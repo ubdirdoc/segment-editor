@@ -1,0 +1,30 @@
+site_name: 'Score documentation'
+
+pages:
+- Home: 'index.md'
+- First steps:
+   - Introduction: 'first_steps/score-presentation.md'
+   - 'Time approach in Score': 'first_steps/time_approach.md'
+   - 'Meet the Score interface': 'first_steps/meet_score_interface.md'
+   - 'Writing your first scenario': 'first_steps/first_scenario.md'
+- In depth:
+   - Processes:
+      - 'Automation Process': 'in_depth/automation_process.md'
+      - 'Interpolation Process': 'in_depth/interpolation_process.md'
+      - 'Mapping Process': 'in_depth/mapping_process.md'
+      - 'Loop Process': 'in_depth/loop_process.md'
+      - 'Scenario Process': 'in_depth/scenario_process.md'
+   - 'Avanced value addressing': 'in_depth/value_addressing.md'
+
+- How to ?:
+   - Setup:
+      - 'Setup an OSC device': 'howtos/declare_an_osc_device.md'
+      - 'Manually declare a namespace': 'howtos/manual_namespace_setup.md'
+      - 'Use the learn function': 'howtos/namespace_learning.md'
+   - Edit:
+      - 'Update stored state': 'howtos/update_state.md'
+   
+use_directory_urls: false
+
+extra_css: 
+   - 'css/ossiadoc.css'

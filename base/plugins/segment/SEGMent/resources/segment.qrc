@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>baseline-videocam-24px.svg</file>
+        <file>translations/fr.qm</file>
+        <file>puzzle.png</file>
+    </qresource>
+</RCC>

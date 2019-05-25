@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Calque_1" xmlns:serif="http://www.serif.com/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 600 600"
+	 style="enable-background:new 0 0 600 600;" xml:space="preserve">
+<style type="text/css">
+	.st0{display:none;fill:#3D3D3D;}
+	.st1{fill:none;stroke:#FFFFFF;stroke-width:1.57;stroke-linejoin:round;stroke-miterlimit:1.5;stroke-dasharray:1.57,1.57;}
+	.st2{fill:#FFFFFF;}
+	.st3{fill:none;stroke:#FFFFFF;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:1.5;}
+	.st4{display:none;fill:#000100;}
+</style>
+<rect x="10.3" y="10.3" class="st0" width="576.4" height="576.4"/>
+<g transform="matrix(1.5,0,0,1,-1.25,0)">
+	<path class="st1" d="M380.2,297.2H7.7"/>
+</g>
+<g transform="matrix(1,0,0,1,5.74,7.65)">
+	<path class="st2" d="M310,530.3L216.9,455l93.1-75.1V530.3z"/>
+</g>
+<g transform="matrix(1,0,0,1,1.49,7.585)">
+	<path class="st2" d="M433.2,378.6l92.9,75.1L433.2,529V378.6z"/>
+</g>
+<g transform="matrix(1,0,0,1,4,0.308777)">
+	<circle class="st2" cx="370.9" cy="298.2" r="54.2"/>
+</g>
+<path class="st3" d="M374.9,298.6v286"/>
+<path class="st4" d="M600,600H0V0h600V600z M20.7,576.4h555.7V20.7H20.7V576.4z"/>
+</svg>
