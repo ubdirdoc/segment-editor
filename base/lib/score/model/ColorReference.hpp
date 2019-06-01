@@ -1,10 +1,13 @@
 #pragma once
-#include <QBrush>
-#include <QColor>
-#include <eggs/variant.hpp>
 #include <score/model/Skin.hpp>
 #include <score/tools/Todo.hpp>
 #include <score/tools/std/Optional.hpp>
+
+#include <QBrush>
+#include <QColor>
+
+#include <eggs/variant.hpp>
+
 #include <utility>
 
 namespace score
@@ -35,13 +38,9 @@ public:
   ColorRef& operator=(const ColorRef& other) = default;
   ColorRef& operator=(ColorRef&& other) = default;
 
-  ColorRef(QBrush Skin::*s) : ref{&(score::Skin::instance().*s)}
-  {
-  }
+  ColorRef(QBrush Skin::*s) : ref{&(score::Skin::instance().*s)} {}
 
-  ColorRef(const QBrush* col) : ref{col}
-  {
-  }
+  ColorRef(const QBrush* col) : ref{col} {}
 
   void setColor(QBrush Skin::*s)
   {
@@ -55,10 +54,7 @@ public:
     return *ref;
   }
 
-  QString name() const
-  {
-    return score::Skin::instance().toString(ref);
-  }
+  QString name() const { return score::Skin::instance().toString(ref); }
 
   static optional<ColorRef> ColorFromString(const QString&);
   static optional<ColorRef> SimilarColor(QColor other);
@@ -66,7 +62,7 @@ public:
 private:
   const QBrush* ref{};
 };
-}
+} // namespace score
 
 Q_DECLARE_METATYPE(score::ColorRef)
 W_REGISTER_ARGTYPE(score::ColorRef)

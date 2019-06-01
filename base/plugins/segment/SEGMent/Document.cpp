@@ -1,106 +1,103 @@
-#include <SEGMent/Document.hpp>
-#include <SEGMent/Model/Layer/ProcessView.hpp>
-#include <SEGMent/Model/Layer/ProcessPresenter.hpp>
-#include <QOpenGLWidget>
-#include <QWheelEvent>
+#include <score/tools/IdentifierGeneration.hpp>
+
 #include <core/document/Document.hpp>
 #include <core/document/DocumentModel.hpp>
-#include <score/tools/IdentifierGeneration.hpp>
-#include <QScrollBar>
+
 #include <QMessageBox>
+#include <QOpenGLWidget>
+#include <QScrollBar>
+#include <QWheelEvent>
+
 #include <SEGMent/Commands/Creation.hpp>
+#include <SEGMent/Document.hpp>
+#include <SEGMent/Model/Layer/ProcessPresenter.hpp>
+#include <SEGMent/Model/Layer/ProcessView.hpp>
 namespace SEGMent
 {
-DocumentModel::DocumentModel(const score::DocumentContext &ctx, QObject *parent)
-  : score::DocumentDelegateModel{Id<score::DocumentDelegateModel>(
-                                   score::id_generator::getFirstId()),
-                                 "SEGMentDocument", parent}
-  , m_context{ctx}
-  , m_base{new SEGMent::ProcessModel{Id<SEGMent::ProcessModel>{0}, this}}
+DocumentModel::DocumentModel(
+    const score::DocumentContext& ctx,
+    QObject* parent)
+    : score::DocumentDelegateModel{Id<score::DocumentDelegateModel>(
+                                       score::id_generator::getFirstId()),
+                                   "SEGMentDocument",
+                                   parent}
+    , m_context{ctx}
+    , m_base{new SEGMent::ProcessModel{Id<SEGMent::ProcessModel>{0}, this}}
 {
 }
 
-SEGMent::ProcessModel &DocumentModel::process() const
+SEGMent::ProcessModel& DocumentModel::process() const
 {
   return *m_base;
 }
 
-DocumentModel::~DocumentModel()
-{
-}
+DocumentModel::~DocumentModel() {}
 
-void DocumentModel::serialize(const VisitorVariant &vis) const
+void DocumentModel::serialize(const VisitorVariant& vis) const
 {
   serialize_dyn(vis, *this);
 }
 
-
-DocumentView::DocumentView(const score::DocumentContext &ctx, QObject *parent)
-  : score::DocumentDelegateView{parent}
-  , m_view{ctx}
+DocumentView::DocumentView(const score::DocumentContext& ctx, QObject* parent)
+    : score::DocumentDelegateView{parent}, m_view{ctx}
 {
   constexpr qreal w = 50000.;
   m_view.setScene(&m_scene);
   m_view.setMinimumSize(400, 400);
   m_view.centerOn(0, 0);
-  m_view.setSceneRect({-w/2., -w/2., w, w});
+  m_view.setSceneRect({-w / 2., -w / 2., w, w});
   m_view.setCursor(QCursor());
 }
 
-DocumentView::~DocumentView()
-{
-}
+DocumentView::~DocumentView() {}
 
-SEGMent::ZoomView &DocumentView::view() const
+SEGMent::ZoomView& DocumentView::view() const
 {
   return const_cast<ZoomView&>(m_view);
 }
 
-QWidget *DocumentView::getWidget()
+QWidget* DocumentView::getWidget()
 {
   return &m_view;
 }
 
-
-
-
-
 DocumentPresenter::DocumentPresenter(
-    const score::DocumentContext &ctx
-    , score::DocumentPresenter *parent_presenter
-    , const DocumentModel &delegate_model
-    , DocumentView &delegate_view)
-  : DocumentDelegatePresenter{parent_presenter, delegate_model,
-                              delegate_view}
-  , m_pres{new SEGMent::Presenter{delegate_model.process(),
-           &delegate_view.view(), ctx, this}}
+    const score::DocumentContext& ctx,
+    score::DocumentPresenter* parent_presenter,
+    const DocumentModel& delegate_model,
+    DocumentView& delegate_view)
+    : DocumentDelegatePresenter{parent_presenter,
+                                delegate_model,
+                                delegate_view}
+    , m_pres{new SEGMent::Presenter{delegate_model.process(),
+                                    &delegate_view.view(),
+                                    ctx,
+                                    this}}
 {
 }
 
-DocumentPresenter::~DocumentPresenter()
-{
-}
+DocumentPresenter::~DocumentPresenter() {}
 
-void DocumentPresenter::setNewSelection(const Selection &s)
+void DocumentPresenter::setNewSelection(const Selection& s)
 {
-  for(auto& obj : m_curSel)
+  for (auto& obj : m_curSel)
   {
-    if(obj)
+    if (obj)
     {
       auto c = obj->findChild<Selectable*>();
-      if(c)
+      if (c)
       {
         c->set_impl(false);
       }
     }
   }
 
-  for(auto& obj : s)
+  for (auto& obj : s)
   {
-    if(obj)
+    if (obj)
     {
       auto c = obj->findChild<Selectable*>();
-      if(c)
+      if (c)
       {
         c->set_impl(true);
       }
@@ -109,28 +106,28 @@ void DocumentPresenter::setNewSelection(const Selection &s)
   m_curSel = s;
 }
 
-score::DocumentDelegateView *DocumentFactory::makeView(
-    const score::DocumentContext &ctx,
-    QObject *parent)
+score::DocumentDelegateView*
+DocumentFactory::makeView(const score::DocumentContext& ctx, QObject* parent)
 {
   return new DocumentView{ctx, parent};
 }
 
-score::DocumentDelegatePresenter *DocumentFactory::makePresenter(
-    const score::DocumentContext &ctx,
-    score::DocumentPresenter *parent_presenter,
-    const score::DocumentDelegateModel &model,
-    score::DocumentDelegateView &view)
+score::DocumentDelegatePresenter* DocumentFactory::makePresenter(
+    const score::DocumentContext& ctx,
+    score::DocumentPresenter* parent_presenter,
+    const score::DocumentDelegateModel& model,
+    score::DocumentDelegateView& view)
 {
-  return new DocumentPresenter{ctx, parent_presenter,
-        static_cast<const DocumentModel&>(model),
-        static_cast<DocumentView&>(view)};
+  return new DocumentPresenter{ctx,
+                               parent_presenter,
+                               static_cast<const DocumentModel&>(model),
+                               static_cast<DocumentView&>(view)};
 }
 
 void DocumentFactory::make(
-    const score::DocumentContext &ctx,
-    score::DocumentDelegateModel *&ptr,
-    score::DocumentModel *parent)
+    const score::DocumentContext& ctx,
+    score::DocumentDelegateModel*& ptr,
+    score::DocumentModel* parent)
 {
   std::allocator<DocumentModel> alloc;
   auto res = alloc.allocate(1);
@@ -139,10 +136,10 @@ void DocumentFactory::make(
 }
 
 void DocumentFactory::load(
-    const VisitorVariant &vis,
-    const score::DocumentContext &ctx,
-    score::DocumentDelegateModel *&ptr,
-    score::DocumentModel *parent)
+    const VisitorVariant& vis,
+    const score::DocumentContext& ctx,
+    score::DocumentDelegateModel*& ptr,
+    score::DocumentModel* parent)
 {
   std::allocator<DocumentModel> alloc;
   auto res = alloc.allocate(1);
@@ -153,8 +150,7 @@ void DocumentFactory::load(
   });
 }
 
-
-}
+} // namespace SEGMent
 
 W_OBJECT_IMPL(SEGMent::DocumentModel)
 W_OBJECT_IMPL(SEGMent::DocumentPresenter)
@@ -182,5 +178,6 @@ void JSONObjectReader::read(const SEGMent::DocumentModel& doc)
 template <>
 void JSONObjectWriter::write(SEGMent::DocumentModel& doc)
 {
-  doc.m_base = new SEGMent::ProcessModel{JSONObject::Deserializer{obj["Process"].toObject()}, &doc};
+  doc.m_base = new SEGMent::ProcessModel{
+      JSONObject::Deserializer{obj["Process"].toObject()}, &doc};
 }

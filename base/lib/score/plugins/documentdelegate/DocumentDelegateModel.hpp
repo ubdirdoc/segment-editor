@@ -16,4 +16,4 @@ public:
 
   virtual void serialize(const VisitorVariant&) const = 0;
 };
-}
+} // namespace score

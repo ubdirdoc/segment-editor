@@ -1,19 +1,18 @@
 #pragma once
-#include <SEGMent/ImageList.hpp>
-
 #include <score/plugins/panel/PanelDelegate.hpp>
 #include <score/plugins/panel/PanelDelegateFactory.hpp>
+
 #include <QTabWidget>
+
+#include <SEGMent/ImageList.hpp>
 namespace SEGMent
 {
 class ImageList;
 
 //! Library panel of SEGMent
-class Library final
-    : public QObject
-    , public score::PanelDelegate
+class Library final : public QObject, public score::PanelDelegate
 {
-    W_OBJECT(Library)
+  W_OBJECT(Library)
 public:
   Library(const score::GUIApplicationContext& ctx);
 
@@ -22,8 +21,8 @@ private:
 
   const score::PanelStatus& defaultPanelStatus() const override;
 
-  void on_modelChanged(
-      score::MaybeDocument oldm, score::MaybeDocument newm) override;
+  void on_modelChanged(score::MaybeDocument oldm, score::MaybeDocument newm)
+      override;
   void on_documentPathChanged(const QString& p);
   void setNewSelection(const Selection& s) override;
 
@@ -45,5 +44,4 @@ class LibraryFactory final : public score::PanelDelegateFactory
   make(const score::GUIApplicationContext& ctx) override;
 };
 
-
-}
+} // namespace SEGMent

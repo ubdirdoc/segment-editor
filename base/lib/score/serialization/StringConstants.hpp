@@ -1,5 +1,6 @@
 #pragma once
 #include <QString>
+
 #include <score_lib_base_export.h>
 namespace score
 {
@@ -108,4 +109,4 @@ struct StringConstants
 };
 
 SCORE_LIB_BASE_EXPORT const StringConstants& StringConstant();
-}
+} // namespace score

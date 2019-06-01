@@ -73,4 +73,4 @@ protected:
 };
 
 using MaybeDocument = const score::DocumentContext*;
-}
+} // namespace score

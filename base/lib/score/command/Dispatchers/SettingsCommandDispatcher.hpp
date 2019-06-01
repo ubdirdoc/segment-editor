@@ -1,7 +1,8 @@
 #pragma once
-#include <memory>
 #include <score/command/SettingsCommand.hpp>
 #include <score/tools/std/HashMap.hpp>
+
+#include <memory>
 namespace score
 {
 class SettingsCommandDispatcher
@@ -71,4 +72,4 @@ private:
   score::hash_map<CommandKey, std::unique_ptr<score::SettingsCommandBase>>
       deferred;
 };
-}
+} // namespace score

@@ -1,29 +1,42 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "CoreApplicationPlugin.hpp"
+
 #include "AboutDialog.hpp"
 
-#include <QMessageBox>
-#include <QDesktopServices>
-#include <QUrl>
-#include <core/view/QRecentFilesMenu.h>
+#include <score/actions/Menu.hpp>
+#include <score/plugins/documentdelegate/DocumentDelegateFactory.hpp>
+
 #include <core/presenter/CoreActions.hpp>
 #include <core/settings/Settings.hpp>
 #include <core/settings/SettingsView.hpp>
+#include <core/view/QRecentFilesMenu.h>
 #include <core/view/Window.hpp>
-#include <score/actions/Menu.hpp>
-#include <score/plugins/documentdelegate/DocumentDelegateFactory.hpp>
+
+#include <QDesktopServices>
+#include <QMessageBox>
+#include <QUrl>
+
 #include <score_git_info.hpp>
 
-SCORE_DECLARE_ACTION(Documentation, "&Documentation", Common, QKeySequence::UnknownKey)
-SCORE_DECLARE_ACTION(Issues, "&Report Issues", Common, QKeySequence::UnknownKey)
+SCORE_DECLARE_ACTION(
+    Documentation,
+    "&Documentation",
+    Common,
+    QKeySequence::UnknownKey)
+SCORE_DECLARE_ACTION(
+    Issues,
+    "&Report Issues",
+    Common,
+    QKeySequence::UnknownKey)
 SCORE_DECLARE_ACTION(Forum, "&Forum", Common, QKeySequence::UnknownKey)
 
 namespace score
 {
 
 CoreApplicationPlugin::CoreApplicationPlugin(
-    const GUIApplicationContext& app, Presenter& pres)
+    const GUIApplicationContext& app,
+    Presenter& pres)
     : GUIApplicationPlugin{app}, m_presenter{pres}
 {
 }
@@ -31,7 +44,8 @@ CoreApplicationPlugin::CoreApplicationPlugin(
 void CoreApplicationPlugin::newDocument()
 {
   m_presenter.m_docManager.newDocument(
-      context, getStrongId(m_presenter.m_docManager.documents()),
+      context,
+      getStrongId(m_presenter.m_docManager.documents()),
       *context.interfaces<score::DocumentDelegateList>().begin());
 }
 
@@ -86,7 +100,7 @@ void CoreApplicationPlugin::openProjectSettings()
 
 void CoreApplicationPlugin::help()
 {
-   QDesktopServices::openUrl(QUrl("https://ossia.github.io/score"));
+  QDesktopServices::openUrl(QUrl("https://ossia.github.io/score"));
 }
 
 void CoreApplicationPlugin::about()
@@ -117,16 +131,18 @@ GUIElements CoreApplicationPlugin::makeGUIElements()
   auto file = new QMenu{tr("&Fichier")};
   auto edit = new QMenu{tr("&Édition")};
   auto view = new QMenu{tr("&Vue")};
-  //auto settings = new QMenu{tr("&Paramètres")};
+  // auto settings = new QMenu{tr("&Paramètres")};
   auto about = new QMenu{tr("&Aide")};
   menus.emplace_back(file, Menus::File(), Menu::is_toplevel{}, 0);
   menus.emplace_back(edit, Menus::Edit(), Menu::is_toplevel{}, 1);
   menus.emplace_back(view, Menus::View(), Menu::is_toplevel{}, 5);
-  //menus.emplace_back(settings, Menus::Settings(), Menu::is_toplevel{}, 6);
+  // menus.emplace_back(settings, Menus::Settings(), Menu::is_toplevel{}, 6);
 
   // Menus are by default at int_max - 1 so that they will be sorted before
   menus.emplace_back(
-      about, Menus::About(), Menu::is_toplevel{},
+      about,
+      Menus::About(),
+      Menu::is_toplevel{},
       std::numeric_limits<int>::max());
 
   auto export_menu = new QMenu{tr("&Export")};
@@ -154,7 +170,9 @@ GUIElements CoreApplicationPlugin::makeGUIElements()
     {
       auto new_doc = new QAction(m_presenter.view());
       connect(
-          new_doc, &QAction::triggered, this,
+          new_doc,
+          &QAction::triggered,
+          this,
           &CoreApplicationPlugin::newDocument);
       file->addAction(new_doc);
       e.actions.add<Actions::New>(new_doc);
@@ -185,7 +203,9 @@ GUIElements CoreApplicationPlugin::makeGUIElements()
     {
       auto saveas_doc = new QAction(m_presenter.view());
       connect(
-          saveas_doc, &QAction::triggered, this,
+          saveas_doc,
+          &QAction::triggered,
+          this,
           &CoreApplicationPlugin::saveAs);
       e.actions.add<Actions::SaveAs>(saveas_doc);
       cond.add<Actions::SaveAs>();
@@ -215,14 +235,15 @@ GUIElements CoreApplicationPlugin::makeGUIElements()
     {
       auto act = new QAction(m_presenter.view());
       connect(
-          act, &QAction::triggered, this,
+          act,
+          &QAction::triggered,
+          this,
           &CoreApplicationPlugin::restoreLayout);
       e.actions.add<Actions::RestoreLayout>(act);
       windows_menu->addAction(act);
     }
-
   }
 
   return e;
 }
-}
+} // namespace score

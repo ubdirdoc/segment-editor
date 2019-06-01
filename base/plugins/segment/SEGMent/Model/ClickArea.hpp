@@ -1,14 +1,14 @@
 #pragma once
-#include <SEGMent/Model/Sound.hpp>
-#include <SEGMent/Model/Traits.hpp>
-#include <SEGMent/Model/Model.hpp>
 #include <score/model/Entity.hpp>
 #include <score/selection/Selectable.hpp>
+
+#include <SEGMent/Model/Model.hpp>
+#include <SEGMent/Model/Sound.hpp>
+#include <SEGMent/Model/Traits.hpp>
 namespace SEGMent
 {
 
-class ClickAreaModel
-    : public Object<ClickAreaModel>
+class ClickAreaModel : public Object<ClickAreaModel>
 {
   W_OBJECT(ClickAreaModel)
   SCORE_SERIALIZE_FRIENDS
@@ -25,7 +25,7 @@ public:
     vis.writeTo(*this);
   }
 };
-}
+} // namespace SEGMent
 
 DEFAULT_MODEL_METADATA(SEGMent::ClickAreaModel, "Click")
 TR_TEXT_METADATA(, SEGMent::ClickAreaModel, PrettyName_k, "Click Area")

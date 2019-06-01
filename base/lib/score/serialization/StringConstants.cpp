@@ -110,4 +110,4 @@ SCORE_LIB_BASE_EXPORT const StringConstants& StringConstant()
                                        QStringLiteral("Width")};
   return strings;
 }
-}
+} // namespace score

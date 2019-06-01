@@ -17,4 +17,4 @@ QString addonArchitecture()
   return "undefined";
 #endif
 }
-}
+} // namespace score

@@ -1,7 +1,9 @@
 #pragma once
-#include <memory>
 #include <score/plugins/customfactory/FactoryInterface.hpp>
+
 #include <score_lib_base_export.h>
+
+#include <memory>
 #include <vector>
 
 namespace score
@@ -24,4 +26,4 @@ public:
       const score::GUIApplicationContext& ctx,
       const score::InterfaceKey& key) const;
 };
-}
+} // namespace score

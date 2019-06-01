@@ -16,4 +16,4 @@ score::SelectionStack& SelectionDispatcher::stack() const
 {
   return m_stack;
 }
-}
+} // namespace score

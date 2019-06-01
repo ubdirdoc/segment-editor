@@ -2,6 +2,7 @@
 #include <score/plugins/ProjectSettings/ProjectSettingsModel.hpp>
 #include <score/plugins/customfactory/FactoryFamily.hpp>
 #include <score/plugins/documentdelegate/plugin/SerializableDocumentPlugin.hpp>
+
 #include <score_lib_base_export.h>
 namespace score
 {
@@ -69,27 +70,24 @@ class ProjectSettingsDelegateFactory_T : public ProjectSettingsFactory
     return new Model_T(ctx, id, parent);
   }
 
-  score::ProjectSettingsView* makeView() override
-  {
-    return new View_T;
-  }
+  score::ProjectSettingsView* makeView() override { return new View_T; }
 
   score::ProjectSettingsPresenter* makePresenter_impl(
       score::ProjectSettingsModel& m,
       score::ProjectSettingsView& v,
       QObject* parent) override
   {
-    return new Presenter_T{safe_cast<Model_T&>(m), safe_cast<View_T&>(v),
-                           parent};
+    return new Presenter_T{
+        safe_cast<Model_T&>(m), safe_cast<View_T&>(v), parent};
   }
 };
-}
+} // namespace score
 
-#define SCORE_DECLARE_PROJECTSETTINGS_FACTORY(          \
-    Factory, Model, Presenter, View, Uuid)              \
-  class Factory final                                   \
-      : public score::ProjectSettingsDelegateFactory_T< \
-            Model, Presenter, View>                     \
-  {                                                     \
-    SCORE_CONCRETE(Uuid)                                \
+#define SCORE_DECLARE_PROJECTSETTINGS_FACTORY(                       \
+    Factory, Model, Presenter, View, Uuid)                           \
+  class Factory final                                                \
+      : public score::                                               \
+            ProjectSettingsDelegateFactory_T<Model, Presenter, View> \
+  {                                                                  \
+    SCORE_CONCRETE(Uuid)                                             \
   };

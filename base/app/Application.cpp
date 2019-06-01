@@ -2,6 +2,26 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "Application.hpp"
 
+#include <score/application/ApplicationComponents.hpp>
+#include <score/application/GUIApplicationContext.hpp>
+#include <score/command/Validity/ValidityChecker.hpp>
+#include <score/model/Identifier.hpp>
+#include <score/model/path/ObjectIdentifier.hpp>
+#include <score/plugins/application/GUIApplicationPlugin.hpp>
+#include <score/plugins/documentdelegate/DocumentDelegateFactory.hpp>
+#include <score/selection/Selection.hpp>
+#include <score/tools/IdentifierGeneration.hpp>
+#include <score/tools/std/Optional.hpp>
+#include <score/widgets/Pixmap.hpp>
+
+#include <core/application/ApplicationRegistrar.hpp>
+#include <core/application/ApplicationSettings.hpp>
+#include <core/application/SafeQApplication.hpp>
+#include <core/document/DocumentBackups.hpp>
+#include <core/document/DocumentModel.hpp>
+#include <core/presenter/DocumentManager.hpp>
+#include <core/presenter/Presenter.hpp>
+#include <core/view/Window.hpp>
 
 #include <QByteArray>
 #include <QCoreApplication>
@@ -20,35 +40,17 @@
 #include <QStringList>
 #include <QStyle>
 #include <QStyleFactory>
-#include <algorithm>
-#include <core/application/ApplicationRegistrar.hpp>
-#include <core/application/ApplicationSettings.hpp>
-#include <core/application/SafeQApplication.hpp>
-#include <core/document/DocumentBackups.hpp>
-#include <core/document/DocumentModel.hpp>
-#include <core/presenter/DocumentManager.hpp>
-#include <core/presenter/Presenter.hpp>
-#include <core/view/Window.hpp>
 #include <qnamespace.h>
-#include <score/application/ApplicationComponents.hpp>
-#include <score/application/GUIApplicationContext.hpp>
-#include <score/command/Validity/ValidityChecker.hpp>
-#include <score/model/Identifier.hpp>
-#include <score/model/path/ObjectIdentifier.hpp>
-#include <score/plugins/application/GUIApplicationPlugin.hpp>
-#include <score/plugins/documentdelegate/DocumentDelegateFactory.hpp>
-#include <score/selection/Selection.hpp>
-#include <score/tools/IdentifierGeneration.hpp>
-#include <score/tools/std/Optional.hpp>
+
+#include <algorithm>
 #include <vector>
-#include <score/widgets/Pixmap.hpp>
 
 #if __has_include(<QQuickStyle>)
-#  include <QQuickStyle>
+#include <QQuickStyle>
 #endif
 
 #if defined(SCORE_STATIC_PLUGINS)
-#  include <score_static_plugins.hpp>
+#include <score_static_plugins.hpp>
 #endif
 
 #include <wobjectimpl.h>
@@ -69,7 +71,6 @@ static void setQApplicationSettings(QApplication& m_app)
 #endif
 }
 
-
 } // namespace score
 
 Application::Application(int& argc, char** argv) : QObject{nullptr}
@@ -88,7 +89,9 @@ Application::Application(int& argc, char** argv) : QObject{nullptr}
 }
 
 Application::Application(
-    const score::ApplicationSettings& appSettings, int& argc, char** argv)
+    const score::ApplicationSettings& appSettings,
+    int& argc,
+    char** argv)
     : QObject{nullptr}, m_applicationSettings(appSettings)
 {
   m_instance = this;
@@ -139,8 +142,8 @@ void Application::init()
     m_view = new score::View{this};
   }
 
-  m_presenter = new score::Presenter{m_applicationSettings, m_settings,
-                                     m_projectSettings, m_view, this};
+  m_presenter = new score::Presenter{
+      m_applicationSettings, m_settings, m_projectSettings, m_view, this};
 
   // Plugins
   loadPluginData();
@@ -214,9 +217,11 @@ void Application::initDocuments()
 void Application::loadPluginData()
 {
   auto& ctx = m_presenter->applicationContext();
-  score::GUIApplicationRegistrar registrar{
-      m_presenter->components(), ctx, m_presenter->menuManager(),
-      m_presenter->toolbarManager(), m_presenter->actionManager()};
+  score::GUIApplicationRegistrar registrar{m_presenter->components(),
+                                           ctx,
+                                           m_presenter->menuManager(),
+                                           m_presenter->toolbarManager(),
+                                           m_presenter->actionManager()};
 
   GUIApplicationInterface::loadPluginData(
       ctx, registrar, m_settings, *m_presenter);

@@ -1,14 +1,15 @@
 #pragma once
-#include <SEGMent/Model/ClickArea.hpp>
-#include <SEGMent/Model/BackClickArea.hpp>
-#include <SEGMent/Model/GifObject.hpp>
-#include <SEGMent/Model/SimpleObject.hpp>
-#include <SEGMent/Model/Sound.hpp>
-#include <SEGMent/Model/TextArea.hpp>
-#include <SEGMent/Model/Model.hpp>
 #include <score/model/Entity.hpp>
 #include <score/model/EntityMap.hpp>
 #include <score/selection/Selectable.hpp>
+
+#include <SEGMent/Model/BackClickArea.hpp>
+#include <SEGMent/Model/ClickArea.hpp>
+#include <SEGMent/Model/GifObject.hpp>
+#include <SEGMent/Model/Model.hpp>
+#include <SEGMent/Model/SimpleObject.hpp>
+#include <SEGMent/Model/Sound.hpp>
+#include <SEGMent/Model/TextArea.hpp>
 namespace SEGMent
 {
 
@@ -18,17 +19,29 @@ struct LongText
   operator const QString&() const noexcept { return txt; }
   operator QString&() noexcept { return txt; }
   friend bool operator==(const LongText& lhs, const LongText& rhs) noexcept
-  { return lhs.txt == rhs.txt; }
+  {
+    return lhs.txt == rhs.txt;
+  }
   friend bool operator!=(const LongText& lhs, const LongText& rhs) noexcept
-  { return lhs.txt != rhs.txt; }
+  {
+    return lhs.txt != rhs.txt;
+  }
   friend bool operator<(const LongText& lhs, const LongText& rhs) noexcept
-  { return lhs.txt < rhs.txt; }
+  {
+    return lhs.txt < rhs.txt;
+  }
   friend bool operator>(const LongText& lhs, const LongText& rhs) noexcept
-  { return lhs.txt > rhs.txt; }
+  {
+    return lhs.txt > rhs.txt;
+  }
   friend bool operator<=(const LongText& lhs, const LongText& rhs) noexcept
-  { return lhs.txt <= rhs.txt; }
+  {
+    return lhs.txt <= rhs.txt;
+  }
   friend bool operator>=(const LongText& lhs, const LongText& rhs) noexcept
-  { return lhs.txt >= rhs.txt; }
+  {
+    return lhs.txt >= rhs.txt;
+  }
 };
 
 //! A scene is the main object in a SEGMent canvas
@@ -37,7 +50,7 @@ class SceneModel : public PathAsId<score::Entity<SceneModel>>
   W_OBJECT(SceneModel)
   SCORE_SERIALIZE_FRIENDS
 public:
-    Selectable selection{this};
+  Selectable selection{this};
 
   using base_type = PathAsId<score::Entity<SceneModel>>;
 
@@ -45,7 +58,7 @@ public:
 
   template <typename DeserializerVisitor>
   SceneModel(DeserializerVisitor&& vis, QObject* parent)
-    : base_type{std::forward<DeserializerVisitor>(vis), parent}
+      : base_type{std::forward<DeserializerVisitor>(vis), parent}
   {
     vis.writeTo(*this);
   }
@@ -81,7 +94,8 @@ public:
   void setAmbience(const Sound& v) MSVC_NOEXCEPT;
   void ambienceChanged(const Sound& v) W_SIGNAL(ambienceChanged, v);
   PROPERTY(
-      Sound, ambience READ ambience WRITE setAmbience NOTIFY ambienceChanged)
+      Sound,
+      ambience READ ambience WRITE setAmbience NOTIFY ambienceChanged)
 
 private:
   Sound m_ambience;
@@ -119,45 +133,47 @@ public:
   bool repeatText() const MSVC_NOEXCEPT;
   void setRepeatText(bool v) MSVC_NOEXCEPT;
   void repeatTextChanged(bool v) W_SIGNAL(repeatTextChanged, v);
-  PROPERTY(bool, repeatText READ repeatText WRITE setRepeatText NOTIFY repeatTextChanged)
+  PROPERTY(
+      bool,
+      repeatText READ repeatText WRITE setRepeatText NOTIFY repeatTextChanged)
 
 private:
   bool m_repeatText{};
 };
 
-template<typename T>
+template <typename T>
 struct SceneAccessor;
-template<>
+template <>
 struct SceneAccessor<ImageModel>
 {
-    static auto& get(SceneModel& scene) { return scene.objects; }
-    static auto& get(const SceneModel& scene) { return scene.objects; }
+  static auto& get(SceneModel& scene) { return scene.objects; }
+  static auto& get(const SceneModel& scene) { return scene.objects; }
 };
-template<>
+template <>
 struct SceneAccessor<GifModel>
 {
-    static auto& get(SceneModel& scene) { return scene.gifs; }
-    static auto& get(const SceneModel& scene) { return scene.gifs; }
+  static auto& get(SceneModel& scene) { return scene.gifs; }
+  static auto& get(const SceneModel& scene) { return scene.gifs; }
 };
-template<>
+template <>
 struct SceneAccessor<ClickAreaModel>
 {
-    static auto& get(SceneModel& scene) { return scene.clickAreas; }
-    static auto& get(const SceneModel& scene) { return scene.clickAreas; }
+  static auto& get(SceneModel& scene) { return scene.clickAreas; }
+  static auto& get(const SceneModel& scene) { return scene.clickAreas; }
 };
-template<>
+template <>
 struct SceneAccessor<BackClickAreaModel>
 {
-    static auto& get(SceneModel& scene) { return scene.backClickAreas; }
-    static auto& get(const SceneModel& scene) { return scene.backClickAreas; }
+  static auto& get(SceneModel& scene) { return scene.backClickAreas; }
+  static auto& get(const SceneModel& scene) { return scene.backClickAreas; }
 };
-template<>
+template <>
 struct SceneAccessor<TextAreaModel>
 {
-    static auto& get(SceneModel& scene) { return scene.textAreas; }
-    static auto& get(const SceneModel& scene) { return scene.textAreas; }
+  static auto& get(SceneModel& scene) { return scene.textAreas; }
+  static auto& get(const SceneModel& scene) { return scene.textAreas; }
 };
-}
+} // namespace SEGMent
 
 DEFAULT_MODEL_METADATA(SEGMent::SceneModel, "Scene")
 Q_DECLARE_METATYPE(SEGMent::SceneModel::SceneType)

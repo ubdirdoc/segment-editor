@@ -1,6 +1,7 @@
 #pragma once
-#include <QPointer>
 #include <score/model/IdentifiedObjectAbstract.hpp>
+
+#include <QPointer>
 
 namespace score
 {
@@ -8,10 +9,7 @@ struct SCORE_LIB_BASE_EXPORT FocusManager : public QObject
 {
   W_OBJECT(FocusManager)
 public:
-  const IdentifiedObjectAbstract* get()
-  {
-    return m_obj;
-  }
+  const IdentifiedObjectAbstract* get() { return m_obj; }
 
   template <typename T>
   void set(QPointer<const T> obj)
@@ -28,8 +26,8 @@ public:
 
   void changed() W_SIGNAL(changed);
 
-  private:
-    QPointer<const IdentifiedObjectAbstract> m_obj{};
+private:
+  QPointer<const IdentifiedObjectAbstract> m_obj{};
 };
 
 struct SCORE_LIB_BASE_EXPORT FocusFacade
@@ -38,13 +36,8 @@ private:
   FocusManager& m_mgr;
 
 public:
-  FocusFacade(FocusManager& mgr) : m_mgr{mgr}
-  {
-  }
+  FocusFacade(FocusManager& mgr) : m_mgr{mgr} {}
 
-  const IdentifiedObjectAbstract* get() const
-  {
-    return m_mgr.get();
-  }
+  const IdentifiedObjectAbstract* get() const { return m_mgr.get(); }
 };
-}
+} // namespace score

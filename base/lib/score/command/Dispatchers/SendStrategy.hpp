@@ -30,7 +30,7 @@ struct UndoRedo
     stack.redoAndPush(other);
   }
 };
-}
+} // namespace SendStrategy
 namespace RedoStrategy
 {
 struct Redo
@@ -43,8 +43,6 @@ struct Redo
 
 struct Quiet
 {
-  static void redo(const score::DocumentContext& ctx, score::Command& cmd)
-  {
-  }
+  static void redo(const score::DocumentContext& ctx, score::Command& cmd) {}
 };
-}
+} // namespace RedoStrategy

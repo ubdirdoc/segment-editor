@@ -17,4 +17,4 @@ GUIApplicationPlugin* ApplicationPlugin_QtInterface::make_guiApplicationPlugin(
 {
   return nullptr;
 }
-}
+} // namespace score

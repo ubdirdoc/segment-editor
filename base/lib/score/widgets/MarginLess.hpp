@@ -25,4 +25,4 @@ public:
     this->setSpacing(0);
   }
 };
-}
+} // namespace score

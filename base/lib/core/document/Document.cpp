@@ -1,23 +1,27 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <QObject>
-#include <algorithm>
-#include <core/document/Document.hpp>
-#include <core/document/DocumentBackupManager.hpp>
-#include <core/document/DocumentModel.hpp>
-#include <core/document/DocumentPresenter.hpp>
-#include <core/document/DocumentView.hpp>
-#include <iterator>
 #include <score/document/DocumentContext.hpp>
 #include <score/plugins/panel/PanelDelegate.hpp>
 #include <score/selection/Selection.hpp>
 #include <score/selection/SelectionStack.hpp>
 #include <score/tools/Todo.hpp>
+
+#include <core/document/Document.hpp>
+#include <core/document/DocumentBackupManager.hpp>
+#include <core/document/DocumentModel.hpp>
+#include <core/document/DocumentPresenter.hpp>
+#include <core/document/DocumentView.hpp>
+
+#include <QObject>
+
+#include <algorithm>
+#include <iterator>
 #include <vector>
 
 class QWidget;
 class Selection;
 #include <score/model/Identifier.hpp>
+
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(score::Document)
 namespace score
@@ -85,7 +89,9 @@ Document::Document(
 
 void Document::init()
 {
-  con(m_selectionStack, &SelectionStack::currentSelectionChanged, this,
+  con(m_selectionStack,
+      &SelectionStack::currentSelectionChanged,
+      this,
       [&](const Selection& s) {
         Selection filtered = s;
         filtered.removeAll(nullptr);
@@ -129,4 +135,4 @@ const Id<DocumentModel>& Document::id() const
 {
   return m_model->id();
 }
-}
+} // namespace score

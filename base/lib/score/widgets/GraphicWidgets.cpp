@@ -1,13 +1,15 @@
 #include "GraphicWidgets.hpp"
 
-#include <QDebug>
-#include <QWidget>
-#include <score/model/Skin.hpp>
-#include <QDoubleSpinBox>
-#include <QWindow>
-#include <QGraphicsScene>
-#include <QGraphicsProxyWidget>
 #include <score/actions/ActionManager.hpp>
+#include <score/model/Skin.hpp>
+
+#include <QDebug>
+#include <QDoubleSpinBox>
+#include <QGraphicsProxyWidget>
+#include <QGraphicsScene>
+#include <QWidget>
+#include <QWindow>
+
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(score::QGraphicsPixmapButton)
 W_OBJECT_IMPL(score::QGraphicsPixmapToggle)
@@ -19,7 +21,9 @@ namespace score
 {
 
 QGraphicsPixmapButton::QGraphicsPixmapButton(
-    QPixmap pressed, QPixmap released, QGraphicsItem* parent)
+    QPixmap pressed,
+    QPixmap released,
+    QGraphicsItem* parent)
     : QGraphicsPixmapItem{released, parent}
     , m_pressed{std::move(pressed)}
     , m_released{std::move(released)}
@@ -45,7 +49,9 @@ void QGraphicsPixmapButton::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 }
 
 QGraphicsPixmapToggle::QGraphicsPixmapToggle(
-    QPixmap pressed, QPixmap released, QGraphicsItem* parent)
+    QPixmap pressed,
+    QPixmap released,
+    QGraphicsItem* parent)
     : QGraphicsPixmapItem{released, parent}
     , m_pressed{std::move(pressed)}
     , m_released{std::move(released)}
@@ -130,7 +136,9 @@ QRectF QGraphicsSlider::boundingRect() const
 }
 
 void QGraphicsSlider::paint(
-    QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
   const auto& skin = score::Skin::instance();
   painter->setRenderHint(QPainter::Antialiasing, true);
@@ -234,7 +242,9 @@ QRectF QGraphicsLogSlider::boundingRect() const
 }
 
 void QGraphicsLogSlider::paint(
-    QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
   const auto& skin = score::Skin::instance();
   painter->setRenderHint(QPainter::Antialiasing, true);
@@ -378,7 +388,9 @@ QRectF QGraphicsIntSlider::boundingRect() const
 }
 
 void QGraphicsIntSlider::paint(
-    QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
   const auto& skin = score::Skin::instance();
   painter->setRenderHint(QPainter::Antialiasing, true);
@@ -395,7 +407,8 @@ void QGraphicsIntSlider::paint(
   // Draw text
   painter->setPen(grayPen);
   painter->drawText(
-      srect.adjusted(6, -2, -6, -1), QString::number(value()),
+      srect.adjusted(6, -2, -6, -1),
+      QString::number(value()),
       getHandleX() > srect.width() / 2 ? QTextOption()
                                        : QTextOption(Qt::AlignRight));
 
@@ -516,7 +529,9 @@ QRectF QGraphicsComboSlider::boundingRect() const
 }
 
 void QGraphicsComboSlider::paint(
-    QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
   const auto& skin = score::Skin::instance();
   painter->setRenderHint(QPainter::Antialiasing, true);
@@ -533,7 +548,8 @@ void QGraphicsComboSlider::paint(
   // Draw text
   painter->setPen(grayPen);
   painter->drawText(
-      srect.adjusted(6, -2, -6, -1), array[value()],
+      srect.adjusted(6, -2, -6, -1),
+      array[value()],
       getHandleX() > srect.width() / 2 ? QTextOption()
                                        : QTextOption(Qt::AlignRight));
 
@@ -562,4 +578,4 @@ QRectF QGraphicsComboSlider::handleRect() const
 {
   return {getHandleX() - 4., 1., 8., m_rect.height() - 1};
 }
-}
+} // namespace score

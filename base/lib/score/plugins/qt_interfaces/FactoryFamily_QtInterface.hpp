@@ -1,6 +1,7 @@
 #pragma once
-#include <memory>
 #include <score/plugins/customfactory/FactoryFamily.hpp>
+
+#include <memory>
 #include <vector>
 
 namespace score
@@ -16,4 +17,4 @@ public:
   virtual std::vector<std::unique_ptr<InterfaceListBase>> factoryFamilies()
       = 0;
 };
-}
+} // namespace score

@@ -1,46 +1,51 @@
-#include <SEGMent/Items/ClickWindow.hpp>
+#include <score/command/Dispatchers/CommandDispatcher.hpp>
 #include <score/selection/SelectionStack.hpp>
+
 #include <QGraphicsSceneDragDropEvent>
-#include <SEGMent/Commands/CommandFactory.hpp>
-#include <SEGMent/Items/GlobalVariables.hpp>
-#include <SEGMent/Commands/Properties.hpp>
 #include <QGraphicsWidget>
 #include <QPainter>
-#include <score/command/Dispatchers/CommandDispatcher.hpp>
+
+#include <SEGMent/Commands/CommandFactory.hpp>
+#include <SEGMent/Commands/Properties.hpp>
+#include <SEGMent/Items/ClickWindow.hpp>
+#include <SEGMent/Items/GlobalVariables.hpp>
 namespace SEGMent
 {
 
-ClickWindow::ClickWindow(const ClickAreaModel& p,
-                         const score::DocumentContext& ctx,
-                         ZoomView& view,
-                         QGraphicsItem* parent):
-  Window(
-      expected_pos(p.pos(), parent->boundingRect())
-    , expected_size(p.size(), parent->boundingRect())
-    , true, true, ctx,view, parent)
-, m_object{p}
+ClickWindow::ClickWindow(
+    const ClickAreaModel& p,
+    const score::DocumentContext& ctx,
+    ZoomView& view,
+    QGraphicsItem* parent)
+    : Window(
+        expected_pos(p.pos(), parent->boundingRect()),
+        expected_size(p.size(), parent->boundingRect()),
+        true,
+        true,
+        ctx,
+        view,
+        parent)
+    , m_object{p}
 {
   setZValue(5);
   setAcceptDrops(true);
 
-  m_sizeGripItem = new SizeGripItem(new ObjectResizer<ClickWindow, false>{*this}, this, true);
+  m_sizeGripItem = new SizeGripItem(
+      new ObjectResizer<ClickWindow, false>{*this}, this, true);
 
-  con(p.selection, &Selectable::changed, this, [=] (bool b) {
+  con(p.selection, &Selectable::changed, this, [=](bool b) {
     m_anchorsSetter.setVisible(b);
   });
   QObject::connect(
-      this, &ClickWindow::on_sizeChanged, this,
-      &ClickWindow::sizeChanged);
+      this, &ClickWindow::on_sizeChanged, this, &ClickWindow::sizeChanged);
 
-  ::bind(p, ClickAreaModel::p_pos{}, this, [=] (auto pos) {
+  ::bind(p, ClickAreaModel::p_pos{}, this, [=](auto pos) {
     setPos(expected_pos(pos, parentItem()->boundingRect()));
   });
-  ::bind(p, ClickAreaModel::p_size{}, this, [=] (auto sz) {
+  ::bind(p, ClickAreaModel::p_size{}, this, [=](auto sz) {
     setRect(expected_rect(sz, parentItem()->boundingRect()));
   });
-  ::bind(p, ClickAreaModel::p_z{}, this, [=] (auto z) {
-    setZValue(z);
-  });
+  ::bind(p, ClickAreaModel::p_z{}, this, [=](auto z) { setZValue(z); });
 
   setMinSize(20, 20);
 }
@@ -48,7 +53,7 @@ ClickWindow::ClickWindow(const ClickAreaModel& p,
 void ClickWindow::sizeChanged()
 {
   m_anchorsSetter.updateAnchorsPos();
-  if(m_sizeGripItem)
+  if (m_sizeGripItem)
     m_sizeGripItem->reset();
 }
 
@@ -70,7 +75,10 @@ void ClickWindow::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   ObjectMover::release(*this, event);
 }
 
-void ClickWindow::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+void ClickWindow::paint(
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
   painter->setPen(Style::instance().clickAreaPen);
   painter->setBrush(Style::instance().clickAreaBrush);
@@ -96,41 +104,44 @@ transition_t ClickWindow::createTransitionFrom(
   return ClickToScene{model(), target, source_anchor, target_anchor};
 }
 
-
-
-
-BackClickWindow::BackClickWindow(const BackClickAreaModel& p,
-                                 const score::DocumentContext& ctx,
-                                 ZoomView& view,
-                                 QGraphicsItem* parent):
-  Window(
-    expected_pos(p.pos(), parent->boundingRect())
-  , expected_size(p.size(), parent->boundingRect())
-  , true, false, ctx, view, parent)
-, m_object{p}
+BackClickWindow::BackClickWindow(
+    const BackClickAreaModel& p,
+    const score::DocumentContext& ctx,
+    ZoomView& view,
+    QGraphicsItem* parent)
+    : Window(
+        expected_pos(p.pos(), parent->boundingRect()),
+        expected_size(p.size(), parent->boundingRect()),
+        true,
+        false,
+        ctx,
+        view,
+        parent)
+    , m_object{p}
 {
   setZValue(5);
   setAcceptDrops(true);
 
-  m_sizeGripItem = new SizeGripItem(new ObjectResizer<BackClickWindow, false>{*this}, this, true);
+  m_sizeGripItem = new SizeGripItem(
+      new ObjectResizer<BackClickWindow, false>{*this}, this, true);
 
-  con(p.selection, &Selectable::changed, this, [=] (bool b) {
+  con(p.selection, &Selectable::changed, this, [=](bool b) {
     m_selection = b;
     update();
   });
   QObject::connect(
-      this, &BackClickWindow::on_sizeChanged, this,
+      this,
+      &BackClickWindow::on_sizeChanged,
+      this,
       &BackClickWindow::sizeChanged);
 
-  ::bind(p, BackClickAreaModel::p_pos{}, this, [=] (auto pos) {
+  ::bind(p, BackClickAreaModel::p_pos{}, this, [=](auto pos) {
     setPos(expected_pos(pos, parentItem()->boundingRect()));
   });
-  ::bind(p, BackClickAreaModel::p_size{}, this, [=] (auto sz) {
+  ::bind(p, BackClickAreaModel::p_size{}, this, [=](auto sz) {
     setRect(expected_rect(sz, parentItem()->boundingRect()));
   });
-  ::bind(p, BackClickAreaModel::p_z{}, this, [=] (auto z) {
-    setZValue(z);
-  });
+  ::bind(p, BackClickAreaModel::p_z{}, this, [=](auto z) { setZValue(z); });
 
   setMinSize(20, 20);
 }
@@ -138,7 +149,7 @@ BackClickWindow::BackClickWindow(const BackClickAreaModel& p,
 void BackClickWindow::sizeChanged()
 {
   m_anchorsSetter.updateAnchorsPos();
-  if(m_sizeGripItem)
+  if (m_sizeGripItem)
     m_sizeGripItem->reset();
 }
 
@@ -160,9 +171,12 @@ void BackClickWindow::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   ObjectMover::release(*this, event);
 }
 
-void BackClickWindow::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+void BackClickWindow::paint(
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
-  if(m_selection)
+  if (m_selection)
   {
     QPen pen = Style::instance().backClickAreaPen;
     QBrush brush = Style::instance().backClickAreaBrush;
@@ -180,7 +194,6 @@ void BackClickWindow::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
   painter->drawRoundedRect(rect(), 2, 2);
   painter->setFont(QFont("Helvetica", 40));
   painter->drawText(rect(), "Back", QTextOption(Qt::AlignCenter));
-
 }
 
 void BackClickWindow::dropEvent(QGraphicsSceneDragDropEvent* e)
@@ -201,63 +214,62 @@ transition_t BackClickWindow::createTransitionFrom(
   return {};
 }
 
-
-
-
-
-
-
-TextWindow::TextWindow(const TextAreaModel& p,
-                         const score::DocumentContext& ctx,
-                       ZoomView& view,
-                         QGraphicsItem* parent):
-  Window(
-    expected_pos(p.pos(), parent->boundingRect())
-  , expected_size(p.size(), parent->boundingRect())
-  , true, false, ctx, view, parent)
-, m_object{p}
+TextWindow::TextWindow(
+    const TextAreaModel& p,
+    const score::DocumentContext& ctx,
+    ZoomView& view,
+    QGraphicsItem* parent)
+    : Window(
+        expected_pos(p.pos(), parent->boundingRect()),
+        expected_size(p.size(), parent->boundingRect()),
+        true,
+        false,
+        ctx,
+        view,
+        parent)
+    , m_object{p}
 {
   setZValue(5);
   setAcceptDrops(true);
 
-  m_sizeGripItem = new SizeGripItem(new ObjectResizer<TextWindow, false>{*this}, this, true);
+  m_sizeGripItem = new SizeGripItem(
+      new ObjectResizer<TextWindow, false>{*this}, this, true);
 
-  con(p.selection, &Selectable::changed, this, [=] (bool b) {
+  con(p.selection, &Selectable::changed, this, [=](bool b) {
     m_selection = b;
     update();
   });
   QObject::connect(
-      this, &TextWindow::on_sizeChanged, this,
-      &TextWindow::sizeChanged);
+      this, &TextWindow::on_sizeChanged, this, &TextWindow::sizeChanged);
 
-  ::bind(p, TextAreaModel::p_pos{}, this, [=] (auto pos) {
+  ::bind(p, TextAreaModel::p_pos{}, this, [=](auto pos) {
     setPos(expected_pos(pos, parentItem()->boundingRect()));
   });
-  ::bind(p, TextAreaModel::p_size{}, this, [=] (auto sz) {
+  ::bind(p, TextAreaModel::p_size{}, this, [=](auto sz) {
     setRect(expected_rect(sz, parentItem()->boundingRect()));
   });
-  ::bind(p, TextAreaModel::p_z{}, this, [=] (auto z) {
-    setZValue(z);
-  });
-  ::bind(p, TextAreaModel::p_text{}, this, [=] (const auto&) {
-    update();
-  });
-
+  ::bind(p, TextAreaModel::p_z{}, this, [=](auto z) { setZValue(z); });
+  ::bind(p, TextAreaModel::p_text{}, this, [=](const auto&) { update(); });
 
   setMinSize(20, 20);
 }
 
-int TextWindow::type() const { return static_type(); }
+int TextWindow::type() const
+{
+  return static_type();
+}
 
-const TextAreaModel&TextWindow::model() const { return m_object; }
+const TextAreaModel& TextWindow::model() const
+{
+  return m_object;
+}
 
 void TextWindow::sizeChanged()
 {
   m_anchorsSetter.updateAnchorsPos();
-  if(m_sizeGripItem)
+  if (m_sizeGripItem)
     m_sizeGripItem->reset();
 }
-
 
 void TextWindow::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
@@ -277,9 +289,12 @@ void TextWindow::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   ObjectMover::release(*this, event);
 }
 
-void TextWindow::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+void TextWindow::paint(
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
-  if(m_selection)
+  if (m_selection)
   {
     QPen pen = Style::instance().textAreaPen;
     QBrush brush = Style::instance().textAreaBrush;
@@ -308,18 +323,15 @@ void TextWindow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
   obj->setWidget(l);
   l->setFocus(Qt::FocusReason::MouseFocusReason);
 
-  connect(l, &QLineEdit::editingFinished,
-          this, [=] {
+  connect(l, &QLineEdit::editingFinished, this, [=] {
     CommandDispatcher<> c{context.commandStack};
-    if(l->text() != m_object.text())
+    if (l->text() != m_object.text())
       c.submitCommand(new SetTextAreaText{m_object, l->text()});
     obj->deleteLater();
   });
 }
 
-void TextWindow::dropEvent(QGraphicsSceneDragDropEvent* e)
-{
-}
+void TextWindow::dropEvent(QGraphicsSceneDragDropEvent* e) {}
 
 void TextWindow::updateRect()
 {
@@ -333,4 +345,4 @@ transition_t TextWindow::createTransitionFrom(
 {
   return {};
 }
-}
+} // namespace SEGMent

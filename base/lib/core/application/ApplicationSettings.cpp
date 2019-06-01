@@ -1,7 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ApplicationSettings.hpp"
-#include <score_git_info.hpp>
 
 #include <QApplication>
 #include <QCommandLineOption>
@@ -11,6 +10,8 @@
 #include <QList>
 #include <QObject>
 #include <QString>
+
+#include <score_git_info.hpp>
 namespace score
 {
 void ApplicationSettings::parse(QStringList cargs, int& argc, char** argv)
@@ -36,7 +37,7 @@ void ApplicationSettings::parse(QStringList cargs, int& argc, char** argv)
       QCoreApplication::translate("main", "Auto-play the loaded scenario"));
   parser.addOption(autoplayOpt);
 
-  if(cargs.contains("--help") || cargs.contains("--version"))
+  if (cargs.contains("--help") || cargs.contains("--version"))
   {
     QCoreApplication app(argc, argv);
     setQApplicationMetadata();
@@ -67,9 +68,8 @@ void setQApplicationMetadata()
   QCoreApplication::setOrganizationName("SEGMent");
   QCoreApplication::setOrganizationDomain("segment.com");
   QCoreApplication::setApplicationName("SEGMent");
-  QCoreApplication::setApplicationVersion(QString("%1.%2")
-                                          .arg(SCORE_VERSION_MAJOR)
-                                          .arg(SCORE_VERSION_MINOR));
+  QCoreApplication::setApplicationVersion(
+      QString("%1.%2").arg(SCORE_VERSION_MAJOR).arg(SCORE_VERSION_MINOR));
 }
 
-}
+} // namespace score

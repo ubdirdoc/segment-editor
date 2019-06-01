@@ -4,6 +4,7 @@
 #include "Anchor.hpp"
 
 #include <QGraphicsItem>
+
 #include <vector>
 
 namespace SEGMent
@@ -22,13 +23,16 @@ private:
 
 public:
   AnchorSetter(
-      int nbOfAnchorsPerSide, qreal anchorsSize, ZoomView& view, QGraphicsItem& parent);
+      int nbOfAnchorsPerSide,
+      qreal anchorsSize,
+      ZoomView& view,
+      QGraphicsItem& parent);
   void updateAnchorsPos();
 
   void setVisible(bool b);
   Anchor* anchor(anchor_id) const noexcept;
   const std::vector<Anchor*>& anchors() const noexcept { return m_anchors; }
 };
-}
+} // namespace SEGMent
 
 #endif // SEGMENTANCHORSETTER_HPP

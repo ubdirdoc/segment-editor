@@ -37,7 +37,7 @@ void TextAreaModel::setBehaviour(Behaviour v) MSVC_NOEXCEPT
     behaviourChanged(v);
   }
 }
-}
+} // namespace SEGMent
 
 template <>
 void DataStreamReader::read(const SEGMent::TextAreaModel& v)

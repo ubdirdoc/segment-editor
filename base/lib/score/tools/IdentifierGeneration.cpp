@@ -32,10 +32,7 @@ struct IdGen
   {
   }
 
-  auto make() noexcept
-  {
-    return dist(gen);
-  }
+  auto make() noexcept { return dist(gen); }
 };
 
 int32_t random_id_generator::getRandomId()
@@ -47,4 +44,4 @@ int32_t random_id_generator::getRandomId()
 }
 
 #endif
-}
+} // namespace score

@@ -18,16 +18,10 @@ public:
 
   void insert(std::vector<Toolbar> vals);
 
-  auto& get()
-  {
-    return m_container;
-  }
-  auto& get() const
-  {
-    return m_container;
-  }
+  auto& get() { return m_container; }
+  auto& get() const { return m_container; }
 
 private:
   score::hash_map<StringKey<Toolbar>, Toolbar> m_container;
 };
-}
+} // namespace score

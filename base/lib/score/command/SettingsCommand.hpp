@@ -1,6 +1,7 @@
 #pragma once
-#include <boost/call_traits.hpp>
 #include <score/command/Command.hpp>
+
+#include <boost/call_traits.hpp>
 namespace score
 {
 /**
@@ -41,26 +42,17 @@ public:
 
   virtual ~SettingsCommand() = default;
 
-  void undo() const final override
-  {
-    (m_model.*T::set())(m_old);
-  }
+  void undo() const final override { (m_model.*T::set())(m_old); }
 
-  void redo() const final override
-  {
-    (m_model.*T::set())(m_new);
-  }
+  void redo() const final override { (m_model.*T::set())(m_new); }
 
-  void update(model_t&, parameter_pass_t newval)
-  {
-    m_new = newval;
-  }
+  void update(model_t&, parameter_pass_t newval) { m_new = newval; }
 
 private:
   model_t& m_model;
   typename T::param_type m_old, m_new;
 };
-}
+} // namespace score
 
 /**
  * \macro SCORE_SETTINGS_COMMAND_DECL

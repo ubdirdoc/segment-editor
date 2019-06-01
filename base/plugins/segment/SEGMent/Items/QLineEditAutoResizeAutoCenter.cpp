@@ -6,18 +6,21 @@ W_OBJECT_IMPL(QLineEditAutoResizeAutoCenter)
 QLineEditAutoResizeAutoCenter::QLineEditAutoResizeAutoCenter(QWidget* parent)
     : QLineEdit(parent)
 {
-  connect(this, &QLineEdit::textChanged,
-          this, [this] { FitToTextAndCenterToParent(); });
+  connect(this, &QLineEdit::textChanged, this, [this] {
+    FitToTextAndCenterToParent();
+  });
 
   FitToTextAndCenterToParent();
 }
 
 QLineEditAutoResizeAutoCenter::QLineEditAutoResizeAutoCenter(
-    const QString& init, QWidget* parent)
+    const QString& init,
+    QWidget* parent)
     : QLineEdit(init, parent)
 {
-  connect(this, &QLineEdit::textChanged,
-          this, [this] { FitToTextAndCenterToParent(); });
+  connect(this, &QLineEdit::textChanged, this, [this] {
+    FitToTextAndCenterToParent();
+  });
   FitToTextAndCenterToParent();
 }
 

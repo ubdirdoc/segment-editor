@@ -2,17 +2,17 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "Action.hpp"
 
-#include <core/presenter/DocumentManager.hpp>
 #include <score/actions/ActionManager.hpp>
 #include <score/selection/SelectionStack.hpp>
+
+#include <core/presenter/DocumentManager.hpp>
+
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(score::CustomActionCondition)
 namespace score
 {
 
-EnableActionIfDocument::~EnableActionIfDocument()
-{
-}
+EnableActionIfDocument::~EnableActionIfDocument() {}
 
 void EnableActionIfDocument::action(ActionManager& mgr, MaybeDocument doc)
 {
@@ -24,13 +24,9 @@ ActionCondition::ActionCondition(StringKey<ActionCondition> k)
 {
 }
 
-ActionCondition::~ActionCondition()
-{
-}
+ActionCondition::~ActionCondition() {}
 
-void ActionCondition::action(ActionManager& mgr, MaybeDocument)
-{
-}
+void ActionCondition::action(ActionManager& mgr, MaybeDocument) {}
 
 StringKey<ActionCondition> ActionCondition::key() const
 {
@@ -151,19 +147,11 @@ void Action::updateTexts()
   m_impl->setStatusTip(clearText);
 }
 
-DocumentActionCondition::~DocumentActionCondition()
-{
-}
+DocumentActionCondition::~DocumentActionCondition() {}
 
-FocusActionCondition::~FocusActionCondition()
-{
-}
+FocusActionCondition::~FocusActionCondition() {}
 
-SelectionActionCondition::~SelectionActionCondition()
-{
-}
+SelectionActionCondition::~SelectionActionCondition() {}
 
-CustomActionCondition::~CustomActionCondition()
-{
-}
-}
+CustomActionCondition::~CustomActionCondition() {}
+} // namespace score

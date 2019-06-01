@@ -11,14 +11,14 @@ class TextWindow;
 class ClickAreaModel;
 
 //! Visual item corresponding to SceneModel
-class SceneWindow
-    : public Window
+class SceneWindow : public Window
 {
 public:
-  SceneWindow(const SceneModel& r,
-              const score::DocumentContext& ctx,
-              ZoomView& view,
-              QGraphicsItem* parent);
+  SceneWindow(
+      const SceneModel& r,
+      const score::DocumentContext& ctx,
+      ZoomView& view,
+      QGraphicsItem* parent);
   ~SceneWindow() override;
 
   static constexpr auto static_type() { return Qt::UserRole + 9986; }
@@ -49,9 +49,13 @@ private:
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
-  QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+  QVariant
+  itemChange(GraphicsItemChange change, const QVariant& value) override;
 
-  transition_t createTransitionFrom(anchor_id source_anchor, const SceneModel& target, anchor_id target_anchor) override;
+  transition_t createTransitionFrom(
+      anchor_id source_anchor,
+      const SceneModel& target,
+      anchor_id target_anchor) override;
 
   const SceneModel& m_scene;
   ZoomView& m_view;
@@ -72,4 +76,4 @@ private:
 
   bool m_moving{false};
 };
-}
+} // namespace SEGMent

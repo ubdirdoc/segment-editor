@@ -2,6 +2,7 @@
 #include <QDateTime>
 #include <QObject>
 #include <QString>
+
 #include <score_lib_base_export.h>
 #include <wobjectdefs.h>
 namespace score
@@ -33,12 +34,12 @@ public:
   void fileNameChanged(QString fileName) W_SIGNAL(fileNameChanged, fileName);
   void authorChanged(QString author) W_SIGNAL(authorChanged, author);
   void creationChanged(QDateTime creation) W_SIGNAL(creationChanged, creation);
-  void lastEditionChanged(QDateTime lastEdition) W_SIGNAL(lastEditionChanged, lastEdition);
+  void lastEditionChanged(QDateTime lastEdition)
+      W_SIGNAL(lastEditionChanged, lastEdition);
 
   W_PROPERTY(
       QString,
-      fileName READ fileName WRITE setFileName NOTIFY
-      fileNameChanged,
+      fileName READ fileName WRITE setFileName NOTIFY fileNameChanged,
       W_Final)
   W_PROPERTY(
       QString,
@@ -46,13 +47,12 @@ public:
       W_Final)
   W_PROPERTY(
       QDateTime,
-      creation READ creation WRITE setCreation NOTIFY
-      creationChanged,
+      creation READ creation WRITE setCreation NOTIFY creationChanged,
       W_Final)
   W_PROPERTY(
       QDateTime,
-      lastEdition READ lastEdition WRITE setLastEdition
-      NOTIFY lastEditionChanged,
+      lastEdition READ lastEdition WRITE setLastEdition NOTIFY
+          lastEditionChanged,
       W_Final)
 };
-}
+} // namespace score

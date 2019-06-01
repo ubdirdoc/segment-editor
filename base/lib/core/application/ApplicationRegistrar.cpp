@@ -4,11 +4,6 @@
 
 #include "ApplicationSettings.hpp"
 
-#include <core/document/Document.hpp>
-#include <core/presenter/DocumentManager.hpp>
-#include <core/presenter/Presenter.hpp>
-#include <core/settings/Settings.hpp>
-#include <core/view/Window.hpp>
 #include <score/application/ApplicationComponents.hpp>
 #include <score/application/ApplicationContext.hpp>
 #include <score/command/CommandGeneratorMap.hpp>
@@ -16,8 +11,16 @@
 #include <score/plugins/customfactory/FactoryFamily.hpp>
 #include <score/plugins/customfactory/StringFactoryKey.hpp>
 #include <score/plugins/panel/PanelDelegateFactory.hpp>
-#include <type_traits>
+
+#include <core/document/Document.hpp>
+#include <core/presenter/DocumentManager.hpp>
+#include <core/presenter/Presenter.hpp>
+#include <core/settings/Settings.hpp>
+#include <core/view/Window.hpp>
+
 #include <vector>
+
+#include <type_traits>
 
 namespace score
 {
@@ -27,9 +30,7 @@ ApplicationRegistrar::ApplicationRegistrar(ApplicationComponentsData& comp)
 {
 }
 
-ApplicationRegistrar::~ApplicationRegistrar()
-{
-}
+ApplicationRegistrar::~ApplicationRegistrar() {}
 
 SCORE_LIB_BASE_EXPORT
 void ApplicationRegistrar::registerAddons(std::vector<score::Addon> vec)
@@ -86,9 +87,7 @@ GUIApplicationRegistrar::GUIApplicationRegistrar(
 {
 }
 
-GUIApplicationRegistrar::~GUIApplicationRegistrar()
-{
-}
+GUIApplicationRegistrar::~GUIApplicationRegistrar() {}
 
 SCORE_LIB_BASE_EXPORT
 void GUIApplicationRegistrar::registerGUIApplicationPlugin(
@@ -112,4 +111,4 @@ void GUIApplicationRegistrar::registerPanel(PanelDelegateFactory& factory)
 
   m_components.panels.push_back(std::move(panel));
 }
-}
+} // namespace score

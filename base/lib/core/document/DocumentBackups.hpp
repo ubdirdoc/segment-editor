@@ -1,7 +1,9 @@
 #pragma once
 #include <QByteArray>
 #include <QString>
+
 #include <score_lib_base_export.h>
+
 #include <utility>
 #include <vector>
 
@@ -39,4 +41,4 @@ struct SCORE_LIB_BASE_EXPORT DocumentBackups
   // Removes all the on-disk files that contains document backups.
   static void clear();
 };
-}
+} // namespace score

@@ -1,9 +1,11 @@
 #pragma once
+#include <score/model/ComponentSerialization.hpp>
+#include <score/tools/IdentifierGeneration.hpp>
+
 #include <ossia/detail/algorithms.hpp>
 
 #include <nano_observer.hpp>
-#include <score/model/ComponentSerialization.hpp>
-#include <score/tools/IdentifierGeneration.hpp>
+
 #include <vector>
 
 namespace score
@@ -23,18 +25,15 @@ template <
     typename ParentComponent_T,
     typename ChildModel_T,
     typename ChildComponent_T>
-class ComponentHierarchyManager
-    : public ParentComponent_T
-    , public Nano::Observer
+class ComponentHierarchyManager : public ParentComponent_T,
+                                  public Nano::Observer
 {
 public:
   using hierarchy_t = ComponentHierarchyManager;
 
   struct ChildPair
   {
-    ChildPair(ChildModel_T* m, ChildComponent_T* c) : model{m}, component{c}
-    {
-    }
+    ChildPair(ChildModel_T* m, ChildComponent_T* c) : model{m}, component{c} {}
     ChildModel_T* model{};
     ChildComponent_T* component{};
   };
@@ -60,17 +59,12 @@ public:
       add(child_model);
     }
 
-    child_models.mutable_added
-        .template connect<&hierarchy_t::add>(this);
+    child_models.mutable_added.template connect<&hierarchy_t::add>(this);
 
-    child_models.removing.template connect<&hierarchy_t::remove>(
-        this);
+    child_models.removing.template connect<&hierarchy_t::remove>(this);
   }
 
-  const auto& children() const
-  {
-    return m_children;
-  }
+  const auto& children() const { return m_children; }
 
   void add(ChildModel_T& element)
   {
@@ -143,10 +137,7 @@ public:
     m_children.clear();
   }
 
-  ~ComponentHierarchyManager()
-  {
-    clear();
-  }
+  ~ComponentHierarchyManager() { clear(); }
 
 private:
   std::vector<ChildPair> m_children; // todo map ? multi_index with both index
@@ -168,18 +159,15 @@ template <
     typename ChildComponent_T,
     typename ChildComponentFactoryList_T,
     bool HasOwnership = true>
-class PolymorphicComponentHierarchyManager
-    : public ParentComponent_T
-    , public Nano::Observer
+class PolymorphicComponentHierarchyManager : public ParentComponent_T,
+                                             public Nano::Observer
 {
 public:
   using hierarchy_t = PolymorphicComponentHierarchyManager;
 
   struct ChildPair
   {
-    ChildPair(ChildModel_T* m, ChildComponent_T* c) : model{m}, component{c}
-    {
-    }
+    ChildPair(ChildModel_T* m, ChildComponent_T* c) : model{m}, component{c} {}
     ChildModel_T* model{};
     ChildComponent_T* component{};
   };
@@ -211,16 +199,11 @@ public:
       add(child_model);
     }
 
-    child_models.mutable_added
-        .template connect<&hierarchy_t::add>(this);
+    child_models.mutable_added.template connect<&hierarchy_t::add>(this);
 
-    child_models.removing.template connect<&hierarchy_t::remove>(
-        this);
+    child_models.removing.template connect<&hierarchy_t::remove>(this);
   }
-  const auto& children() const
-  {
-    return m_children;
-  }
+  const auto& children() const { return m_children; }
 
   void add(ChildModel_T& element)
   {
@@ -250,10 +233,7 @@ public:
     m_children.clear();
   }
 
-  ~PolymorphicComponentHierarchyManager()
-  {
-    clear();
-  }
+  ~PolymorphicComponentHierarchyManager() { clear(); }
 
 private:
   // TODO remove these useless templates when MSVC grows some brains
@@ -341,4 +321,4 @@ using PolymorphicComponentHierarchy = PolymorphicComponentHierarchyManager<
     typename Component::component_t,
     typename Component::component_factory_list_t,
     HasOwnership>;
-}
+} // namespace score

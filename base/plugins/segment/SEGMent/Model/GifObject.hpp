@@ -1,11 +1,13 @@
 #pragma once
-#include <SEGMent/Model/Sound.hpp>
-#include <SEGMent/Model/Traits.hpp>
-#include <SEGMent/Model/Model.hpp>
-#include <SEGMent/Model/Image.hpp>
 #include <score/model/Entity.hpp>
 #include <score/selection/Selectable.hpp>
+
 #include <QMovie>
+
+#include <SEGMent/Model/Image.hpp>
+#include <SEGMent/Model/Model.hpp>
+#include <SEGMent/Model/Sound.hpp>
+#include <SEGMent/Model/Traits.hpp>
 namespace SEGMent
 {
 
@@ -17,13 +19,17 @@ namespace SEGMent
  *   - If all the gifs in a scene are "victorious" then there is a transition
  *   to the next scene.
  */
-struct GifModel
-    : public Object<GifModel>
+struct GifModel : public Object<GifModel>
 {
   W_OBJECT(GifModel)
   SCORE_SERIALIZE_FRIENDS
 public:
-  enum Frame { Ignored, Active, Victorious };
+  enum Frame
+  {
+    Ignored,
+    Active,
+    Victorious
+  };
   using Frames = std::vector<Frame>;
   using base_type = Object<GifModel>;
   Selectable selection{this};
@@ -31,13 +37,13 @@ public:
   GifModel(const Id<GifModel>& id, QObject* parent);
 
   template <typename DeserializerVisitor>
-  GifModel(DeserializerVisitor&& vis, QObject* parent)
-      : base_type{vis, parent}
+  GifModel(DeserializerVisitor&& vis, QObject* parent) : base_type{vis, parent}
   {
     vis.writeTo(*this);
   }
 
   mutable QMovie gif;
+
 public:
   const Image& image() const MSVC_NOEXCEPT;
   void setImage(const Image& v) MSVC_NOEXCEPT;
@@ -54,7 +60,10 @@ public:
   int defaultFrame() const MSVC_NOEXCEPT;
   void setDefaultFrame(int v) MSVC_NOEXCEPT;
   void defaultFrameChanged(int v) W_SIGNAL(defaultFrameChanged, v);
-  PROPERTY(int, defaultFrame READ defaultFrame WRITE setDefaultFrame NOTIFY defaultFrameChanged)
+  PROPERTY(
+      int,
+      defaultFrame READ defaultFrame WRITE setDefaultFrame NOTIFY
+          defaultFrameChanged)
 
 private:
   Image m_image;
@@ -62,7 +71,7 @@ private:
   int m_defaultFrame{};
 };
 
-}
+} // namespace SEGMent
 Q_DECLARE_METATYPE(SEGMent::GifModel::Frames)
 W_REGISTER_ARGTYPE(SEGMent::GifModel::Frames)
 DEFAULT_MODEL_METADATA(SEGMent::GifModel, "Gif")

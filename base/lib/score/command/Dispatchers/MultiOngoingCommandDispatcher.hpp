@@ -1,7 +1,8 @@
 #pragma once
-#include <core/command/CommandStack.hpp>
 #include <score/command/Dispatchers/ICommandDispatcher.hpp>
 #include <score/command/Dispatchers/SendStrategy.hpp>
+
+#include <core/command/CommandStack.hpp>
 
 // Creates commands on a list and keep updating the latest command
 // up to the next new command.
@@ -19,7 +20,7 @@ struct Simple
     }
   }
 };
-}
+} // namespace RollbackStrategy
 
 /**
  * @brief The MultiOngoingCommandDispatcher class
@@ -39,10 +40,7 @@ public:
   {
   }
 
-  ~MultiOngoingCommandDispatcher()
-  {
-    cleanup();
-  }
+  ~MultiOngoingCommandDispatcher() { cleanup(); }
 
   void submitCommand(score::Command* cmd)
   {

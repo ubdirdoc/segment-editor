@@ -1,10 +1,11 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <score/plugins/documentdelegate/DocumentDelegateFactory.hpp>
+#include <score/plugins/documentdelegate/DocumentDelegatePresenter.hpp>
+
 #include <core/document/DocumentModel.hpp>
 #include <core/document/DocumentPresenter.hpp>
 #include <core/document/DocumentView.hpp>
-#include <score/plugins/documentdelegate/DocumentDelegateFactory.hpp>
-#include <score/plugins/documentdelegate/DocumentDelegatePresenter.hpp>
 
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(score::DocumentPresenter)
@@ -20,7 +21,10 @@ DocumentPresenter::DocumentPresenter(
     , m_view{v}
     , m_model{m}
     , m_presenter{fact.makePresenter(
-          ctx, this, m_model.modelDelegate(), m_view.viewDelegate())}
+          ctx,
+          this,
+          m_model.modelDelegate(),
+          m_view.viewDelegate())}
 {
 }
 
@@ -28,4 +32,4 @@ void DocumentPresenter::setNewSelection(const Selection& s)
 {
   m_presenter->setNewSelection(s);
 }
-}
+} // namespace score

@@ -17,7 +17,8 @@ struct is_template<T<U, M>> : std::true_type
 };
 
 template <
-    template <typename, std::size_t, typename> class T,
+    template <typename, std::size_t, typename>
+    class T,
     typename U,
     std::size_t M,
     typename V>

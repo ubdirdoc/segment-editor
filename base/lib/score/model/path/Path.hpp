@@ -1,7 +1,8 @@
 #pragma once
-#include <QDataStream>
 #include <score/document/DocumentInterface.hpp>
 #include <score/tools/Metadata.hpp>
+
+#include <QDataStream>
 
 /**
  * @brief Used to know if two types are in an inheritance relationship.
@@ -29,7 +30,7 @@ namespace IDocument
 template <typename T>
 Path<T> path(const IdentifiedObject<T>& obj);
 }
-}
+} // namespace score
 
 /**
  * @brief The Path class is a typesafe wrapper around ObjectPath.
@@ -82,18 +83,15 @@ public:
   };
 
   Path(const ObjectPath& obj, UnsafeDynamicCreation) noexcept
-    : m_impl{obj.vec()}
+      : m_impl{obj.vec()}
   {
   }
   Path(ObjectPath&& obj, UnsafeDynamicCreation) noexcept
-    : m_impl{std::move(obj.vec())}
+      : m_impl{std::move(obj.vec())}
   {
   }
 
-  Path(const Object& obj) noexcept
-    : Path(score::IDocument::path(obj))
-  {
-  }
+  Path(const Object& obj) noexcept : Path(score::IDocument::path(obj)) {}
 
   ~Path() = default;
 
@@ -109,7 +107,7 @@ public:
   //! Add a new ObjectIdentifier at the end of the path and return a new path.
   //! The previous path is now empty.
   template <typename U>
-  auto extend(const QString& name, const Id<U>& id) && noexcept
+      auto extend(const QString& name, const Id<U>& id) && noexcept
   {
     Path<U> p{std::move(this->m_impl.vec())};
     p.m_impl.vec().push_back({name, id});
@@ -128,7 +126,7 @@ public:
   //! Add a new ObjectIdentifier at the end of the path and return a new path.
   //! The previous path is now empty.
   template <typename U>
-  auto extend(const Id<U>& id) && noexcept
+      auto extend(const Id<U>& id) && noexcept
   {
     Path<U> p{std::move(this->m_impl.vec())};
     p.m_impl.vec().push_back({Metadata<ObjectKey_k, U>::get(), id});
@@ -164,16 +162,14 @@ public:
   template <
       typename U,
       std::enable_if_t<in_relationship<U, Object>::value>* = nullptr>
-  Path(const Path<U>& other) noexcept
-    : m_impl{other.m_impl.vec()}
+  Path(const Path<U>& other) noexcept : m_impl{other.m_impl.vec()}
   {
   }
 
   template <
       typename U,
       std::enable_if_t<in_relationship<U, Object>::value>* = nullptr>
-  Path(Path<U>&& other) noexcept
-    : m_impl{std::move(other.m_impl.vec())}
+  Path(Path<U>&& other) noexcept : m_impl{std::move(other.m_impl.vec())}
   {
   }
 
@@ -213,34 +209,16 @@ public:
     return m_impl.try_find<Object>(ctx);
   }
 
-  const auto& unsafePath() const& noexcept
-  {
-    return m_impl;
-  }
-  auto& unsafePath() & noexcept
-  {
-    return m_impl;
-  }
-  auto&& unsafePath() && noexcept
-  {
-    return std::move(m_impl);
-  }
+  const auto& unsafePath() const& noexcept { return m_impl; }
+  auto& unsafePath() & noexcept { return m_impl; }
+  auto&& unsafePath() && noexcept { return std::move(m_impl); }
 
-  bool valid() const noexcept
-  {
-    return !m_impl.vec().empty();
-  }
+  bool valid() const noexcept { return !m_impl.vec().empty(); }
 
 private:
-  Path(const ObjectPath& path) noexcept : m_impl{path.vec()}
-  {
-  }
-  Path(ObjectPath&& path) noexcept : m_impl{std::move(path.vec())}
-  {
-  }
-  Path(const std::vector<ObjectIdentifier>& vec) noexcept : m_impl{vec}
-  {
-  }
+  Path(const ObjectPath& path) noexcept : m_impl{path.vec()} {}
+  Path(ObjectPath&& path) noexcept : m_impl{std::move(path.vec())} {}
+  Path(const std::vector<ObjectIdentifier>& vec) noexcept : m_impl{vec} {}
   Path(std::vector<ObjectIdentifier>&& vec) noexcept : m_impl{std::move(vec)}
   {
   }
@@ -272,7 +250,7 @@ struct hash<Path<tag>>
     return std::hash<ObjectPath>{}(path.unsafePath());
   }
 };
-}
+} // namespace std
 
 namespace score
 {
@@ -284,4 +262,4 @@ auto id(const Path<T>& path)
 
   return Id<T>(path.unsafePath().vec().back().id());
 }
-}
+} // namespace score

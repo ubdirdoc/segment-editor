@@ -1,6 +1,7 @@
 #pragma once
 #include <score/serialization/DataStreamVisitor.hpp>
 #include <score/serialization/JSONVisitor.hpp>
+
 #include <list>
 /**
  * @brief Base type for a tree data structure.
@@ -9,7 +10,7 @@
  * It can then be used in abstract item models easily.
  */
 
-template<typename T>
+template <typename T>
 auto& child_at(const std::list<T>& list, int index)
 {
   SCORE_ASSERT(index >= 0 && index < list.size());
@@ -18,7 +19,7 @@ auto& child_at(const std::list<T>& list, int index)
   return *it;
 }
 
-template<typename T>
+template <typename T>
 auto& child_at(std::list<T>& list, int index)
 {
   SCORE_ASSERT(index >= 0 && index < list.size());
@@ -27,14 +28,14 @@ auto& child_at(std::list<T>& list, int index)
   return *it;
 }
 
-template<typename T>
+template <typename T>
 int index_of_child(const std::list<T>& list, const T* child)
 {
   int i = 0;
   const auto end = list.end();
-  for(auto it = list.begin(); it != end; ++it)
+  for (auto it = list.begin(); it != end; ++it)
   {
-    if(&(*it) == child)
+    if (&(*it) == child)
       return i;
     i++;
   }
@@ -54,31 +55,13 @@ public:
   using iterator = typename impl_type::iterator;
   using const_iterator = typename impl_type::const_iterator;
 
-  auto begin()
-  {
-    return m_children.begin();
-  }
-  auto begin() const
-  {
-    return cbegin();
-  }
-  auto cbegin() const
-  {
-    return m_children.cbegin();
-  }
+  auto begin() { return m_children.begin(); }
+  auto begin() const { return cbegin(); }
+  auto cbegin() const { return m_children.cbegin(); }
 
-  auto end()
-  {
-    return m_children.end();
-  }
-  auto end() const
-  {
-    return cend();
-  }
-  auto cend() const
-  {
-    return m_children.cend();
-  }
+  auto end() { return m_children.end(); }
+  auto end() const { return cend(); }
+  auto cend() const { return m_children.cend(); }
 
   TreeNode() = default;
 
@@ -175,20 +158,11 @@ public:
     return n;
   }
 
-  TreeNode* parent() const
-  {
-    return m_parent;
-  }
+  TreeNode* parent() const { return m_parent; }
 
-  bool hasChild(std::size_t index) const
-  {
-    return m_children.size() > index;
-  }
+  bool hasChild(std::size_t index) const { return m_children.size() > index; }
 
-  TreeNode& childAt(int index)
-  {
-    return child_at(m_children, index);
-  }
+  TreeNode& childAt(int index) { return child_at(m_children, index); }
 
   const TreeNode& childAt(int index) const
   {
@@ -212,43 +186,25 @@ public:
     return end;
   }
 
-  int childCount() const
-  {
-    return m_children.size();
-  }
+  int childCount() const { return m_children.size(); }
 
-  bool hasChildren() const
-  {
-    return !m_children.empty();
-  }
+  bool hasChildren() const { return !m_children.empty(); }
 
-  const auto& children() const
-  {
-    return m_children;
-  }
+  const auto& children() const { return m_children; }
   void reserve(std::size_t s)
   {
-    //m_children.reserve(s);
+    // m_children.reserve(s);
   }
-  void resize(std::size_t s)
-  {
-    m_children.resize(s);
-  }
+  void resize(std::size_t s) { m_children.resize(s); }
 
-  auto erase(const_iterator it)
-  {
-    return m_children.erase(it);
-  }
+  auto erase(const_iterator it) { return m_children.erase(it); }
 
   auto erase(const_iterator it_beg, const_iterator it_end)
   {
     return m_children.erase(it_beg, it_end);
   }
 
-  void setParent(TreeNode* parent)
-  {
-    m_parent = parent;
-  }
+  void setParent(TreeNode* parent) { m_parent = parent; }
 
   template <typename Fun>
   void visit(Fun f) const

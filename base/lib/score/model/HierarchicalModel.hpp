@@ -56,4 +56,4 @@ public:
 template <typename Model>
 using HierarchicalComponents
     = HierarchicalMember<Model, score::Components, &Model::components>;
-}
+} // namespace score

@@ -16,4 +16,4 @@ struct OpenDocumentsFile
   static bool exists();
   static QString path();
 };
-}
+} // namespace score

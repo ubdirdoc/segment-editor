@@ -1,12 +1,16 @@
 #pragma once
-#include <QObject>
-#include <wobjectdefs.h>
-#include <QString>
-#include <algorithm>
+#include <score/tools/Version.hpp>
+
 #include <core/document/Document.hpp>
 #include <core/document/DocumentBuilder.hpp>
-#include <score/tools/Version.hpp>
+
+#include <QObject>
+#include <QString>
+
 #include <score_lib_base_export.h>
+#include <wobjectdefs.h>
+
+#include <algorithm>
 #include <set>
 #include <vector>
 class QRecentFilesMenu;
@@ -23,25 +27,13 @@ namespace score
 struct DocumentList
 {
 public:
-  const std::vector<Document*>& documents() const
-  {
-    return m_documents;
-  }
+  const std::vector<Document*>& documents() const { return m_documents; }
 
-  std::vector<Document*>& documents()
-  {
-    return m_documents;
-  }
+  std::vector<Document*>& documents() { return m_documents; }
 
-  Document* currentDocument() const
-  {
-    return m_currentDocument;
-  }
+  Document* currentDocument() const { return m_currentDocument; }
 
-  void setCurrentDocument(Document* d)
-  {
-    m_currentDocument = d;
-  }
+  void setCurrentDocument(Document* d) { m_currentDocument = d; }
 
 protected:
   std::vector<Document*> m_documents;
@@ -51,9 +43,8 @@ protected:
 /**
  * @brief Owns the documents
  */
-class SCORE_LIB_BASE_EXPORT DocumentManager
-    : public QObject
-    , public DocumentList
+class SCORE_LIB_BASE_EXPORT DocumentManager : public QObject,
+                                              public DocumentList
 {
   W_OBJECT(DocumentManager)
 public:
@@ -63,10 +54,7 @@ public:
 
   ~DocumentManager();
 
-  auto recentFiles() const
-  {
-    return m_recentFiles;
-  }
+  auto recentFiles() const { return m_recentFiles; }
 
   // Document management
   Document*
@@ -129,7 +117,8 @@ public:
   bool preparingNewDocument() const;
 
 public:
-  void documentChanged(score::Document* arg_1) W_SIGNAL(documentChanged, arg_1);
+  void documentChanged(score::Document* arg_1)
+      W_SIGNAL(documentChanged, arg_1);
 
 private:
   void prepareNewDocument(const score::GUIApplicationContext& ctx);
@@ -142,7 +131,9 @@ private:
   checkAndUpdateJson(QJsonDocument&, const score::GUIApplicationContext& ctx);
 
   bool updateJson(
-      QJsonObject& object, score::Version json_ver, score::Version score_ver);
+      QJsonObject& object,
+      score::Version json_ver,
+      score::Version score_ver);
 
   void saveRecentFilesState();
 
@@ -158,4 +149,4 @@ private:
 Id<score::DocumentModel> getStrongId(const std::vector<score::Document*>& v);
 Id<score::DocumentPlugin>
 getStrongId(const std::vector<score::DocumentPlugin*>& v);
-}
+} // namespace score

@@ -1,8 +1,10 @@
 #pragma once
-#include <QObject>
-#include <QShortcut>
 #include <score/document/DocumentContext.hpp>
 #include <score/tools/std/Optional.hpp>
+
+#include <QObject>
+#include <QShortcut>
+
 #include <score_lib_base_export.h>
 class Selection;
 namespace score
@@ -96,4 +98,4 @@ private:
   const score::GUIApplicationContext& m_context;
   MaybeDocument m_model{};
 };
-}
+} // namespace score

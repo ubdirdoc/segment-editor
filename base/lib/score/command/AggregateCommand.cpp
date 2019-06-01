@@ -2,18 +2,20 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "AggregateCommand.hpp"
 
-#include <QByteArray>
-#include <QDataStream>
-#include <QList>
-#include <QPair>
-#include <QtGlobal>
-#include <boost/concept/usage.hpp>
-#include <boost/range/adaptor/reversed.hpp>
 #include <score/application/ApplicationComponents.hpp>
 #include <score/application/ApplicationContext.hpp>
 #include <score/command/Command.hpp>
 #include <score/plugins/customfactory/StringFactoryKey.hpp>
 #include <score/serialization/DataStreamVisitor.hpp>
+
+#include <boost/concept/usage.hpp>
+#include <boost/range/adaptor/reversed.hpp>
+
+#include <QByteArray>
+#include <QDataStream>
+#include <QList>
+#include <QPair>
+#include <QtGlobal>
 
 namespace score
 {
@@ -76,4 +78,4 @@ void AggregateCommand::deserializeImpl(DataStreamOutput& s)
     m_cmds.push_back(cmd);
   }
 }
-}
+} // namespace score

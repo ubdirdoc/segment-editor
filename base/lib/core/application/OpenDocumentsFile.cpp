@@ -23,4 +23,4 @@ bool OpenDocumentsFile::exists()
 {
   return QFile::exists(OpenDocumentsFile::path());
 }
-}
+} // namespace score

@@ -1,14 +1,17 @@
 #pragma once
+#include <score/model/IdentifiedObject.hpp>
+#include <score/selection/Selection.hpp>
+
 #include <QByteArray>
 #include <QJsonObject>
 #include <QString>
 #include <QVariant>
+
+#include <wobjectdefs.h>
+
 #include <algorithm>
 #include <iterator>
-#include <score/model/IdentifiedObject.hpp>
-#include <score/selection/Selection.hpp>
 #include <vector>
-#include <wobjectdefs.h>
 class QObject;
 #include <score/model/Identifier.hpp>
 
@@ -42,25 +45,18 @@ public:
       QObject* parent);
   ~DocumentModel();
 
-  DocumentDelegateModel& modelDelegate() const
-  {
-    return *m_model;
-  }
+  DocumentDelegateModel& modelDelegate() const { return *m_model; }
 
   // Plugin models
   void addPluginModel(DocumentPlugin* m);
-  const std::vector<DocumentPlugin*>& pluginModels()
-  {
-    return m_pluginModels;
-  }
+  const std::vector<DocumentPlugin*>& pluginModels() { return m_pluginModels; }
 
   void pluginModelsChanged() W_SIGNAL(pluginModelsChanged)
 
-      private
-      : void loadDocumentAsJson(
-            score::DocumentContext& ctx,
-            const QJsonObject&,
-            DocumentDelegateFactory& fact);
+      private : void loadDocumentAsJson(
+                    score::DocumentContext& ctx,
+                    const QJsonObject&,
+                    DocumentDelegateFactory& fact);
   void loadDocumentAsByteArray(
       score::DocumentContext& ctx,
       const QByteArray&,
@@ -70,4 +66,4 @@ public:
   DocumentDelegateModel*
       m_model{}; // note : this *has* to be last due to init order
 };
-}
+} // namespace score

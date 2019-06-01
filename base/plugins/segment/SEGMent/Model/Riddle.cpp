@@ -3,7 +3,6 @@
 #include <score/serialization/JSONValueVisitor.hpp>
 namespace SEGMent
 {
-
 }
 
 template <>
@@ -27,7 +26,6 @@ template <>
 void JSONObjectWriter::write(SEGMent::GifRiddle& v)
 {
 }
-
 
 template <>
 void DataStreamReader::read(const SEGMent::PuzzleRiddle& v)
@@ -54,7 +52,8 @@ void JSONObjectWriter::write(SEGMent::PuzzleRiddle& v)
 template <>
 void DataStreamReader::read(const SEGMent::TextRiddle& v)
 {
-  m_stream << v.question << v.expected << v.ifCorrect << v.ifWrong << v.fuzzyMatches << v.useStars;
+  m_stream << v.question << v.expected << v.ifCorrect << v.ifWrong
+           << v.fuzzyMatches << v.useStars;
 
   insertDelimiter();
 }
@@ -62,7 +61,8 @@ void DataStreamReader::read(const SEGMent::TextRiddle& v)
 template <>
 void DataStreamWriter::write(SEGMent::TextRiddle& v)
 {
-  m_stream >> v.question >> v.expected >> v.ifCorrect >> v.ifWrong >> v.fuzzyMatches >> v.useStars;
+  m_stream >> v.question >> v.expected >> v.ifCorrect >> v.ifWrong
+      >> v.fuzzyMatches >> v.useStars;
 
   checkDelimiter();
 }
@@ -86,7 +86,7 @@ void JSONObjectWriter::write(SEGMent::TextRiddle& v)
   v.ifCorrect = obj["IfCorrect"].toString();
   v.ifWrong = obj["IfWrong"].toString();
   const auto varlist = obj["FuzzyMatches"].toArray();
-  for(const auto& val : varlist)
+  for (const auto& val : varlist)
     v.fuzzyMatches.push_back(val.toString());
   v.useStars = obj["UseStars"].toBool();
 }

@@ -2,17 +2,20 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "SelectionStack.hpp"
 
-#include <QList>
-#include <QPointer>
-#include <QVector>
-#include <algorithm>
-#include <qnamespace.h>
 #include <score/model/IdentifiedObjectAbstract.hpp>
 #include <score/selection/FocusManager.hpp>
 #include <score/selection/Selectable.hpp>
 #include <score/selection/Selection.hpp>
 #include <score/tools/Todo.hpp>
+
+#include <QList>
+#include <QPointer>
+#include <QVector>
+#include <qnamespace.h>
+
 #include <wobjectimpl.h>
+
+#include <algorithm>
 W_OBJECT_IMPL(score::SelectionStack)
 W_OBJECT_IMPL(Selectable)
 W_OBJECT_IMPL(score::FocusManager)
@@ -77,8 +80,11 @@ void SelectionStack::push(const Selection& selection)
       // TODO we should erase connections once the selected objects aren't in
       // the stack anymore.
       connect(
-          obj, &IdentifiedObjectAbstract::identified_object_destroyed, this,
-          &SelectionStack::prune, Qt::UniqueConnection);
+          obj,
+          &IdentifiedObjectAbstract::identified_object_destroyed,
+          this,
+          &SelectionStack::prune,
+          Qt::UniqueConnection);
     });
 
     m_unselectable.push(s);
@@ -111,4 +117,4 @@ void SelectionStack::prune(IdentifiedObjectAbstract* p)
 {
   clear();
 }
-}
+} // namespace score

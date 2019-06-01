@@ -1,8 +1,8 @@
 #pragma once
-#include <QListWidget>
-#include <QTreeView>
 #include <QFileSystemModel>
 #include <QFileSystemWatcher>
+#include <QListWidget>
+#include <QTreeView>
 
 namespace SEGMent
 {
@@ -32,15 +32,14 @@ private:
   QString m_id;
 };
 
-class SoundModel final
-    : public QFileSystemModel
+class SoundModel final : public QFileSystemModel
 {
 public:
   using QFileSystemModel::QFileSystemModel;
   QString ressourcesPath;
 
 private:
-  QMimeData*mimeData(const QModelIndexList& indexes) const override;
+  QMimeData* mimeData(const QModelIndexList& indexes) const override;
 };
 
 class SoundList : public QTreeView
@@ -56,9 +55,7 @@ public:
   SoundModel m_model;
 };
 
-
-class TemplateList final
-    : public QListWidget
+class TemplateList final : public QListWidget
 {
 public:
   explicit TemplateList(QString resPath, QString folder, QString id);
@@ -78,4 +75,4 @@ private:
   QString m_folder;
   QString m_id;
 };
-}
+} // namespace SEGMent

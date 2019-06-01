@@ -1,6 +1,8 @@
 #include "Scene.hpp"
-#include <SEGMent/Model/Model.hpp>
+
 #include <QUrl>
+
+#include <SEGMent/Model/Model.hpp>
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(SEGMent::SceneModel)
 namespace SEGMent
@@ -66,7 +68,7 @@ void SceneModel::setImage(const Image& v) MSVC_NOEXCEPT
 {
   if (m_image != v)
   {
-    if(metadata().getLabel().isEmpty())
+    if (metadata().getLabel().isEmpty())
       metadata().setLabel(QUrl(v).fileName().split(".")[0]);
     m_image = v;
     imageChanged(v);
@@ -101,7 +103,7 @@ void SceneModel::setRepeatText(bool v) MSVC_NOEXCEPT
   }
 }
 
-}
+} // namespace SEGMent
 
 template <>
 void DataStreamReader::read(const SEGMent::LongText& v)
@@ -136,7 +138,8 @@ template <>
 void DataStreamWriter::write(SEGMent::SceneModel& v)
 {
   ossia::for_each_in_tuple(
-      std::tie(v.objects, v.gifs, v.clickAreas, v.backClickAreas, v.textAreas), [&](auto& map) {
+      std::tie(v.objects, v.gifs, v.clickAreas, v.backClickAreas, v.textAreas),
+      [&](auto& map) {
         using entity_type =
             typename std::remove_reference_t<decltype(map)>::value_type;
         int32_t sz;
@@ -164,7 +167,8 @@ void JSONObjectReader::read(const SEGMent::SceneModel& v)
 
   obj["Ambience"] = toJsonObject(v.m_ambience);
   obj["Image"] = v.m_image.path;
-  obj["ImageSize"] = QJsonArray{v.m_image.cache.width(), v.m_image.cache.height()};
+  obj["ImageSize"]
+      = QJsonArray{v.m_image.cache.width(), v.m_image.cache.height()};
   obj["Rect"] = toJsonValue(v.m_rect);
   obj["SceneType"] = (int)v.m_sceneType;
   obj["StartText"] = v.m_startText;

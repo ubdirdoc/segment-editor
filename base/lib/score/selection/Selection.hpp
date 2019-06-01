@@ -1,7 +1,9 @@
 #pragma once
-#include <QPointer>
-#include <wobjectdefs.h>
 #include <score/model/IdentifiedObjectAbstract.hpp>
+
+#include <QPointer>
+
+#include <wobjectdefs.h>
 
 /**
  * A selection is a set of objects.

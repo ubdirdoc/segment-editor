@@ -7,8 +7,9 @@ namespace Inspector
 InspectorWidgetFactory::~InspectorWidgetFactory() = default;
 
 bool InspectorWidgetFactory::update(
-    QWidget*, const QList<const IdentifiedObjectAbstract*>& obj) const
+    QWidget*,
+    const QList<const IdentifiedObjectAbstract*>& obj) const
 {
   return false;
 }
-}
+} // namespace Inspector

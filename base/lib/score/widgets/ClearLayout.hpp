@@ -1,5 +1,6 @@
 #pragma once
 #include <qnamespace.h>
+
 #include <score_lib_base_export.h>
 class QLayout;
 
@@ -15,4 +16,4 @@ SCORE_LIB_BASE_EXPORT void clearLayout(QLayout* layout);
  * @brief setCursor sets the cursor safely.
  */
 SCORE_LIB_BASE_EXPORT void setCursor(Qt::CursorShape c);
-}
+} // namespace score

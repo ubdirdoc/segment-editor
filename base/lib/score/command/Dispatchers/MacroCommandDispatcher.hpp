@@ -1,8 +1,9 @@
 #pragma once
-#include <memory>
 #include <score/command/AggregateCommand.hpp>
 #include <score/command/Dispatchers/ICommandDispatcher.hpp>
 #include <score/command/Dispatchers/SendStrategy.hpp>
+
+#include <memory>
 
 /**
  * @brief The MacroCommandDispatcher class
@@ -27,7 +28,9 @@ public:
   }
 
   template <typename... Args>
-  GenericMacroCommandDispatcher(std::unique_ptr<score::AggregateCommand> cmd, Args&&... args)
+  GenericMacroCommandDispatcher(
+      std::unique_ptr<score::AggregateCommand> cmd,
+      Args&&... args)
       : ICommandDispatcher{std::forward<Args&&>(args)...}
       , m_aggregateCommand{std::move(cmd)}
   {
@@ -62,10 +65,7 @@ public:
     }
   }
 
-  auto command() const
-  {
-    return m_aggregateCommand.get();
-  }
+  auto command() const { return m_aggregateCommand.get(); }
 
 protected:
   std::unique_ptr<Command_T> m_aggregateCommand;

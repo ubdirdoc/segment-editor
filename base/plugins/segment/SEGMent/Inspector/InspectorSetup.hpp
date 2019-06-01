@@ -1,94 +1,94 @@
 #pragma once
-#include <Inspector/InspectorWidgetFactoryInterface.hpp>
-#include <SEGMent/Model/Scene.hpp>
-#include <SEGMent/Model/SimpleObject.hpp>
-#include <SEGMent/Commands/Properties.hpp>
-#include <SEGMent/Commands/SoundCommands.hpp>
-#include <SEGMent/Items/GlobalVariables.hpp>
 #include <Inspector/InspectorLayout.hpp>
+#include <Inspector/InspectorWidgetFactoryInterface.hpp>
+
 #include <score/command/Dispatchers/CommandDispatcher.hpp>
 #include <score/document/DocumentContext.hpp>
 #include <score/widgets/SignalUtils.hpp>
-#include <QMovie>
-#include <QStackedWidget>
-#include <QList>
-#include <QLineEdit>
-#include <QSlider>
-#include <QWidget>
+
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDropEvent>
-#include <QMimeData>
-#include <QPushButton>
-#include <QTableWidget>
-#include <QCheckBox>
-#include <QPlainTextEdit>
 #include <QLabel>
-#include <SEGMent/FilePath.hpp>
+#include <QLineEdit>
+#include <QList>
+#include <QMimeData>
+#include <QMovie>
+#include <QPlainTextEdit>
+#include <QPushButton>
+#include <QSlider>
+#include <QStackedWidget>
+#include <QTableWidget>
+#include <QWidget>
 #include <QtColorWidgets/color_wheel.hpp>
 
-#define INSPECTOR_FACTORY(Factory, InspModel, InspObject, Uuid)                               \
-class Factory final : public Inspector::InspectorWidgetFactory                                \
-{                                                                                             \
-   SCORE_CONCRETE(Uuid)                                                                       \
-public:                                                                                       \
-  Factory() = default;                                                                        \
-                                                                                              \
-  QWidget* make(                                                                              \
-      const QList<const QObject*>& sourceElements,                                            \
-      const score::DocumentContext& doc,                                                      \
-      QWidget* parent) const override                                                         \
-  {                                                                                           \
-    return new InspObject{safe_cast<const InspModel&>(*sourceElements.first()), doc, parent}; \
-  }                                                                                           \
-                                                                                              \
-  bool matches(const QList<const QObject*>& objects) const override                           \
-  {                                                                                           \
-    return dynamic_cast<const InspModel*>(objects.first());                                   \
-  }                                                                                           \
-};
+#include <SEGMent/Commands/Properties.hpp>
+#include <SEGMent/Commands/SoundCommands.hpp>
+#include <SEGMent/FilePath.hpp>
+#include <SEGMent/Items/GlobalVariables.hpp>
+#include <SEGMent/Model/Scene.hpp>
+#include <SEGMent/Model/SimpleObject.hpp>
 
+#define INSPECTOR_FACTORY(Factory, InspModel, InspObject, Uuid)               \
+  class Factory final : public Inspector::InspectorWidgetFactory              \
+  {                                                                           \
+    SCORE_CONCRETE(Uuid)                                                      \
+  public:                                                                     \
+    Factory() = default;                                                      \
+                                                                              \
+    QWidget* make(                                                            \
+        const QList<const QObject*>& sourceElements,                          \
+        const score::DocumentContext& doc,                                    \
+        QWidget* parent) const override                                       \
+    {                                                                         \
+      return new InspObject{                                                  \
+          safe_cast<const InspModel&>(*sourceElements.first()), doc, parent}; \
+    }                                                                         \
+                                                                              \
+    bool matches(const QList<const QObject*>& objects) const override         \
+    {                                                                         \
+      return dynamic_cast<const InspModel*>(objects.first());                 \
+    }                                                                         \
+  };
 
 namespace SEGMent
 {
-struct EditingFinishedTextEdit final
-    : QPlainTextEdit
+struct EditingFinishedTextEdit final : QPlainTextEdit
 {
   W_OBJECT(EditingFinishedTextEdit)
-  public:
-  EditingFinishedTextEdit(QWidget* parent = nullptr)
-    : QPlainTextEdit{parent}
+public:
+  EditingFinishedTextEdit(QWidget* parent = nullptr) : QPlainTextEdit{parent}
   {
     setTabChangesFocus(true);
-    connect(this, &EditingFinishedTextEdit::textChanged,
-            this, [=] { m_changed = true; });
+    connect(this, &EditingFinishedTextEdit::textChanged, this, [=] {
+      m_changed = true;
+    });
   }
 
   void focusOutEvent(QFocusEvent* ev)
   {
-    if(m_changed)
+    if (m_changed)
       editingFinished();
     QPlainTextEdit::focusOutEvent(ev);
   }
 
   void setPlainText(const QString& str)
   {
-    if(str != toPlainText())
+    if (str != toPlainText())
     {
       QPlainTextEdit::setPlainText(str);
       m_changed = false;
     }
   }
 
-  void editingFinished() W_SIGNAL(editingFinished)
-  private:
-  bool m_changed{};
+  void editingFinished() W_SIGNAL(editingFinished) private : bool m_changed{};
 };
 
 /**
  * This class is used to create widgets for the various properties & objects
  * of a SEGMent game.
  */
-template<typename T, typename U>
+template <typename T, typename U>
 struct WidgetFactory
 {
   const U& object;
@@ -100,9 +100,9 @@ struct WidgetFactory
   {
     SCORE_ASSERT(!str.isEmpty());
     str[0] = str[0].toUpper();
-    for(int i = 1; i < str.size(); i++)
+    for (int i = 1; i < str.size(); i++)
     {
-      if(str[i].isUpper())
+      if (str[i].isUpper())
       {
         str.insert(i, ' ');
         i++;
@@ -113,39 +113,44 @@ struct WidgetFactory
 
   void setup()
   {
-    if(auto widg = make((object.*(T::get()))()))
+    if (auto widg = make((object.*(T::get()))()))
       layout.addRow(prettyText(T::name), (QWidget*)widg);
   }
 
   void setup(QString txt)
   {
-    if(auto widg = make((object.*(T::get()))()))
+    if (auto widg = make((object.*(T::get()))()))
       layout.addRow(txt, (QWidget*)widg);
   }
 
-
   //// Generic widgets ////
 
-  template<typename X>
+  template <typename X>
   auto make(X*) = delete;
   auto make(bool c)
   {
-    using cmd = typename score::PropertyCommand_T<T>::template command<void>::type;
+    using cmd =
+        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto cb = new QCheckBox{parent};
     cb->setCheckState(c ? Qt::Checked : Qt::Unchecked);
 
-    QObject::connect(cb, &QCheckBox::stateChanged,
-            parent, [&object=this->object,&ctx=this->ctx] (int state) {
-      bool cur = (object.*(T::get()))();
-      if((state == Qt::Checked && !cur) || (state == Qt::Unchecked && cur))
-      {
-        CommandDispatcher<> disp{ctx.commandStack};
-        disp.submitCommand(new cmd{object, state == Qt::Checked ? true : false});
-      }
-    });
+    QObject::connect(
+        cb,
+        &QCheckBox::stateChanged,
+        parent,
+        [& object = this->object, &ctx = this->ctx](int state) {
+          bool cur = (object.*(T::get()))();
+          if ((state == Qt::Checked && !cur)
+              || (state == Qt::Unchecked && cur))
+          {
+            CommandDispatcher<> disp{ctx.commandStack};
+            disp.submitCommand(
+                new cmd{object, state == Qt::Checked ? true : false});
+          }
+        });
 
-    QObject::connect(&object, T::notify(), parent, [cb] (bool cs) {
-      if(cs != cb->checkState())
+    QObject::connect(&object, T::notify(), parent, [cb](bool cs) {
+      if (cs != cb->checkState())
         cb->setCheckState(cs ? Qt::Checked : Qt::Unchecked);
     });
     return cb;
@@ -153,21 +158,25 @@ struct WidgetFactory
 
   auto make(const QString& cur)
   {
-    using cmd = typename score::PropertyCommand_T<T>::template command<void>::type;
+    using cmd =
+        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto l = new QLineEdit{cur, parent};
     l->setSizePolicy(QSizePolicy::Policy{}, QSizePolicy::MinimumExpanding);
-    QObject::connect(l, &QLineEdit::editingFinished,
-            parent, [l,&object=this->object,&ctx=this->ctx] () {
-      const auto& cur = (object.*(T::get()))();
-      if(l->text() != cur)
-      {
-        CommandDispatcher<> disp{ctx.commandStack};
-        disp.submitCommand(new cmd{object, l->text()});
-      }
-    });
+    QObject::connect(
+        l,
+        &QLineEdit::editingFinished,
+        parent,
+        [l, &object = this->object, &ctx = this->ctx]() {
+          const auto& cur = (object.*(T::get()))();
+          if (l->text() != cur)
+          {
+            CommandDispatcher<> disp{ctx.commandStack};
+            disp.submitCommand(new cmd{object, l->text()});
+          }
+        });
 
-    QObject::connect(&object, T::notify(), parent, [l] (const QString& txt) {
-      if(txt != l->text())
+    QObject::connect(&object, T::notify(), parent, [l](const QString& txt) {
+      if (txt != l->text())
         l->setText(txt);
     });
     return l;
@@ -175,21 +184,25 @@ struct WidgetFactory
 
   auto make(const LongText& cur)
   {
-    using cmd = typename score::PropertyCommand_T<T>::template command<void>::type;
+    using cmd =
+        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto l = new QPlainTextEdit{cur, parent};
     l->setSizePolicy(QSizePolicy::Policy{}, QSizePolicy::MinimumExpanding);
-    QObject::connect(l, &QPlainTextEdit::textChanged,
-            parent, [l,&object=this->object,&ctx=this->ctx] () {
-      const auto& cur = (object.*(T::get()))();
-      if(auto txt = l->toPlainText(); txt != cur)
-      {
-        CommandDispatcher<> disp{ctx.commandStack};
-        disp.submitCommand(new cmd{object, txt});
-      }
-    });
+    QObject::connect(
+        l,
+        &QPlainTextEdit::textChanged,
+        parent,
+        [l, &object = this->object, &ctx = this->ctx]() {
+          const auto& cur = (object.*(T::get()))();
+          if (auto txt = l->toPlainText(); txt != cur)
+          {
+            CommandDispatcher<> disp{ctx.commandStack};
+            disp.submitCommand(new cmd{object, txt});
+          }
+        });
 
-    QObject::connect(&object, T::notify(), parent, [l] (const QString& txt) {
-      if(txt != l->toPlainText())
+    QObject::connect(&object, T::notify(), parent, [l](const QString& txt) {
+      if (txt != l->toPlainText())
         l->setPlainText(txt);
     });
     return l;
@@ -197,21 +210,25 @@ struct WidgetFactory
 
   auto make(QColor cur)
   {
-    using cmd = typename score::PropertyCommand_T<T>::template command<void>::type;
+    using cmd =
+        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto l = new color_widgets::ColorWheel{parent};
     l->setColor(cur);
-    QObject::connect(l, &color_widgets::ColorWheel::colorChanged,
-            parent, [l,&object=this->object,&ctx=this->ctx] (QColor c) {
-      const auto& cur = (object.*(T::get()))();
-      if(l->color() != cur)
-      {
-        CommandDispatcher<> disp{ctx.commandStack};
-        disp.submitCommand(new cmd{object, l->color()});
-      }
-    });
+    QObject::connect(
+        l,
+        &color_widgets::ColorWheel::colorChanged,
+        parent,
+        [l, &object = this->object, &ctx = this->ctx](QColor c) {
+          const auto& cur = (object.*(T::get()))();
+          if (l->color() != cur)
+          {
+            CommandDispatcher<> disp{ctx.commandStack};
+            disp.submitCommand(new cmd{object, l->color()});
+          }
+        });
 
-    QObject::connect(&object, T::notify(), parent, [l] (QColor c) {
-      if(c != l->color())
+    QObject::connect(&object, T::notify(), parent, [l](QColor c) {
+      if (c != l->color())
         l->setColor(c);
     });
     return l;
@@ -220,8 +237,8 @@ struct WidgetFactory
   //// Specialized widgets ////
   struct SoundLineEdit : QLineEdit
   {
-    SoundLineEdit(QString txt = {}, QWidget* parent = nullptr):
-      QLineEdit{txt, parent}
+    SoundLineEdit(QString txt = {}, QWidget* parent = nullptr)
+        : QLineEdit{txt, parent}
     {
       setMinimumWidth(175);
       setClearButtonEnabled(true);
@@ -240,8 +257,10 @@ struct WidgetFactory
 
   auto make(const SEGMent::Sound& cur)
   {
-    using cmd = typename score::PropertyCommand_T<T>::template command<void>::type;
-    const Sound& sound_obj = (const_cast<U&>(object).*SoundAccessor<U>::value)();
+    using cmd =
+        typename score::PropertyCommand_T<T>::template command<void>::type;
+    const Sound& sound_obj
+        = (const_cast<U&>(object).*SoundAccessor<U>::value)();
 
     auto w = new QWidget;
     w->setContentsMargins(0, 0, 0, 0);
@@ -253,35 +272,40 @@ struct WidgetFactory
       l->setSizePolicy(QSizePolicy::Policy{}, QSizePolicy::MinimumExpanding);
       lay->addWidget(l);
 
-      QObject::connect(l, &QLineEdit::textChanged,
-                       [l,&object=this->object,&ctx=this->ctx] (const auto& txt) {
-        if(!l->hasFocus())
-        {
-          CommandDispatcher<> disp{ctx.commandStack};
-          Sound s = (object.*(T::get()))();
-          if(s.path() != txt)
-          {
-            s.setPath(txt);
-            disp.submitCommand(new cmd{object, std::move(s)});
-          }
-        }
-      });
-      QObject::connect(l, &QLineEdit::editingFinished,
-                       parent, [l,&object=this->object,&ctx=this->ctx] () {
-        CommandDispatcher<> disp{ctx.commandStack};
-        Sound s = (object.*(T::get()))();
-        if(s.path() != l->text())
-        {
-          s.setPath(l->text());
-          disp.submitCommand(new cmd{object, std::move(s)});
-        }
-      });
+      QObject::connect(
+          l,
+          &QLineEdit::textChanged,
+          [l, &object = this->object, &ctx = this->ctx](const auto& txt) {
+            if (!l->hasFocus())
+            {
+              CommandDispatcher<> disp{ctx.commandStack};
+              Sound s = (object.*(T::get()))();
+              if (s.path() != txt)
+              {
+                s.setPath(txt);
+                disp.submitCommand(new cmd{object, std::move(s)});
+              }
+            }
+          });
+      QObject::connect(
+          l,
+          &QLineEdit::editingFinished,
+          parent,
+          [l, &object = this->object, &ctx = this->ctx]() {
+            CommandDispatcher<> disp{ctx.commandStack};
+            Sound s = (object.*(T::get()))();
+            if (s.path() != l->text())
+            {
+              s.setPath(l->text());
+              disp.submitCommand(new cmd{object, std::move(s)});
+            }
+          });
 
-      QObject::connect(&cur, &Sound::pathChanged,
-                       parent, [l] (const QString& txt) {
-        if(txt != l->text())
-          l->setText(txt);
-      });
+      QObject::connect(
+          &cur, &Sound::pathChanged, parent, [l](const QString& txt) {
+            if (txt != l->text())
+              l->setText(txt);
+          });
     }
 
     // Play - stop - Repeat
@@ -291,40 +315,48 @@ struct WidgetFactory
 
       {
         auto play = new QPushButton{};
-        play->setIcon(QIcon{qApp->style()->standardPixmap(QStyle::SP_MediaPlay)});
-        QObject::connect(play, &QPushButton::pressed,
-                         parent, [&object=this->object, &ctx=this->ctx] {
-          SoundPlayer::instance().play((object.*(T::get()))(), ctx);
-        });
-        play->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+        play->setIcon(
+            QIcon{qApp->style()->standardPixmap(QStyle::SP_MediaPlay)});
+        QObject::connect(
+            play,
+            &QPushButton::pressed,
+            parent,
+            [& object = this->object, &ctx = this->ctx] {
+              SoundPlayer::instance().play((object.*(T::get()))(), ctx);
+            });
+        play->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         sub->addWidget(play);
       }
 
       {
         auto stop = new QPushButton{};
-        stop->setIcon(QIcon{qApp->style()->standardPixmap(QStyle::SP_MediaStop)});
-        QObject::connect(stop, &QPushButton::pressed,
-                         parent, [] {
+        stop->setIcon(
+            QIcon{qApp->style()->standardPixmap(QStyle::SP_MediaStop)});
+        QObject::connect(stop, &QPushButton::pressed, parent, [] {
           SoundPlayer::instance().stop();
         });
-        stop->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+        stop->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         sub->addWidget(stop);
       }
       sub->addStretch(1);
 
       auto rpt = new QCheckBox{QObject::tr("Repeat")};
       rpt->setChecked(sound_obj.repeat());
-      QObject::connect(rpt, &QCheckBox::stateChanged,
-                       parent, [&ctx=this->ctx, &object=this->object] (int st) {
-          CommandDispatcher<> disp{ctx.commandStack};
-          Sound s = (object.*(T::get()))();
-          if(s.repeat() != bool(st))
-          {
-            s.setRepeat(bool(st));
-            disp.submitCommand(new cmd{object, std::move(s)});
-          }
-      });
-      rpt->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::Preferred);
+      QObject::connect(
+          rpt,
+          &QCheckBox::stateChanged,
+          parent,
+          [& ctx = this->ctx, &object = this->object](int st) {
+            CommandDispatcher<> disp{ctx.commandStack};
+            Sound s = (object.*(T::get()))();
+            if (s.repeat() != bool(st))
+            {
+              s.setRepeat(bool(st));
+              disp.submitCommand(new cmd{object, std::move(s)});
+            }
+          });
+      rpt->setSizePolicy(
+          QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
       lay->addWidget(rpt);
     }
 
@@ -334,17 +366,21 @@ struct WidgetFactory
       sl->setRange(0, 100);
       sl->setValue(sound_obj.volume() * 100.);
       sl->setOrientation(Qt::Horizontal);
-      QObject::connect(sl, &QSlider::sliderMoved,
-                       parent, [&object=this->object, &ctx=this->ctx] (int volume) {
-        SoundPlayer::instance().setVolume(volume);
-        ctx.dispatcher.template submitCommand<SetVolume<U>>(object, volume / 100.);
-      });
+      QObject::connect(
+          sl,
+          &QSlider::sliderMoved,
+          parent,
+          [& object = this->object, &ctx = this->ctx](int volume) {
+            SoundPlayer::instance().setVolume(volume);
+            ctx.dispatcher.template submitCommand<SetVolume<U>>(
+                object, volume / 100.);
+          });
 
-      QObject::connect(sl, &QSlider::sliderReleased,
-                       parent, [&ctx=this->ctx] {
-        ctx.dispatcher.commit();
-      });
-      sl->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
+      QObject::connect(
+          sl, &QSlider::sliderReleased, parent, [& ctx = this->ctx] {
+            ctx.dispatcher.commit();
+          });
+      sl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
       lay->addWidget(sl);
     }
 
@@ -354,18 +390,21 @@ struct WidgetFactory
   auto make(const SEGMent::GifModel::Frames& cur)
   {
     auto widg = new QTableWidget;
-    QObject::connect(widg, &QTableWidget::itemDoubleClicked,
-                     &object, [&object=this->object,&ctx=this->ctx] (QTableWidgetItem* item) {
-      CommandDispatcher<> disp{ctx.commandStack};
-      if(item->column() == 0)
-        disp.submitCommand(new SetGifDefaultFrame{object, item->row()});
-    });
+    QObject::connect(
+        widg,
+        &QTableWidget::itemDoubleClicked,
+        &object,
+        [& object = this->object, &ctx = this->ctx](QTableWidgetItem* item) {
+          CommandDispatcher<> disp{ctx.commandStack};
+          if (item->column() == 0)
+            disp.submitCommand(new SetGifDefaultFrame{object, item->row()});
+        });
 
     widg->setRowCount(cur.size());
     widg->setColumnCount(2);
     QMovie v(toLocalFile(this->object.image(), ctx));
     v.setCacheMode(QMovie::CacheAll);
-    for(std::size_t i = 0; i < cur.size(); i++)
+    for (std::size_t i = 0; i < cur.size(); i++)
     {
       v.jumpToNextFrame();
       auto image = new QTableWidgetItem;
@@ -375,17 +414,23 @@ struct WidgetFactory
 
       auto cb = new QComboBox{};
       cb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-      cb->addItems({QObject::tr("Passée"), QObject::tr("Stop"), QObject::tr("Victorieuse")});
+      cb->addItems({QObject::tr("Passée"),
+                    QObject::tr("Stop"),
+                    QObject::tr("Victorieuse")});
       cb->setCurrentIndex((int)cur[i]);
-      QObject::connect(cb, SignalUtils::QComboBox_currentIndexChanged_int(), &object,
-                       [i, &object=this->object,&ctx=this->ctx] (int idx) {
-        using cmd = typename score::PropertyCommand_T<T>::template command<void>::type;
+      QObject::connect(
+          cb,
+          SignalUtils::QComboBox_currentIndexChanged_int(),
+          &object,
+          [i, &object = this->object, &ctx = this->ctx](int idx) {
+            using cmd = typename score::PropertyCommand_T<T>::template command<
+                void>::type;
 
-        CommandDispatcher<> disp{ctx.commandStack};
-        auto f = object.frames();
-        f[i] = (SEGMent::GifModel::Frame) idx;
-        disp.submitCommand(new cmd{object, std::move(f)});
-      });
+            CommandDispatcher<> disp{ctx.commandStack};
+            auto f = object.frames();
+            f[i] = (SEGMent::GifModel::Frame)idx;
+            disp.submitCommand(new cmd{object, std::move(f)});
+          });
 
       widg->setCellWidget(i, 1, cb);
     }
@@ -396,9 +441,7 @@ struct WidgetFactory
     return widg;
   }
 
-
   //// Transitions ////
-
 
   auto operator()(const SEGMent::SceneToScene& cur)
   {
@@ -409,44 +452,52 @@ struct WidgetFactory
     cb->addItem(QObject::tr("Puzzle"));
     cb->addItem(QObject::tr("Text"));
 
-    if(!cur.riddle)
+    if (!cur.riddle)
       cb->setCurrentIndex(0);
     else
       cb->setCurrentIndex(1 + cur.riddle.which());
 
-    QObject::connect(cb, SignalUtils::QComboBox_currentIndexChanged_int(),
-                     parent, [&object=this->object,&ctx=this->ctx] (int idx) {
-
-      CommandDispatcher<> disp{ctx.commandStack};
-      auto riddle = object.transition().template target<SEGMent::SceneToScene>()->riddle;
-      switch(idx)
-      {
-        case 0:
-        {
-          if(riddle.which() != riddle.npos)
-            disp.submitCommand(new ChangeRiddle{object, SEGMent::riddle_t{}});
-          break;
-        }
-        case 1:
-        {
-          if(riddle.which() != 0)
-            disp.submitCommand(new ChangeRiddle{object, SEGMent::GifRiddle{}});
-          break;
-        }
-        case 2:
-        {
-          if(riddle.which() != 1)
-            disp.submitCommand(new ChangeRiddle{object, SEGMent::PuzzleRiddle{}});
-          break;
-        }
-        case 3:
-        {
-          if(riddle.which() != 2)
-            disp.submitCommand(new ChangeRiddle{object, SEGMent::TextRiddle{}});
-          break;
-        }
-      }
-    });
+    QObject::connect(
+        cb,
+        SignalUtils::QComboBox_currentIndexChanged_int(),
+        parent,
+        [& object = this->object, &ctx = this->ctx](int idx) {
+          CommandDispatcher<> disp{ctx.commandStack};
+          auto riddle = object.transition()
+                            .template target<SEGMent::SceneToScene>()
+                            ->riddle;
+          switch (idx)
+          {
+            case 0:
+            {
+              if (riddle.which() != riddle.npos)
+                disp.submitCommand(
+                    new ChangeRiddle{object, SEGMent::riddle_t{}});
+              break;
+            }
+            case 1:
+            {
+              if (riddle.which() != 0)
+                disp.submitCommand(
+                    new ChangeRiddle{object, SEGMent::GifRiddle{}});
+              break;
+            }
+            case 2:
+            {
+              if (riddle.which() != 1)
+                disp.submitCommand(
+                    new ChangeRiddle{object, SEGMent::PuzzleRiddle{}});
+              break;
+            }
+            case 3:
+            {
+              if (riddle.which() != 2)
+                disp.submitCommand(
+                    new ChangeRiddle{object, SEGMent::TextRiddle{}});
+              break;
+            }
+          }
+        });
 
     layout.addRow(QObject::tr("Riddle"), cb);
 
@@ -466,92 +517,108 @@ struct WidgetFactory
 
     auto question = new QLineEdit;
     {
-      QObject::connect(question, &QLineEdit::editingFinished,
-              parent, [question,&cur=cur,&object=this->object,&ctx=this->ctx] {
-        auto riddle = *cur.riddle.target<TextRiddle>();
-        if(riddle.question != question->text())
-        {
-          riddle.question = question->text();
+      QObject::connect(
+          question,
+          &QLineEdit::editingFinished,
+          parent,
+          [question, &cur = cur, &object = this->object, &ctx = this->ctx] {
+            auto riddle = *cur.riddle.target<TextRiddle>();
+            if (riddle.question != question->text())
+            {
+              riddle.question = question->text();
 
-          CommandDispatcher<> disp{ctx.commandStack};
-          disp.submitCommand(new ChangeRiddle{object, riddle});
-        }
-      });
+              CommandDispatcher<> disp{ctx.commandStack};
+              disp.submitCommand(new ChangeRiddle{object, riddle});
+            }
+          });
     }
     auto expected = new EditingFinishedTextEdit;
     {
-      QObject::connect(expected, &EditingFinishedTextEdit::editingFinished,
-              parent, [expected,&cur=cur,&object=this->object,&ctx=this->ctx] {
-        auto riddle = *cur.riddle.target<TextRiddle>();
-        auto old_riddle = riddle;
-        auto str = expected->toPlainText();
-        auto answers = str.split("\n", QString::SplitBehavior::SkipEmptyParts);
+      QObject::connect(
+          expected,
+          &EditingFinishedTextEdit::editingFinished,
+          parent,
+          [expected, &cur = cur, &object = this->object, &ctx = this->ctx] {
+            auto riddle = *cur.riddle.target<TextRiddle>();
+            auto old_riddle = riddle;
+            auto str = expected->toPlainText();
+            auto answers
+                = str.split("\n", QString::SplitBehavior::SkipEmptyParts);
 
-        switch(answers.size())
-        {
-          case 0:
-            riddle.expected.clear();
-            riddle.fuzzyMatches.clear();
-            break;
-          case 1:
-            riddle.expected = answers[0];
-            riddle.fuzzyMatches.clear();
-            break;
-          default:
-            riddle.expected = answers[0];
-            answers.removeFirst();
-            riddle.fuzzyMatches = answers;
-            break;
-        }
+            switch (answers.size())
+            {
+              case 0:
+                riddle.expected.clear();
+                riddle.fuzzyMatches.clear();
+                break;
+              case 1:
+                riddle.expected = answers[0];
+                riddle.fuzzyMatches.clear();
+                break;
+              default:
+                riddle.expected = answers[0];
+                answers.removeFirst();
+                riddle.fuzzyMatches = answers;
+                break;
+            }
 
-        if(old_riddle != riddle)
-        {
-          CommandDispatcher<> disp{ctx.commandStack};
-          disp.submitCommand(new ChangeRiddle{object, riddle});
-        }
-
-      });
+            if (old_riddle != riddle)
+            {
+              CommandDispatcher<> disp{ctx.commandStack};
+              disp.submitCommand(new ChangeRiddle{object, riddle});
+            }
+          });
     }
     auto ifCorrect = new QLineEdit;
     {
-      QObject::connect(ifCorrect, &QLineEdit::editingFinished,
-              parent, [ifCorrect,&cur=cur,&object=this->object,&ctx=this->ctx] {
-        auto riddle = *cur.riddle.target<TextRiddle>();
-        if(riddle.ifCorrect != ifCorrect->text())
-        {
-          riddle.ifCorrect = ifCorrect->text();
+      QObject::connect(
+          ifCorrect,
+          &QLineEdit::editingFinished,
+          parent,
+          [ifCorrect, &cur = cur, &object = this->object, &ctx = this->ctx] {
+            auto riddle = *cur.riddle.target<TextRiddle>();
+            if (riddle.ifCorrect != ifCorrect->text())
+            {
+              riddle.ifCorrect = ifCorrect->text();
 
-          CommandDispatcher<> disp{ctx.commandStack};
-          disp.submitCommand(new ChangeRiddle{object, riddle});
-        }
-      });
+              CommandDispatcher<> disp{ctx.commandStack};
+              disp.submitCommand(new ChangeRiddle{object, riddle});
+            }
+          });
     }
     auto ifWrong = new QLineEdit;
     {
-      QObject::connect(ifWrong, &QLineEdit::editingFinished,
-              parent, [ifWrong,&cur=cur,&object=this->object,&ctx=this->ctx] {
-        auto riddle = *cur.riddle.target<TextRiddle>();
-        if(riddle.ifWrong != ifWrong->text())
-        {
-          riddle.ifWrong = ifWrong->text();
+      QObject::connect(
+          ifWrong,
+          &QLineEdit::editingFinished,
+          parent,
+          [ifWrong, &cur = cur, &object = this->object, &ctx = this->ctx] {
+            auto riddle = *cur.riddle.target<TextRiddle>();
+            if (riddle.ifWrong != ifWrong->text())
+            {
+              riddle.ifWrong = ifWrong->text();
 
-          CommandDispatcher<> disp{ctx.commandStack};
-          disp.submitCommand(new ChangeRiddle{object, riddle});
-        }
-      });
+              CommandDispatcher<> disp{ctx.commandStack};
+              disp.submitCommand(new ChangeRiddle{object, riddle});
+            }
+          });
     }
 
     auto stars = new QCheckBox(QObject::tr("Password (******)"));
     {
-      QObject::connect(stars, &QCheckBox::stateChanged,
-              parent, [stars,&cur=cur,&object=this->object,&ctx=this->ctx] (int state) {
-        auto riddle = *cur.riddle.target<TextRiddle>();
+      QObject::connect(
+          stars,
+          &QCheckBox::stateChanged,
+          parent,
+          [stars, &cur = cur, &object = this->object, &ctx = this->ctx](
+              int state) {
+            auto riddle = *cur.riddle.target<TextRiddle>();
 
-        riddle.useStars = bool(state);
+            riddle.useStars = bool(state);
 
-        CommandDispatcher<> disp{ctx.commandStack};
-        disp.submitCommand(new ChangeRiddle{object, riddle});
-      });
+            CommandDispatcher<> disp{ctx.commandStack};
+            disp.submitCommand(new ChangeRiddle{object, riddle});
+          });
     }
 
     tl->addRow(QObject::tr("Question"), question);
@@ -562,11 +629,11 @@ struct WidgetFactory
     tl->addRow(stars);
 
     // TODO fuzzy matches
-    if(auto tr = cur.riddle.target<TextRiddle>())
+    if (auto tr = cur.riddle.target<TextRiddle>())
     {
       question->setText(tr->question);
       expected->setPlainText(tr->expected);
-      for(auto str : tr->fuzzyMatches)
+      for (auto str : tr->fuzzyMatches)
       {
         expected->appendPlainText(str);
       }
@@ -577,8 +644,8 @@ struct WidgetFactory
     sw->addWidget(tw);
     layout.addRow(sw);
 
-    auto set_sw_index = [=,&cur] (int index) {
-      switch(index)
+    auto set_sw_index = [=, &cur](int index) {
+      switch (index)
       {
         case 0:
           cb->setCurrentIndex(1);
@@ -591,11 +658,11 @@ struct WidgetFactory
         case 2:
           cb->setCurrentIndex(3);
           sw->setCurrentIndex(3);
-          if(auto tr = cur.riddle.target<TextRiddle>())
+          if (auto tr = cur.riddle.target<TextRiddle>())
           {
             question->setText(tr->question);
             expected->setPlainText(tr->expected);
-            for(auto str : tr->fuzzyMatches)
+            for (auto str : tr->fuzzyMatches)
             {
               expected->appendPlainText(str);
             }
@@ -612,60 +679,53 @@ struct WidgetFactory
 
     set_sw_index(cur.riddle.which());
 
-    QObject::connect(&object, T::notify(), parent, [=] (const transition_t& new_t) {
-      set_sw_index(new_t.target<SceneToScene>()->riddle.which());
-    });
+    QObject::connect(
+        &object, T::notify(), parent, [=](const transition_t& new_t) {
+          set_sw_index(new_t.target<SceneToScene>()->riddle.which());
+        });
     return nullptr;
   }
 
-  auto operator()(const SEGMent::ObjectToScene& cur)
-  {
-    return nullptr;
-  }
-  auto operator()(const SEGMent::GifToScene& cur)
-  {
-    return nullptr;
-  }
-  auto operator()(const SEGMent::ClickToScene& cur)
-  {
-    return nullptr;
-  }
+  auto operator()(const SEGMent::ObjectToScene& cur) { return nullptr; }
+  auto operator()(const SEGMent::GifToScene& cur) { return nullptr; }
+  auto operator()(const SEGMent::ClickToScene& cur) { return nullptr; }
 
   auto make(const SEGMent::transition_t& cur)
   {
     return eggs::variants::apply(*this, cur);
   }
 
-
   //// Enums ////
 
-
-  template<typename Type>
+  template <typename Type>
   auto make_combo(std::vector<std::pair<QString, Type>> values, Type s)
   {
-    using cmd = typename score::PropertyCommand_T<T>::template command<void>::type;
+    using cmd =
+        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto cb = new QComboBox;
     cb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    for(auto& v : values)
+    for (auto& v : values)
     {
       cb->addItem(v.first, v.second);
     }
 
     cb->setCurrentIndex(static_cast<int>(s));
-    QObject::connect(cb, SignalUtils::QComboBox_currentIndexChanged_int(),
-                     parent, [cb,&object=this->object,&ctx=this->ctx] (int idx) {
-      auto data = cb->itemData(idx).value<Type>();
-      if(data != (object.*(T::get()))())
-      {
-        CommandDispatcher<> disp{ctx.commandStack};
-        disp.submitCommand(new cmd{object, data});
-      }
-    });
+    QObject::connect(
+        cb,
+        SignalUtils::QComboBox_currentIndexChanged_int(),
+        parent,
+        [cb, &object = this->object, &ctx = this->ctx](int idx) {
+          auto data = cb->itemData(idx).value<Type>();
+          if (data != (object.*(T::get()))())
+          {
+            CommandDispatcher<> disp{ctx.commandStack};
+            disp.submitCommand(new cmd{object, data});
+          }
+        });
 
-
-    QObject::connect(&object, T::notify(), parent, [cb] (auto val) {
+    QObject::connect(&object, T::notify(), parent, [cb](auto val) {
       auto idx = static_cast<int>(val);
-      if(idx >= 0 && idx < cb->count() && idx != cb->currentIndex())
+      if (idx >= 0 && idx < cb->count() && idx != cb->currentIndex())
       {
         cb->blockSignals(true);
         cb->setCurrentIndex(idx);
@@ -678,44 +738,52 @@ struct WidgetFactory
   auto make(TransitionModel::FadeMode f)
   {
     return make_combo(
-      {
-       {QObject::tr("Immediate"), TransitionModel::FadeMode::Immediate},
-       {QObject::tr("Crossfade"), TransitionModel::FadeMode::Crossfade}
-      }, f);
+        {{QObject::tr("Immediate"), TransitionModel::FadeMode::Immediate},
+         {QObject::tr("Crossfade"), TransitionModel::FadeMode::Crossfade}},
+        f);
   }
 
   auto make(SceneModel::SceneType s)
   {
     return make_combo(
-      {
-       {QObject::tr("Default"), SceneModel::SceneType::Default},
-       {QObject::tr("Initial"), SceneModel::SceneType::Initial},
-       {QObject::tr("Final"), SceneModel::SceneType::Final},
-       {QObject::tr("Game Over"), SceneModel::SceneType::GameOver}
-      }, s);
+        {{QObject::tr("Default"), SceneModel::SceneType::Default},
+         {QObject::tr("Initial"), SceneModel::SceneType::Initial},
+         {QObject::tr("Final"), SceneModel::SceneType::Final},
+         {QObject::tr("Game Over"), SceneModel::SceneType::GameOver}},
+        s);
   }
 
   auto make(TextAreaModel::Behaviour s)
   {
     return make_combo(
-      {
-       {QObject::tr("Add"), TextAreaModel::Behaviour::Add},
-       {QObject::tr("Replace"), TextAreaModel::Behaviour::Replace},
-       {QObject::tr("Clear"), TextAreaModel::Behaviour::Clear},
-       {QObject::tr("Validate"), TextAreaModel::Behaviour::Validate}
-      }, s);
+        {{QObject::tr("Add"), TextAreaModel::Behaviour::Add},
+         {QObject::tr("Replace"), TextAreaModel::Behaviour::Replace},
+         {QObject::tr("Clear"), TextAreaModel::Behaviour::Clear},
+         {QObject::tr("Validate"), TextAreaModel::Behaviour::Validate}},
+        s);
   }
 };
 
-template<typename T, typename U>
-auto setup_inspector(T, const U& sc, const score::DocumentContext& doc, Inspector::Layout& layout, QWidget* parent)
+template <typename T, typename U>
+auto setup_inspector(
+    T,
+    const U& sc,
+    const score::DocumentContext& doc,
+    Inspector::Layout& layout,
+    QWidget* parent)
 {
   WidgetFactory<T, U>{sc, doc, layout, parent}.setup();
 }
 
-template<typename T, typename U>
-auto setup_inspector(T, QString txt, const U& sc, const score::DocumentContext& doc, Inspector::Layout& layout, QWidget* parent)
+template <typename T, typename U>
+auto setup_inspector(
+    T,
+    QString txt,
+    const U& sc,
+    const score::DocumentContext& doc,
+    Inspector::Layout& layout,
+    QWidget* parent)
 {
   WidgetFactory<T, U>{sc, doc, layout, parent}.setup(txt);
 }
-}
+} // namespace SEGMent

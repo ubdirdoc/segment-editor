@@ -1,8 +1,9 @@
 #pragma once
+#include <score/serialization/IsTemplate.hpp>
+
 #include <ossia/detail/config.hpp>
 
 #include <tsl/hopscotch_map.h>
-#include <score/serialization/IsTemplate.hpp>
 namespace score
 {
 template <typename... Args>
@@ -14,7 +15,7 @@ void optimize_hash_map(Map& map)
   map.max_load_factor(0.1f);
   map.reserve(map.size());
 }
-}
+} // namespace score
 
 template <typename T, typename U>
 struct is_template<score::hash_map<T, U>> : std::true_type

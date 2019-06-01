@@ -1,7 +1,9 @@
 #pragma once
-#include <QDebug>
 #include <score/tools/opaque/OpaqueString.hpp>
 #include <score/tools/std/String.hpp>
+
+#include <QDebug>
+
 #include <score_lib_base_export.h>
 // TODO rename file.
 template <typename Tag>
@@ -31,14 +33,8 @@ class StringKey : OpaqueString
 public:
   using OpaqueString::OpaqueString;
 
-  auto& toString()
-  {
-    return impl;
-  }
-  auto& toString() const
-  {
-    return impl;
-  }
+  auto& toString() { return impl; }
+  auto& toString() const { return impl; }
 };
 
 namespace std
@@ -51,7 +47,7 @@ struct hash<StringKey<T>>
     return std::hash<OpaqueString>()(static_cast<const OpaqueString&>(kagi));
   }
 };
-}
+} // namespace std
 
 #include <score/serialization/DataStreamVisitor.hpp>
 #include <score/serialization/JSONValueVisitor.hpp>

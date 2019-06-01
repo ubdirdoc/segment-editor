@@ -1,8 +1,10 @@
 #pragma once
+#include <score/model/IdentifiedObjectMap.hpp>
+
+#include <nano_signal_slot.hpp>
+
 #include <array>
 #include <iostream>
-#include <nano_signal_slot.hpp>
-#include <score/model/IdentifiedObjectMap.hpp>
 #include <utility>
 
 namespace score
@@ -37,62 +39,20 @@ class EntityMap
 public:
   // The real interface starts here
   using value_type = T;
-  auto begin() const INLINE_EXPORT
-  {
-    return m_map.begin();
-  }
-  auto rbegin() const INLINE_EXPORT
-  {
-    return m_map.rbegin();
-  }
-  auto cbegin() const INLINE_EXPORT
-  {
-    return m_map.cbegin();
-  }
-  auto end() const INLINE_EXPORT
-  {
-    return m_map.end();
-  }
-  auto rend() const INLINE_EXPORT
-  {
-    return m_map.rend();
-  }
-  auto cend() const INLINE_EXPORT
-  {
-    return m_map.cend();
-  }
-  auto size() const INLINE_EXPORT
-  {
-    return m_map.size();
-  }
-  bool empty() const INLINE_EXPORT
-  {
-    return m_map.empty();
-  }
-  auto& unsafe_map() INLINE_EXPORT
-  {
-    return m_map;
-  }
-  const auto& map() const INLINE_EXPORT
-  {
-    return m_map;
-  }
-  const auto& get() const INLINE_EXPORT
-  {
-    return m_map.m_map;
-  }
-  T& at(const Id<T>& id) INLINE_EXPORT
-  {
-    return m_map.at(id);
-  }
-  T& at(const Id<T>& id) const INLINE_EXPORT
-  {
-    return m_map.at(id);
-  }
-  auto find(const Id<T>& id) const INLINE_EXPORT
-  {
-    return m_map.find(id);
-  }
+  auto begin() const INLINE_EXPORT { return m_map.begin(); }
+  auto rbegin() const INLINE_EXPORT { return m_map.rbegin(); }
+  auto cbegin() const INLINE_EXPORT { return m_map.cbegin(); }
+  auto end() const INLINE_EXPORT { return m_map.end(); }
+  auto rend() const INLINE_EXPORT { return m_map.rend(); }
+  auto cend() const INLINE_EXPORT { return m_map.cend(); }
+  auto size() const INLINE_EXPORT { return m_map.size(); }
+  bool empty() const INLINE_EXPORT { return m_map.empty(); }
+  auto& unsafe_map() INLINE_EXPORT { return m_map; }
+  const auto& map() const INLINE_EXPORT { return m_map; }
+  const auto& get() const INLINE_EXPORT { return m_map.m_map; }
+  T& at(const Id<T>& id) INLINE_EXPORT { return m_map.at(id); }
+  T& at(const Id<T>& id) const INLINE_EXPORT { return m_map.at(id); }
+  auto find(const Id<T>& id) const INLINE_EXPORT { return m_map.find(id); }
 
   // public:
   mutable Nano::Signal<void(T&)> mutable_added;
@@ -101,10 +61,7 @@ public:
   mutable Nano::Signal<void(const T&)> removed;
   mutable Nano::Signal<void()> orderChanged;
 
-  void add(T* t) INLINE_EXPORT
-  {
-    EntityMapInserter<T>{}.add(*this, t);
-  }
+  void add(T* t) INLINE_EXPORT { EntityMapInserter<T>{}.add(*this, t); }
 
   void erase(T& elt) INLINE_EXPORT
   {
@@ -161,4 +118,4 @@ void EntityMapInserter<T>::add(EntityMap<T>& map, T* t)
   map.mutable_added(*t);
   map.added(*t);
 }
-}
+} // namespace score

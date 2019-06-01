@@ -1,12 +1,13 @@
 #pragma once
+#include <score/command/Command.hpp>
+#include <score/command/CommandData.hpp>
+
 #include <QByteArray>
 #include <QObject>
 #include <QPair>
 #include <QStack>
 #include <QString>
 #include <QTemporaryFile>
-#include <score/command/Command.hpp>
-#include <score/command/CommandData.hpp>
 
 namespace score
 {
@@ -51,4 +52,4 @@ private:
 
   QTemporaryFile m_file;
 };
-}
+} // namespace score

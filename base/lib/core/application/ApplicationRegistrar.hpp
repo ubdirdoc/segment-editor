@@ -1,12 +1,15 @@
 #pragma once
-#include <QObject>
 #include <score/actions/Action.hpp>
 #include <score/command/Command.hpp>
 #include <score/command/CommandGeneratorMap.hpp>
 #include <score/plugins/Addon.hpp>
 #include <score/plugins/customfactory/FactoryInterface.hpp>
 #include <score/tools/std/HashMap.hpp>
+
+#include <QObject>
+
 #include <score_lib_base_export.h>
+
 #include <utility>
 namespace score
 {
@@ -46,10 +49,7 @@ public:
                          std::unique_ptr<InterfaceListBase>>&& cmds);
   void registerFactory(std::unique_ptr<InterfaceListBase> cmds);
 
-  ApplicationComponentsData& components() const
-  {
-    return m_components;
-  }
+  ApplicationComponentsData& components() const { return m_components; }
 
 protected:
   ApplicationComponentsData& m_components;
@@ -78,4 +78,4 @@ private:
   ToolbarManager& m_toolbarManager;
   ActionManager& m_actionManager;
 };
-}
+} // namespace score

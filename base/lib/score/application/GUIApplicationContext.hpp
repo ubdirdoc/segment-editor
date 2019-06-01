@@ -28,10 +28,7 @@ struct GUIApplicationContext : public score::ApplicationContext
    *
    * @see score::PanelDelegate
    */
-  auto panels() const
-  {
-    return components.panels();
-  }
+  auto panels() const { return components.panels(); }
 
   /**
    * @brief Access to a specific PanelDelegate
@@ -112,4 +109,4 @@ struct GUIApplicationContext : public score::ApplicationContext
 };
 
 SCORE_LIB_BASE_EXPORT const GUIApplicationContext& GUIAppContext();
-}
+} // namespace score

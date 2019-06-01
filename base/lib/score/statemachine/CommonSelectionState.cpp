@@ -12,6 +12,7 @@
 #include <QKeyEventTransition>
 #include <qcoreevent.h>
 #include <qnamespace.h>
+
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(CommonSelectionState)
 
@@ -22,7 +23,9 @@ bool CommonSelectionState::multiSelection() const
 }
 
 CommonSelectionState::CommonSelectionState(
-    score::SelectionStack& stack, QObject* obj, QState* parent)
+    score::SelectionStack& stack,
+    QObject* obj,
+    QState* parent)
     : QState{parent}, dispatcher{stack}
 {
   setObjectName("metaSelectionState");
@@ -63,13 +66,19 @@ CommonSelectionState::CommonSelectionState(
 
     // Operations
     connect(
-        pressAreaSelection, &QState::entered, this,
+        pressAreaSelection,
+        &QState::entered,
+        this,
         &CommonSelectionState::on_pressAreaSelection);
     connect(
-        moveAreaSelection, &QState::entered, this,
+        moveAreaSelection,
+        &QState::entered,
+        this,
         &CommonSelectionState::on_moveAreaSelection);
     connect(
-        releaseAreaSelection, &QState::entered, this,
+        releaseAreaSelection,
+        &QState::entered,
+        this,
         &CommonSelectionState::on_releaseAreaSelection);
   }
 
@@ -82,7 +91,9 @@ CommonSelectionState::CommonSelectionState(
   score::make_transition<score::Cancel_Transition>(this, deselectState);
   deselectState->addTransition(m_waitState);
   connect(
-      deselectState, &QAbstractState::entered, this,
+      deselectState,
+      &QAbstractState::entered,
+      this,
       &CommonSelectionState::on_deselect);
 }
 

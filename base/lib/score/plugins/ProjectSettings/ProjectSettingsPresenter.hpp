@@ -1,10 +1,11 @@
 #pragma once
-#include <QObject>
 #include <core/settings/SettingsPresenter.hpp>
+
+#include <QObject>
 
 namespace score
 {
 class ProjectSettingsModel;
 using ProjectSettingsPresenter
     = SettingsDelegatePresenter<ProjectSettingsModel>;
-}
+} // namespace score

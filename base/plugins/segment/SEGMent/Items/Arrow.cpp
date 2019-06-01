@@ -1,9 +1,12 @@
 #include "Arrow.hpp"
-#include <SEGMent/Commands/Properties.hpp>
+
+#include <score/selection/SelectionStack.hpp>
+
+#include <QGraphicsSceneMouseEvent>
 #include <QPen>
 #include <QtMath>
-#include <score/selection/SelectionStack.hpp>
-#include <QGraphicsSceneMouseEvent>
+
+#include <SEGMent/Commands/Properties.hpp>
 namespace SEGMent
 {
 
@@ -33,9 +36,10 @@ QRectF Arrow::boundingRect() const
   qreal extra = (pen().width() + 20) / 2.0;
 
   return QRectF(
-             line().p1(), QSizeF(
-                              line().p2().x() - line().p1().x(),
-                              line().p2().y() - line().p1().y()))
+             line().p1(),
+             QSizeF(
+                 line().p2().x() - line().p1().x(),
+                 line().p2().y() - line().p1().y()))
       .normalized()
       .adjusted(-extra, -extra, extra, extra);
 }
@@ -51,17 +55,17 @@ QPainterPath Arrow::shape() const
   return stk.createStroke(path);
 }
 
-
 void Arrow::paint(
-    QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
   QLineF l = line();
-  const auto& style =
-      m_model.transition().target<SceneToScene>()
-      ? Style::instance().sceneArrow
-      : Style::instance().arrow;
+  const auto& style = m_model.transition().target<SceneToScene>()
+                          ? Style::instance().sceneArrow
+                          : Style::instance().arrow;
 
-  if(m_dragging)
+  if (m_dragging)
   {
     painter->setPen(style.hoverPen);
     painter->setBrush(style.hoverBrush);
@@ -69,7 +73,7 @@ void Arrow::paint(
     painter->drawLine(l);
     painter->drawPolygon(m_arrowHead);
   }
-  else if(!m_selected)
+  else if (!m_selected)
   {
     painter->setPen(style.pen);
     painter->setBrush(style.brush);
@@ -84,10 +88,8 @@ void Arrow::paint(
 
     painter->drawLine(l);
     painter->drawPolygon(m_arrowHead);
-
   }
 }
-
 
 void Arrow::updateShape()
 {
@@ -102,18 +104,17 @@ void Arrow::updateShape()
 
   setLine(QLineF(endPoint, startPoint));
 
-
   using namespace std;
   constexpr qreal arrowSize = 20;
   const double angle = std::atan2(-line().dy(), line().dx());
   QPointF arrowP1 = endPoint
                     + QPointF(
-                          sin(angle + M_PI / 3.) * arrowSize,
-                          cos(angle + M_PI / 3.) * arrowSize);
+                        sin(angle + M_PI / 3.) * arrowSize,
+                        cos(angle + M_PI / 3.) * arrowSize);
   QPointF arrowP2 = endPoint
                     + QPointF(
-                          sin(angle + M_PI - M_PI / 3.) * arrowSize,
-                          cos(angle + M_PI - M_PI / 3.) * arrowSize);
+                        sin(angle + M_PI - M_PI / 3.) * arrowSize,
+                        cos(angle + M_PI - M_PI / 3.) * arrowSize);
 
   m_arrowHead.clear();
   m_arrowHead << line().p1() << arrowP1 << arrowP2;
@@ -121,7 +122,7 @@ void Arrow::updateShape()
 
 void Arrow::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-  if(shape().contains(event->pos()))
+  if (shape().contains(event->pos()))
   {
     context.selectionStack.pushNewSelection({&m_model});
     event->setAccepted(true);
@@ -140,13 +141,15 @@ void Arrow::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 void Arrow::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
   event->setAccepted(false);
-  if((event->buttons() & Qt::RightButton) || (event->button() == Qt::RightButton))
+  if ((event->buttons() & Qt::RightButton)
+      || (event->button() == Qt::RightButton))
   {
     auto m = new QMenu;
     auto act = m->addAction(tr("Delete"));
     connect(act, &QAction::triggered, [=] {
       CommandDispatcher<> c{this->context.commandStack};
-      c.submitCommand(new RemoveTransition{(const SEGMent::ProcessModel&) *m_model.parent(), m_model});
+      c.submitCommand(new RemoveTransition{
+          (const SEGMent::ProcessModel&)*m_model.parent(), m_model});
     });
     m->exec(event->screenPos());
     m->deleteLater();
@@ -158,17 +161,16 @@ void Arrow::dragEnterEvent(QGraphicsSceneDragDropEvent* event)
   const auto& txt = event->mimeData()->text();
 
   bool can_drop = txt == SEGMENT_SOUND_ID;
-  if(!can_drop)
+  if (!can_drop)
   {
-    if(m_model.transition().target<SEGMent::SceneToScene>())
+    if (m_model.transition().target<SEGMent::SceneToScene>())
     {
-      can_drop = txt == SEGMENT_TEXTRIDDLE_ID
-      || txt == SEGMENT_GIFRIDDLE_ID
-      || txt == SEGMENT_PUZZLERIDDLE_ID;
+      can_drop = txt == SEGMENT_TEXTRIDDLE_ID || txt == SEGMENT_GIFRIDDLE_ID
+                 || txt == SEGMENT_PUZZLERIDDLE_ID;
     }
   }
 
-  if(can_drop)
+  if (can_drop)
   {
     m_dragging = true;
     event->accept();
@@ -200,9 +202,9 @@ void Arrow::dropEvent(QGraphicsSceneDragDropEvent* event)
 
   auto mime = event->mimeData();
   const auto& txt = mime->text();
-  if(txt == SEGMENT_SOUND_ID)
+  if (txt == SEGMENT_SOUND_ID)
   {
-    if(!mime->urls().empty())
+    if (!mime->urls().empty())
     {
       QUrl currentUrl = mime->urls().first();
 
@@ -213,30 +215,31 @@ void Arrow::dropEvent(QGraphicsSceneDragDropEvent* event)
   else
   {
     auto trans = m_model.transition().target<SEGMent::SceneToScene>();
-    if(trans)
+    if (trans)
     {
-      if(txt == SEGMENT_TEXTRIDDLE_ID)
+      if (txt == SEGMENT_TEXTRIDDLE_ID)
       {
         CommandDispatcher<> disp{context.commandStack};
-        if(!trans->riddle.target<SEGMent::TextRiddle>())
+        if (!trans->riddle.target<SEGMent::TextRiddle>())
         {
           disp.submitCommand(new ChangeRiddle{m_model, SEGMent::TextRiddle{}});
         }
       }
-      else if(txt == SEGMENT_GIFRIDDLE_ID)
+      else if (txt == SEGMENT_GIFRIDDLE_ID)
       {
         CommandDispatcher<> disp{context.commandStack};
-        if(!trans->riddle.target<SEGMent::GifRiddle>())
+        if (!trans->riddle.target<SEGMent::GifRiddle>())
         {
           disp.submitCommand(new ChangeRiddle{m_model, SEGMent::GifRiddle{}});
         }
       }
-      else if(txt == SEGMENT_PUZZLERIDDLE_ID)
+      else if (txt == SEGMENT_PUZZLERIDDLE_ID)
       {
         CommandDispatcher<> disp{context.commandStack};
-        if(!trans->riddle.target<SEGMent::PuzzleRiddle>())
+        if (!trans->riddle.target<SEGMent::PuzzleRiddle>())
         {
-          disp.submitCommand(new ChangeRiddle{m_model, SEGMent::PuzzleRiddle{}});
+          disp.submitCommand(
+              new ChangeRiddle{m_model, SEGMent::PuzzleRiddle{}});
         }
       }
     }
@@ -249,4 +252,4 @@ void Arrow::setSelected(bool b)
   update();
 }
 
-}
+} // namespace SEGMent

@@ -1,25 +1,28 @@
 #pragma once
-#include <QObject>
 #include <score/application/ApplicationContext.hpp>
 #include <score/command/Command.hpp>
 #include <score/command/CommandGeneratorMap.hpp>
 #include <score/plugins/customfactory/FactoryFamily.hpp>
 #include <score/plugins/qt_interfaces/CommandFactory_QtInterface.hpp>
-#include <score/plugins/qt_interfaces/GUIApplicationPlugin_QtInterface.hpp>
 #include <score/plugins/qt_interfaces/FactoryFamily_QtInterface.hpp>
 #include <score/plugins/qt_interfaces/FactoryInterface_QtInterface.hpp>
+#include <score/plugins/qt_interfaces/GUIApplicationPlugin_QtInterface.hpp>
 #include <score/plugins/qt_interfaces/PluginRequirements_QtInterface.hpp>
+
+#include <QObject>
+
 #include <utility>
 #include <vector>
 
 /**
  * \namespace SEGMent
  *
- * This is a GUI editor for SEGMent games, implemented as an ossia score plug-in.
- * For more information on ossia score, refer to https://ossia.io.
+ * This is a GUI editor for SEGMent games, implemented as an ossia score
+ * plug-in. For more information on ossia score, refer to https://ossia.io.
  *
  * This plug-in provides a new document kind : a SEGMent document.
- * This document represents an infinite visual canvas on which 2D scenes can be positioned.
+ * This document represents an infinite visual canvas on which 2D scenes can be
+ * positioned.
  *
  * The code organization is as follows :
  *
@@ -31,11 +34,10 @@
  *
  */
 
-class iscore_addon_SEGMent final
-    : public score::Plugin_QtInterface
-    , public score::FactoryInterface_QtInterface
-    , public score::CommandFactory_QtInterface
-    , public score::ApplicationPlugin_QtInterface
+class iscore_addon_SEGMent final : public score::Plugin_QtInterface,
+                                   public score::FactoryInterface_QtInterface,
+                                   public score::CommandFactory_QtInterface,
+                                   public score::ApplicationPlugin_QtInterface
 {
   // Version, and unique identifier for the plug-in.
   // The uuid can be generated with "uuidgen" on linux or OS X.

@@ -1,6 +1,7 @@
 #pragma once
 #include <score/serialization/DataStreamVisitor.hpp>
 #include <score/serialization/JSONVisitor.hpp>
+
 #include <type_traits>
 
 /**
@@ -149,4 +150,4 @@ auto unmarshall(const QByteArray& arr)
 {
   return DataStreamWriter::unmarshall<Object>(arr);
 }
-}
+} // namespace score

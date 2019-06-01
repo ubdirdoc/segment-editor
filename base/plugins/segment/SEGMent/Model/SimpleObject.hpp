@@ -1,16 +1,16 @@
 #pragma once
-#include <SEGMent/Model/Sound.hpp>
-#include <SEGMent/Model/Image.hpp>
-#include <SEGMent/Model/Traits.hpp>
-#include <SEGMent/Model/Model.hpp>
 #include <score/model/Entity.hpp>
 #include <score/selection/Selectable.hpp>
+
+#include <SEGMent/Model/Image.hpp>
+#include <SEGMent/Model/Model.hpp>
+#include <SEGMent/Model/Sound.hpp>
+#include <SEGMent/Model/Traits.hpp>
 
 namespace SEGMent
 {
 //! A simple object with an image. Can be associated to a transition.
-class ImageModel
-    : public Object<ImageModel>
+class ImageModel : public Object<ImageModel>
 {
   W_OBJECT(ImageModel)
   SCORE_SERIALIZE_FRIENDS
@@ -44,8 +44,7 @@ private:
   bool m_puzzle{false};
 };
 
-}
-
+} // namespace SEGMent
 
 DEFAULT_MODEL_METADATA(SEGMent::ImageModel, "Object")
 TR_TEXT_METADATA(, SEGMent::ImageModel, PrettyName_k, "Object")

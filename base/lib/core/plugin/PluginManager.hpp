@@ -1,9 +1,6 @@
 #pragma once
-#include <QObject>
-#include <QString>
-#include <QStringList>
-#include <core/plugin/PluginDependencyGraph.hpp>
 #include <score/application/ApplicationContext.hpp>
+#include <score/plugins/PluginInstances.hpp>
 #include <score/plugins/customfactory/FactoryFamily.hpp>
 #include <score/plugins/qt_interfaces/CommandFactory_QtInterface.hpp>
 #include <score/plugins/qt_interfaces/FactoryFamily_QtInterface.hpp>
@@ -11,8 +8,15 @@
 #include <score/plugins/qt_interfaces/GUIApplicationPlugin_QtInterface.hpp>
 #include <score/plugins/qt_interfaces/PluginRequirements_QtInterface.hpp>
 #include <score/tools/std/Optional.hpp>
-#include <score/plugins/PluginInstances.hpp>
+
+#include <core/plugin/PluginDependencyGraph.hpp>
+
+#include <QObject>
+#include <QString>
+#include <QStringList>
+
 #include <score_lib_base_export.h>
+
 #include <vector>
 namespace score
 {
@@ -41,7 +45,8 @@ QStringList addonsDir();
 QStringList pluginsDir();
 
 SCORE_LIB_BASE_EXPORT void loadPluginsInAllFolders(
-    std::vector<score::Addon>& availablePlugins, QStringList additional = {});
+    std::vector<score::Addon>& availablePlugins,
+    QStringList additional = {});
 
 SCORE_LIB_BASE_EXPORT void
 loadAddonsInAllFolders(std::vector<score::Addon>& availablePlugins);
@@ -176,5 +181,5 @@ void loadPlugins(Registrar_T& registrar, const Context_T& context)
 }
 
 QStringList pluginsBlacklist();
-}
-}
+} // namespace PluginLoader
+} // namespace score

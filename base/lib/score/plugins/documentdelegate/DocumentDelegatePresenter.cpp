@@ -2,8 +2,9 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "DocumentDelegatePresenter.hpp"
 
-#include <core/document/DocumentPresenter.hpp>
 #include <score/selection/Selection.hpp>
+
+#include <core/document/DocumentPresenter.hpp>
 
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(score::DocumentDelegatePresenter)
@@ -21,4 +22,4 @@ DocumentDelegatePresenter::DocumentDelegatePresenter(
 }
 
 score::DocumentDelegatePresenter::~DocumentDelegatePresenter() = default;
-}
+} // namespace score

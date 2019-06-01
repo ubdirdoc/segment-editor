@@ -50,4 +50,4 @@ private:
   QTemporaryFile m_modelFile;
   CommandBackupFile* m_commandFile{};
 };
-}
+} // namespace score

@@ -2,13 +2,15 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "RandomNameProvider.hpp"
 
+#include <score/tools/IdentifierGeneration.hpp>
+
 #include <QByteArray>
 #include <QFile>
 #include <QFlags>
 #include <QIODevice>
 #include <QStringList>
+
 #include <cstdlib>
-#include <score/tools/IdentifierGeneration.hpp>
 
 struct WordList : public QStringList
 {
@@ -38,11 +40,11 @@ QString RandomNameProvider::generateRandomName()
   return words.at(std::abs(
              score::random_id_generator::getRandomId() % (words.size() - 1)))
          + QString::number(
-               std::abs(score::random_id_generator::getRandomId() % 99))
+             std::abs(score::random_id_generator::getRandomId() % 99))
          + words.at(std::abs(
-               score::random_id_generator::getRandomId() % (words.size() - 1)))
+             score::random_id_generator::getRandomId() % (words.size() - 1)))
          + QString::number(
-               std::abs(score::random_id_generator::getRandomId() % 99));
+             std::abs(score::random_id_generator::getRandomId() % 99));
 }
 
 QString RandomNameProvider::generateShortRandomName()
@@ -52,5 +54,5 @@ QString RandomNameProvider::generateShortRandomName()
   return words.at(std::abs(
              score::random_id_generator::getRandomId() % (words.size() - 1)))
          + QString::number(
-               std::abs(score::random_id_generator::getRandomId() % 99));
+             std::abs(score::random_id_generator::getRandomId() % 99));
 }

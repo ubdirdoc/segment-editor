@@ -1,9 +1,12 @@
 #pragma once
-#include <QDebug>
-#include <eggs/variant.hpp>
-#include <ossia/detail/for_each.hpp>
 #include <score/serialization/DataStreamVisitor.hpp>
 #include <score/serialization/JSONVisitor.hpp>
+
+#include <ossia/detail/for_each.hpp>
+
+#include <QDebug>
+
+#include <eggs/variant.hpp>
 
 /**
  * @file VariantSerialization
@@ -71,7 +74,9 @@ template <typename T>
 struct VariantDataStreamDeserializer
 {
   VariantDataStreamDeserializer(
-      DataStream::Deserializer& s_p, quint64 which_p, T& var_p)
+      DataStream::Deserializer& s_p,
+      quint64 which_p,
+      T& var_p)
       : s{s_p}, which{which_p}, var{var_p}
   {
   }

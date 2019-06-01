@@ -1,10 +1,13 @@
 #pragma once
 
-#include <QMainWindow>
 #include <core/document/Document.hpp>
-#include <wobjectdefs.h>
+
+#include <QMainWindow>
 #include <QPair>
 #include <QString>
+
+#include <wobjectdefs.h>
+
 #include <vector>
 
 class QCloseEvent;
@@ -14,6 +17,7 @@ class QObject;
 class QTabWidget;
 
 #include <score/model/Identifier.hpp>
+
 #include <score_lib_base_export.h>
 
 namespace score
@@ -44,14 +48,17 @@ public:
   void closeEvent(QCloseEvent*) override;
 
 public:
-  void activeDocumentChanged(const Id<DocumentModel>& arg_1) W_SIGNAL(activeDocumentChanged, arg_1);
-  void closeRequested(const Id<DocumentModel>& arg_1) W_SIGNAL(closeRequested, arg_1);
+  void activeDocumentChanged(const Id<DocumentModel>& arg_1)
+      W_SIGNAL(activeDocumentChanged, arg_1);
+  void closeRequested(const Id<DocumentModel>& arg_1)
+      W_SIGNAL(closeRequested, arg_1);
 
   void ready() W_SIGNAL(ready);
   void sizeChanged(QSize arg_1) W_SIGNAL(sizeChanged, arg_1);
 
 public:
-  void on_fileNameChanged(DocumentView* d, const QString& newName); W_SLOT(on_fileNameChanged);
+  void on_fileNameChanged(DocumentView* d, const QString& newName);
+  W_SLOT(on_fileNameChanged);
 
 private:
   void changeEvent(QEvent*) override;
@@ -64,4 +71,4 @@ private:
   Presenter* m_presenter{};
   QTabWidget* m_tabWidget{};
 };
-}
+} // namespace score

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+
 #include <wobjectdefs.h>
 
 class Selection;
@@ -25,10 +26,7 @@ public:
       DocumentView&,
       QObject* parent);
 
-  DocumentDelegatePresenter* presenterDelegate() const
-  {
-    return m_presenter;
-  }
+  DocumentDelegatePresenter* presenterDelegate() const { return m_presenter; }
 
   void setNewSelection(const Selection& s);
 
@@ -36,4 +34,4 @@ public:
   const DocumentModel& m_model;
   DocumentDelegatePresenter* m_presenter{};
 };
-}
+} // namespace score

@@ -1,15 +1,18 @@
 #pragma once
+#include <score/document/DocumentContext.hpp>
+#include <score/locking/ObjectLocker.hpp>
+#include <score/selection/FocusManager.hpp>
+#include <score/selection/SelectionStack.hpp>
+
+#include <core/command/CommandStack.hpp>
+#include <core/document/DocumentMetadata.hpp>
+
 #include <QByteArray>
 #include <QJsonObject>
 #include <QString>
 #include <QTimer>
 #include <QVariant>
-#include <core/command/CommandStack.hpp>
-#include <core/document/DocumentMetadata.hpp>
-#include <score/document/DocumentContext.hpp>
-#include <score/locking/ObjectLocker.hpp>
-#include <score/selection/FocusManager.hpp>
-#include <score/selection/SelectionStack.hpp>
+
 #include <wobjectdefs.h>
 
 class QObject;
@@ -19,6 +22,7 @@ namespace score
 class DocumentBackupManager;
 } // namespace score
 #include <score/model/Identifier.hpp>
+
 #include <score_lib_base_export.h>
 
 namespace score
@@ -48,56 +52,26 @@ class SCORE_LIB_BASE_EXPORT Document final : public QObject
 public:
   ~Document();
 
-  const DocumentMetadata& metadata() const
-  {
-    return m_metadata;
-  }
-  DocumentMetadata& metadata()
-  {
-    return m_metadata;
-  }
+  const DocumentMetadata& metadata() const { return m_metadata; }
+  DocumentMetadata& metadata() { return m_metadata; }
 
   const Id<DocumentModel>& id() const;
 
-  CommandStack& commandStack()
-  {
-    return m_commandStack;
-  }
+  CommandStack& commandStack() { return m_commandStack; }
 
-  SelectionStack& selectionStack()
-  {
-    return m_selectionStack;
-  }
+  SelectionStack& selectionStack() { return m_selectionStack; }
 
-  FocusManager& focusManager()
-  {
-    return m_focus;
-  }
+  FocusManager& focusManager() { return m_focus; }
 
-  ObjectLocker& locker()
-  {
-    return m_objectLocker;
-  }
+  ObjectLocker& locker() { return m_objectLocker; }
 
-  const DocumentContext& context() const
-  {
-    return m_context;
-  }
+  const DocumentContext& context() const { return m_context; }
 
-  DocumentModel& model() const
-  {
-    return *m_model;
-  }
+  DocumentModel& model() const { return *m_model; }
 
-  DocumentPresenter* presenter() const
-  {
-    return m_presenter;
-  }
+  DocumentPresenter* presenter() const { return m_presenter; }
 
-  DocumentView* view() const
-  {
-    return m_view;
-  }
+  DocumentView* view() const { return m_view; }
 
   QJsonObject saveDocumentModelAsJson();
   QByteArray saveDocumentModelAsByteArray();
@@ -105,10 +79,7 @@ public:
   QJsonObject saveAsJson();
   QByteArray saveAsByteArray();
 
-  DocumentBackupManager* backupManager() const
-  {
-    return m_backupMgr;
-  }
+  DocumentBackupManager* backupManager() const { return m_backupMgr; }
 
   void setBackupMgr(DocumentBackupManager* backupMgr);
 
@@ -167,7 +138,7 @@ private:
   bool m_virgin{false}; // Used to check if we can safely close it
   // if we want to load a document instead upon opening score.
 };
-}
+} // namespace score
 
 Q_DECLARE_METATYPE(score::Document*)
 Q_DECLARE_METATYPE(Id<score::DocumentModel>)

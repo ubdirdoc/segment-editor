@@ -2,6 +2,7 @@
 class QByteArray;
 class QVariant;
 #include <score/model/Identifier.hpp>
+
 #include <score_lib_base_export.h>
 namespace score
 {
@@ -49,4 +50,4 @@ private:
 
   DocumentBackupManager* m_backupManager{};
 };
-}
+} // namespace score

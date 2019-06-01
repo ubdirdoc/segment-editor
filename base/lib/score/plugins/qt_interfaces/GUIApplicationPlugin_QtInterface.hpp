@@ -18,4 +18,4 @@ public:
   virtual GUIApplicationPlugin*
   make_guiApplicationPlugin(const score::GUIApplicationContext& app);
 };
-}
+} // namespace score

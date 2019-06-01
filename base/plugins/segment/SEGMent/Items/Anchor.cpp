@@ -2,11 +2,12 @@
 
 #include "Arrow.hpp"
 
-#include <QDrag>
+#include <QApplication>
 #include <QCursor>
+#include <QDrag>
 #include <QGraphicsSceneMouseEvent>
 #include <QMimeData>
-#include <QApplication>
+
 #include <SEGMent/Model/Layer/ProcessView.hpp>
 #include <wobjectimpl.h>
 
@@ -15,10 +16,7 @@ namespace SEGMent
 {
 
 Anchor::Anchor(qreal w, anchor_id i, QGraphicsItem* parent, ZoomView& view)
-    : QGraphicsItem(parent)
-    , id{i}
-    , m_processView{view}
-    , m_width{w}
+    : QGraphicsItem(parent), id{i}, m_processView{view}, m_width{w}
 {
   setFlag(ItemSendsScenePositionChanges);
   setFlag(ItemIsSelectable);
@@ -31,7 +29,7 @@ Anchor::Anchor(qreal w, anchor_id i, QGraphicsItem* parent, ZoomView& view)
 QRectF Anchor::boundingRect() const
 {
   const auto w = m_width + 2.;
-  return { -w / 2., -w / 2., w, w };
+  return {-w / 2., -w / 2., w, w};
 }
 
 void Anchor::dragEnterEvent(QGraphicsSceneDragDropEvent* event)
@@ -77,31 +75,30 @@ void Anchor::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   auto mime = new QMimeData;
 
   drag->setMimeData(mime);
-  connect(drag, &QDrag::destroyed, this, [=] {
-    m_processView.finishArrowDrop();
-  });
+  connect(
+      drag, &QDrag::destroyed, this, [=] { m_processView.finishArrowDrop(); });
   drag->exec();
 }
 
 QVariant Anchor::itemChange(
-      QGraphicsItem::GraphicsItemChange change,
-      const QVariant& value)
+    QGraphicsItem::GraphicsItemChange change,
+    const QVariant& value)
 {
-  if(change == GraphicsItemChange::ItemScenePositionHasChanged)
+  if (change == GraphicsItemChange::ItemScenePositionHasChanged)
     moved();
   return QGraphicsItem::itemChange(change, value);
 }
 
 void Anchor::paint(
-      QPainter* painter,
-      const QStyleOptionGraphicsItem* option,
-      QWidget* widget)
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
   const auto& skin = Style::instance();
   painter->setPen(skin.anchorPen);
   painter->setBrush(skin.anchorBrush);
   const auto w = m_width;
-  painter->drawEllipse( QRectF{ -w / 2., -w / 2., w, w });
+  painter->drawEllipse(QRectF{-w / 2., -w / 2., w, w});
 }
 
 QPainterPath Anchor::shape() const
@@ -115,5 +112,4 @@ bool Anchor::contains(const QPointF& point) const
 {
   return boundingRect().contains(point);
 }
-}
-
+} // namespace SEGMent

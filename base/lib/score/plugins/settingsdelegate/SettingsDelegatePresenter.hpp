@@ -1,6 +1,8 @@
 #pragma once
-#include <QObject>
 #include <score/command/Dispatchers/SettingsCommandDispatcher.hpp>
+
+#include <QObject>
+
 #include <score_lib_base_export.h>
 
 namespace score
@@ -20,15 +22,9 @@ public:
   }
 
   virtual ~SettingsDelegatePresenter() = default;
-  void on_accept()
-  {
-    m_disp.commit();
-  }
+  void on_accept() { m_disp.commit(); }
 
-  void on_reject()
-  {
-    m_disp.rollback();
-  }
+  void on_reject() { m_disp.rollback(); }
 
   virtual QString settingsName() = 0;
   virtual QIcon settingsIcon() = 0;
@@ -55,7 +51,7 @@ protected:
 using GlobalSettingsPresenter
     = SettingsDelegatePresenter<SettingsDelegateModel>;
 using GlobalSettingsView = SettingsDelegateView<SettingsDelegateModel>;
-}
+} // namespace score
 
 #define SETTINGS_PRESENTER(Control)                                      \
   do                                                                     \

@@ -17,33 +17,16 @@ private:
   score::CommandStack& m_stack;
 
 public:
-  CommandStackFacade(score::CommandStack& stack) : m_stack{stack}
-  {
-  }
+  CommandStackFacade(score::CommandStack& stack) : m_stack{stack} {}
 
-  const score::DocumentContext& context() const
-  {
-    return m_stack.context();
-  }
+  const score::DocumentContext& context() const { return m_stack.context(); }
 
-  void push(score::Command* cmd) const
-  {
-    m_stack.push(cmd);
-  }
+  void push(score::Command* cmd) const { m_stack.push(cmd); }
 
-  void redoAndPush(score::Command* cmd) const
-  {
-    m_stack.redoAndPush(cmd);
-  }
+  void redoAndPush(score::Command* cmd) const { m_stack.redoAndPush(cmd); }
 
-  void disableActions() const
-  {
-    m_stack.disableActions();
-  }
+  void disableActions() const { m_stack.disableActions(); }
 
-  void enableActions() const
-  {
-    m_stack.enableActions();
-  }
+  void enableActions() const { m_stack.enableActions(); }
 };
-}
+} // namespace score

@@ -1,11 +1,14 @@
 #pragma once
-#include <QPoint>
 #include <score/model/Identifier.hpp>
-#include <SEGMent/Model/Scene.hpp>
-#include <SEGMent/Items/Window.hpp>
-#include <SEGMent/Items/Arrow.hpp>
-#include <SEGMent/Model/Transition.hpp>
+
 #include <ossia/detail/ptr_set.hpp>
+
+#include <QPoint>
+
+#include <SEGMent/Items/Arrow.hpp>
+#include <SEGMent/Items/Window.hpp>
+#include <SEGMent/Model/Scene.hpp>
+#include <SEGMent/Model/Transition.hpp>
 
 namespace SEGMent
 {
@@ -13,9 +16,7 @@ class ProcessModel;
 class ZoomView;
 
 //! Shows the element of a SEGMent ProcessModel in a View
-class Presenter final
-  : public QObject
-  , public Nano::Observer
+class Presenter final : public QObject, public Nano::Observer
 {
 public:
   explicit Presenter(
@@ -36,4 +37,4 @@ private:
   ossia::ptr_map<const SceneModel*, SceneWindow*> m_scenes;
   ossia::ptr_map<const TransitionModel*, Arrow*> m_transitions;
 };
-}
+} // namespace SEGMent

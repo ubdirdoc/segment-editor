@@ -1,9 +1,11 @@
 #pragma once
-#include <score/tools/std/IndirectContainer.hpp>
 #include <score/model/IdentifiedObject.hpp>
+#include <score/tools/std/IndirectContainer.hpp>
+
 #include <tsl/hopscotch_map.h>
-#include <vector>
+
 #include <list>
+#include <vector>
 // This file contains a fast map for items based on their identifier,
 // based on boost's multi-index maps.
 
@@ -37,14 +39,18 @@ class IdContainer<
 public:
   using model_type = Model;
   using order_t = std::list<Element*>;
-  using map_t = tsl::hopscotch_map<Id<Model>, std::pair<Element*, typename order_t::iterator>>;
+  using map_t = tsl::hopscotch_map<
+      Id<Model>,
+      std::pair<Element*, typename order_t::iterator>>;
   map_t m_map;
   order_t m_order;
 
   using value_type = Element;
   using iterator = score::indirect_iterator<typename order_t::iterator>;
-  using const_iterator = score::indirect_iterator<typename order_t::const_iterator>;
-  using const_reverse_iterator = score::indirect_iterator<typename order_t::const_reverse_iterator>;
+  using const_iterator
+      = score::indirect_iterator<typename order_t::const_iterator>;
+  using const_reverse_iterator
+      = score::indirect_iterator<typename order_t::const_reverse_iterator>;
 
   IdContainer() INLINE_EXPORT = default;
   IdContainer(const IdContainer& other) = delete;
@@ -61,10 +67,7 @@ public:
     }
   }
 
-  auto& ordered() INLINE_EXPORT
-  {
-    return m_order;
-  }
+  auto& ordered() INLINE_EXPORT { return m_order; }
 
   const_iterator begin() const INLINE_EXPORT
   {
@@ -91,15 +94,9 @@ public:
     return score::make_indirect_iterator(this->m_order.cend());
   }
 
-  std::size_t size() const INLINE_EXPORT
-  {
-    return m_map.size();
-  }
+  std::size_t size() const INLINE_EXPORT { return m_map.size(); }
 
-  bool empty() const INLINE_EXPORT
-  {
-    return m_map.empty();
-  }
+  bool empty() const INLINE_EXPORT { return m_map.empty(); }
 
   std::vector<Element*> as_vec() const INLINE_EXPORT
   {
@@ -110,7 +107,6 @@ public:
   {
     return score::IndirectContainer<Element>(m_order.begin(), m_order.end());
   }
-
 
   void insert(value_type* t) INLINE_EXPORT
   {
@@ -123,7 +119,7 @@ public:
   {
     // No delete : it is done in EntityMap.
 
-    if(it != this->m_map.end())
+    if (it != this->m_map.end())
     {
       m_order.erase(it->second.second);
       m_map.erase(it);
@@ -133,17 +129,14 @@ public:
   {
     // No delete : it is done in EntityMap.
 
-    if(it != this->m_map.end())
+    if (it != this->m_map.end())
     {
       m_order.erase(it->second.second);
       m_map.erase(it);
     }
   }
 
-  void remove(const Id<Model>& id) INLINE_EXPORT
-  {
-    remove(m_map.find(id));
-  }
+  void remove(const Id<Model>& id) INLINE_EXPORT { remove(m_map.find(id)); }
 
   void clear() INLINE_EXPORT
   {
@@ -157,9 +150,10 @@ public:
   const_iterator find(const Id<Model>& id) const INLINE_EXPORT
   {
     auto it = this->m_map.find(id);
-    if(it != this->m_map.end())
+    if (it != this->m_map.end())
     {
-      return score::make_indirect_iterator((typename order_t::const_iterator)it->second.second);
+      return score::make_indirect_iterator(
+          (typename order_t::const_iterator)it->second.second);
     }
     else
     {
@@ -171,7 +165,8 @@ public:
   {
     if (id.m_ptr)
     {
-      SCORE_ASSERT(id.m_ptr->parent() == this->m_map.find(id)->second.first->parent());
+      SCORE_ASSERT(
+          id.m_ptr->parent() == this->m_map.find(id)->second.first->parent());
       return safe_cast<Element&>(*id.m_ptr);
     }
     auto item = this->m_map.find(id);
@@ -201,7 +196,7 @@ public:
     std::vector<Element*> v;
     const auto N = m_map.size();
     v.reserve(N);
-    for(auto& e : m_map)
+    for (auto& e : m_map)
     {
       v.push_back(e.second);
     }
@@ -247,7 +242,7 @@ public:
   void erase(const Id<Model>& id) INLINE_EXPORT
   {
     auto it = m_map.find(id);
-    if(it != m_map.end())
+    if (it != m_map.end())
     {
       auto ptr = it->second;
       m_map.erase(it);
@@ -257,7 +252,7 @@ public:
 
   void remove_all() INLINE_EXPORT
   {
-    for(auto& e : m_map)
+    for (auto& e : m_map)
     {
       delete e.second;
     }

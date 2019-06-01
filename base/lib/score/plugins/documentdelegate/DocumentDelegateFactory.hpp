@@ -1,5 +1,6 @@
 #pragma once
 #include <score/plugins/customfactory/FactoryFamily.hpp>
+
 #include <score_lib_base_export.h>
 
 struct VisitorVariant;
@@ -24,7 +25,9 @@ struct DocumentContext;
 class SCORE_LIB_BASE_EXPORT DocumentDelegateFactory
     : public score::InterfaceBase
 {
-  SCORE_INTERFACE(DocumentDelegateFactory, "127ea824-f623-4f68-8deb-7c8c930a262b")
+  SCORE_INTERFACE(
+      DocumentDelegateFactory,
+      "127ea824-f623-4f68-8deb-7c8c930a262b")
 public:
   ~DocumentDelegateFactory() override;
 
@@ -60,4 +63,4 @@ public:
 
   using object_type = DocumentDelegateModel;
 };
-}
+} // namespace score

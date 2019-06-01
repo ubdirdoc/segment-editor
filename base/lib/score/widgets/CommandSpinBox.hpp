@@ -1,7 +1,8 @@
 #pragma once
-#include <QObject>
 #include <score/command/Dispatchers/SingleOngoingCommandDispatcher.hpp>
 #include <score/widgets/SignalUtils.hpp>
+
+#include <QObject>
 namespace score
 {
 /**
@@ -41,13 +42,10 @@ struct CommandSpinbox : public QObject
     m_sb->setValue((model.*Property::get())());
   }
 
-  auto widget() const
-  {
-    return m_sb;
-  }
+  auto widget() const { return m_sb; }
 
 private:
   SpinBox* m_sb{};
   SingleOngoingCommandDispatcher<Command> m_slotDisp;
 };
-}
+} // namespace score

@@ -1,5 +1,6 @@
 #pragma once
 #include <QObject>
+
 #include <score_lib_base_export.h>
 #include <wobjectdefs.h>
 
@@ -12,21 +13,14 @@ class SCORE_LIB_BASE_EXPORT Selectable final : public QObject
 {
   W_OBJECT(Selectable)
 public:
-  Selectable(QObject* parent = nullptr)
-    : QObject{parent}
+  Selectable(QObject* parent = nullptr) : QObject{parent}
   {
     connect(this, &Selectable::set, this, &Selectable::set_impl);
   }
 
-  virtual ~Selectable()
-  {
-    set(false);
-  }
+  virtual ~Selectable() { set(false); }
 
-  bool get() const
-  {
-    return m_val;
-  }
+  bool get() const { return m_val; }
 
   void set_impl(bool v)
   {

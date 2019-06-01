@@ -1,4 +1,11 @@
 #pragma once
+#include <score/model/EntityBase.hpp>
+#include <score/serialization/VisitorInterface.hpp>
+#include <score/serialization/VisitorTags.hpp>
+#include <score/tools/Todo.hpp>
+#include <score/tools/std/Optional.hpp>
+
+#include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/small_vector.hpp>
 
 #include <QByteArray>
@@ -6,48 +13,45 @@
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>
-#include <ossia/detail/flat_set.hpp>
-#include <score/model/EntityBase.hpp>
-#include <score/serialization/VisitorInterface.hpp>
-#include <score/serialization/VisitorTags.hpp>
-#include <score/tools/Todo.hpp>
-#include <score/tools/std/Optional.hpp>
+
+#include <sys/types.h>
+
 #include <stdexcept>
 #include <string>
-#include <sys/types.h>
-#include <type_traits>
 #include <vector>
+
+#include <type_traits>
 
 namespace score
 {
 class ApplicationComponents;
 }
 #if defined(SCORE_DEBUG_DELIMITERS)
-#  define SCORE_DEBUG_INSERT_DELIMITER \
-    do                                 \
-    {                                  \
-      insertDelimiter();               \
-    } while (0)
-#  define SCORE_DEBUG_INSERT_DELIMITER2(Vis) \
-    do                                       \
-    {                                        \
-      Vis.insertDelimiter();                 \
-    } while (0)
-#  define SCORE_DEBUG_CHECK_DELIMITER \
-    do                                \
-    {                                 \
-      checkDelimiter();               \
-    } while (0)
-#  define SCORE_DEBUG_CHECK_DELIMITER2(Vis) \
-    do                                      \
-    {                                       \
-      Vis.checkDelimiter();                 \
-    } while (0)
+#define SCORE_DEBUG_INSERT_DELIMITER \
+  do                                 \
+  {                                  \
+    insertDelimiter();               \
+  } while (0)
+#define SCORE_DEBUG_INSERT_DELIMITER2(Vis) \
+  do                                       \
+  {                                        \
+    Vis.insertDelimiter();                 \
+  } while (0)
+#define SCORE_DEBUG_CHECK_DELIMITER \
+  do                                \
+  {                                 \
+    checkDelimiter();               \
+  } while (0)
+#define SCORE_DEBUG_CHECK_DELIMITER2(Vis) \
+  do                                      \
+  {                                       \
+    Vis.checkDelimiter();                 \
+  } while (0)
 #else
-#  define SCORE_DEBUG_INSERT_DELIMITER
-#  define SCORE_DEBUG_INSERT_DELIMITER2(Vis)
-#  define SCORE_DEBUG_CHECK_DELIMITER
-#  define SCORE_DEBUG_CHECK_DELIMITER2(Vis)
+#define SCORE_DEBUG_INSERT_DELIMITER
+#define SCORE_DEBUG_INSERT_DELIMITER2(Vis)
+#define SCORE_DEBUG_CHECK_DELIMITER
+#define SCORE_DEBUG_CHECK_DELIMITER2(Vis)
 #endif
 
 /**
@@ -141,10 +145,7 @@ class DataStream
 public:
   using Serializer = DataStreamReader;
   using Deserializer = DataStreamWriter;
-  static constexpr SerializationIdentifier type()
-  {
-    return 2;
-  }
+  static constexpr SerializationIdentifier type() { return 2; }
 };
 
 class SCORE_LIB_BASE_EXPORT DataStreamReader : public AbstractVisitor
@@ -153,10 +154,7 @@ public:
   using type = DataStream;
   using is_visitor_tag = std::integral_constant<bool, true>;
 
-  VisitorVariant toVariant()
-  {
-    return {*this, DataStream::type()};
-  }
+  VisitorVariant toVariant() { return {*this, DataStream::type()}; }
 
   DataStreamReader();
   DataStreamReader(QByteArray* array);
@@ -186,15 +184,9 @@ public:
    *
    * Adds a delimiter that is to be checked by the reader.
    */
-  void insertDelimiter()
-  {
-    m_stream << int32_t(0xDEADBEEF);
-  }
+  void insertDelimiter() { m_stream << int32_t(0xDEADBEEF); }
 
-  auto& stream()
-  {
-    return m_stream;
-  }
+  auto& stream() { return m_stream; }
 
   //! Serializable types should reimplement this method
   //! It is not to be called by user code.
@@ -205,9 +197,11 @@ private:
   template <typename T>
   void readFrom_impl(const T& obj, visitor_template_tag)
   {
-    if constexpr(base_kind<T>::value)
+    if constexpr (base_kind<T>::value)
     {
-      readFrom_impl((const typename T::base_type&) obj, typename serialization_tag<T>::type{});
+      readFrom_impl(
+          (const typename T::base_type&)obj,
+          typename serialization_tag<T>::type{});
     }
     TSerializer<DataStream, T>::readFrom(*this, obj);
   }
@@ -215,37 +209,41 @@ private:
   template <typename T>
   void readFrom_impl(const T& obj, visitor_object_tag)
   {
-    if constexpr(base_kind<T>::value)
+    if constexpr (base_kind<T>::value)
     {
-      readFrom_impl((const typename T::base_type&) obj, typename serialization_tag<T>::type{});
+      readFrom_impl(
+          (const typename T::base_type&)obj,
+          typename serialization_tag<T>::type{});
     }
     else
     {
       TSerializer<DataStream, IdentifiedObject<T>>::readFrom(*this, obj);
     }
 
-    if constexpr(is_custom_serialized<T>::value || is_template<T>::value)
-        TSerializer<DataStream, T>::readFrom(*this, obj);
+    if constexpr (is_custom_serialized<T>::value || is_template<T>::value)
+      TSerializer<DataStream, T>::readFrom(*this, obj);
     else
-        read(obj);
+      read(obj);
   }
 
   template <typename T>
   void readFrom_impl(const T& obj, visitor_entity_tag)
   {
-    if constexpr(base_kind<T>::value)
+    if constexpr (base_kind<T>::value)
     {
-      readFrom_impl((const typename T::base_type&) obj, typename serialization_tag<T>::type{});
+      readFrom_impl(
+          (const typename T::base_type&)obj,
+          typename serialization_tag<T>::type{});
     }
     else
     {
       TSerializer<DataStream, score::Entity<T>>::readFrom(*this, obj);
     }
 
-    if constexpr(is_custom_serialized<T>::value || is_template<T>::value)
-        TSerializer<DataStream, T>::readFrom(*this, obj);
+    if constexpr (is_custom_serialized<T>::value || is_template<T>::value)
+      TSerializer<DataStream, T>::readFrom(*this, obj);
     else
-        read(obj);
+      read(obj);
   }
 
   template <typename T, typename Fun>
@@ -329,10 +327,7 @@ public:
   using is_visitor_tag = std::integral_constant<bool, true>;
   using is_deserializer_tag = std::integral_constant<bool, true>;
 
-  VisitorVariant toVariant()
-  {
-    return {*this, DataStream::type()};
-  }
+  VisitorVariant toVariant() { return {*this, DataStream::type()}; }
 
   DataStreamWriter();
   DataStreamWriter(const DataStreamWriter&) = delete;
@@ -379,10 +374,7 @@ public:
     }
   }
 
-  auto& stream()
-  {
-    return m_stream;
-  }
+  auto& stream() { return m_stream; }
 
 private:
   template <typename T>

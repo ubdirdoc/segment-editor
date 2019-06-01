@@ -1,30 +1,30 @@
-#include <SEGMent/ImageList.hpp>
-
+#include <QApplication>
+#include <QBuffer>
+#include <QDebug>
 #include <QDir>
 #include <QDrag>
-#include <QMimeData>
-#include <QApplication>
-#include <QMouseEvent>
-#include <QDebug>
 #include <QFileSystemModel>
-#include <QPainter>
-#include <QJsonDocument>
-#include <QBuffer>
-#include <QShortcut>
 #include <QFileSystemWatcher>
+#include <QJsonDocument>
+#include <QMimeData>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QShortcut>
 
-#include <SEGMent/Model/Sound.hpp>
+#include <SEGMent/ImageList.hpp>
 #include <SEGMent/Items/GlobalVariables.hpp>
+#include <SEGMent/Model/Sound.hpp>
 
 namespace SEGMent
 {
 ImageList::ImageList(QString resPath, QString folder, QString id)
-  : m_path{resPath}
-  , m_folder{folder}
-  , m_id{id}
+    : m_path{resPath}, m_folder{folder}, m_id{id}
 {
-  connect(&m_watch, &QFileSystemWatcher::directoryChanged,
-          this, &ImageList::loadFolder);
+  connect(
+      &m_watch,
+      &QFileSystemWatcher::directoryChanged,
+      this,
+      &ImageList::loadFolder);
 }
 
 void ImageList::startDrag(Qt::DropActions supportedActions)
@@ -32,13 +32,11 @@ void ImageList::startDrag(Qt::DropActions supportedActions)
   QListWidget::startDrag(supportedActions);
 }
 
-void ImageList::dragEnterEvent(QDragEnterEvent* event)
-{
-}
+void ImageList::dragEnterEvent(QDragEnterEvent* event) {}
 
 void ImageList::reloadList(QString path)
 {
-  if(m_path != path && !path.isEmpty())
+  if (m_path != path && !path.isEmpty())
     m_path = path;
 
   m_watch.removePaths(m_watch.directories());
@@ -60,7 +58,7 @@ void ImageList::mouseMoveEvent(QMouseEvent* event)
   auto drag = new QDrag{this};
   auto mime = new QMimeData;
   mime->setText(m_id);
-  mime->setUrls({ QUrl{m_folder + currentItem->text()} });
+  mime->setUrls({QUrl{m_folder + currentItem->text()}});
 
   QRect zone = visualItemRect(currentItem);
   QPixmap pixmap(zone.size());
@@ -78,7 +76,7 @@ void ImageList::addFile(const QFileInfo& fileInfo)
 
   QTimer::singleShot(64, [=] {
     QIcon icon;
-    if(fileInfo.completeSuffix().compare("gif", Qt::CaseInsensitive) == 0)
+    if (fileInfo.completeSuffix().compare("gif", Qt::CaseInsensitive) == 0)
     {
       QPixmap pixmap = QPixmap(fileInfo.absoluteFilePath());
       pixmap = pixmap.scaled(100, 100);
@@ -94,9 +92,10 @@ void ImageList::addFile(const QFileInfo& fileInfo)
       icon = QIcon(fileInfo.absoluteFilePath());
     }
 
-    auto items = this->findItems(fileInfo.fileName(), Qt::MatchFlag::MatchExactly);
+    auto items
+        = this->findItems(fileInfo.fileName(), Qt::MatchFlag::MatchExactly);
 
-    for(auto item : items)
+    for (auto item : items)
       item->setIcon(icon);
   });
 
@@ -121,16 +120,13 @@ void ImageList::loadFolder(const QString& path)
   }
 }
 
-}
-
-
-
+} // namespace SEGMent
 
 namespace SEGMent
 {
-QMimeData*SoundModel::mimeData(const QModelIndexList& indexes) const
+QMimeData* SoundModel::mimeData(const QModelIndexList& indexes) const
 {
-  if(!indexes.empty())
+  if (!indexes.empty())
   {
     auto mime = new QMimeData;
     mime->setText(SEGMENT_SOUND_ID);
@@ -139,7 +135,7 @@ QMimeData*SoundModel::mimeData(const QModelIndexList& indexes) const
     path.remove(ressourcesPath);
     path.remove(0, 1);
 
-    mime->setUrls({ QUrl{path}});
+    mime->setUrls({QUrl{path}});
 
     return mime;
   }
@@ -147,23 +143,20 @@ QMimeData*SoundModel::mimeData(const QModelIndexList& indexes) const
 }
 
 SoundList::SoundList(QString path, QString folder, QString id)
-  : m_path{path}
-  , m_folder{folder}
-  , m_id{id}
+    : m_path{path}, m_folder{folder}, m_id{id}
 {
   this->setDragEnabled(true);
   this->setModel(&m_model);
   this->setColumnWidth(0, 200);
-  connect(this, &SoundList::doubleClicked,
-          this, [=] (const auto& idx) {
+  connect(this, &SoundList::doubleClicked, this, [=](const auto& idx) {
     auto& sp = SoundPlayer::instance();
     sp.play(QUrl::fromLocalFile(m_model.filePath(idx)));
-  } );
+  });
 }
 
 void SoundList::reloadList(QString path)
 {
-  if(m_path != path && !path.isEmpty())
+  if (m_path != path && !path.isEmpty())
     m_path = path;
 
   setModel(&m_model);
@@ -176,29 +169,26 @@ void SoundList::clear()
   setModel(nullptr);
 }
 
-}
-
-
-
+} // namespace SEGMent
 
 namespace SEGMent
 {
 TemplateList::TemplateList(QString resPath, QString folder, QString id)
-  : m_path{resPath}
-  , m_folder{folder}
-  , m_id{id}
+    : m_path{resPath}, m_folder{folder}, m_id{id}
 {
-  connect(&m_watch, &QFileSystemWatcher::directoryChanged,
-          this, &TemplateList::loadFolder);
+  connect(
+      &m_watch,
+      &QFileSystemWatcher::directoryChanged,
+      this,
+      &TemplateList::loadFolder);
   auto shortcut = new QShortcut{QKeySequence::Delete, this};
   shortcut->setContext(Qt::WidgetShortcut);
-  connect(shortcut, &QShortcut::activated,
-          this, [=] {
+  connect(shortcut, &QShortcut::activated, this, [=] {
     auto currentItem = this->currentItem();
     if (!currentItem)
       return;
     auto file = m_path + "/" + m_folder + currentItem->text();
-    if(QFile f{file}; f.exists())
+    if (QFile f{file}; f.exists())
       f.remove();
   });
 }
@@ -208,13 +198,11 @@ void TemplateList::startDrag(Qt::DropActions supportedActions)
   QListWidget::startDrag(supportedActions);
 }
 
-void TemplateList::dragEnterEvent(QDragEnterEvent* event)
-{
-}
+void TemplateList::dragEnterEvent(QDragEnterEvent* event) {}
 
 void TemplateList::reloadList(QString path)
 {
-  if(m_path != path && !path.isEmpty())
+  if (m_path != path && !path.isEmpty())
     m_path = path;
 
   m_watch.removePaths(m_watch.directories());
@@ -222,9 +210,7 @@ void TemplateList::reloadList(QString path)
   loadFolder(m_path);
 }
 
-void TemplateList::dropEvent(QDropEvent* event)
-{
-}
+void TemplateList::dropEvent(QDropEvent* event) {}
 
 void TemplateList::mouseMoveEvent(QMouseEvent* event)
 {
@@ -235,7 +221,7 @@ void TemplateList::mouseMoveEvent(QMouseEvent* event)
   auto drag = new QDrag{this};
   auto mime = new QMimeData;
   mime->setText(m_id);
-  mime->setUrls({ QUrl{m_folder + currentItem->text()} });
+  mime->setUrls({QUrl{m_folder + currentItem->text()}});
 
   QRect zone = visualItemRect(currentItem);
   QPixmap pixmap(zone.size());
@@ -261,16 +247,19 @@ void TemplateList::loadFolder(const QString& folder)
     for (int i = 0; i < fileList.size(); ++i)
     {
       auto fileInfo = fileList.at(i);
-      if(fileInfo.suffix().contains("template"))
+      if (fileInfo.suffix().contains("template"))
       {
-        if(auto file = QFile{fileInfo.absoluteFilePath()}; file.open(QIODevice::ReadOnly))
+        if (auto file = QFile{fileInfo.absoluteFilePath()};
+            file.open(QIODevice::ReadOnly))
         {
           auto data = file.readAll();
           QJsonParseError err{};
           auto json = QJsonDocument::fromJson(data, &err);
-          if(err.error == QJsonParseError::NoError)
+          if (err.error == QJsonParseError::NoError)
           {
-            auto pixmap = QByteArray::fromBase64(json.object()["Pixmap"].toString().toLatin1(), QByteArray::Base64Encoding);
+            auto pixmap = QByteArray::fromBase64(
+                json.object()["Pixmap"].toString().toLatin1(),
+                QByteArray::Base64Encoding);
 
             QImage img = QImage::fromData(pixmap, "PNG");
             QIcon icon{QPixmap::fromImage(img)};
@@ -282,4 +271,4 @@ void TemplateList::loadFolder(const QString& folder)
   }
 }
 
-}
+} // namespace SEGMent

@@ -1,5 +1,6 @@
 #pragma once
 #include <score/plugins/customfactory/StringFactoryKey.hpp>
+
 #include <score_lib_base_export.h>
 class QMenu;
 namespace score
@@ -49,4 +50,4 @@ struct SCORE_LIB_BASE_EXPORT Menus
   static StringKey<Menu> Settings();
   static StringKey<Menu> About();
 };
-}
+} // namespace score

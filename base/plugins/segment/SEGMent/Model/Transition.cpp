@@ -1,13 +1,16 @@
 #include "Transition.hpp"
 
 #include <score/serialization/VariantSerialization.hpp>
+
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(SEGMent::TransitionModel)
 namespace SEGMent
 {
 
 TransitionModel::TransitionModel(
-    transition_t trans, const Id<TransitionModel>& id, QObject* parent)
+    transition_t trans,
+    const Id<TransitionModel>& id,
+    QObject* parent)
     : Entity{id, "Transition", parent}, m_transition{std::move(trans)}
 {
 }
@@ -72,7 +75,7 @@ void TransitionModel::setSound(const Sound& v) MSVC_NOEXCEPT
   }
 }
 
-}
+} // namespace SEGMent
 
 template <>
 void DataStreamReader::read(const SEGMent::TransitionModel& v)

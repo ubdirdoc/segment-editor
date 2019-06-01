@@ -1,12 +1,15 @@
 #pragma once
+#include <score/command/Command.hpp>
+#include <score/command/Validity/ValidityChecker.hpp>
+
 #include <QObject>
 #include <QStack>
 #include <QString>
-#include <score/command/Command.hpp>
-#include <score/command/Validity/ValidityChecker.hpp>
+
 #include <wobjectdefs.h>
 
-namespace score {
+namespace score
+{
 class Document;
 
 /**
@@ -19,14 +22,15 @@ class Document;
  * Instead, the various command dispatchers, in score/command/Dispatchers
  * should be used.
  */
-class SCORE_LIB_BASE_EXPORT CommandStack final : public QObject {
+class SCORE_LIB_BASE_EXPORT CommandStack final : public QObject
+{
   W_OBJECT(CommandStack)
 
   friend class CommandBackupFile;
   friend struct CommandStackBackup;
 
 public:
-  explicit CommandStack(const score::Document &ctx, QObject *parent = nullptr);
+  explicit CommandStack(const score::Document& ctx, QObject* parent = nullptr);
   ~CommandStack();
 
   /**
@@ -56,25 +60,25 @@ public:
 
   int size() const;
 
-  const score::Command *command(int index) const;
+  const score::Command* command(int index) const;
   int currentIndex() const;
 
   void markCurrentIndexAsSaved();
 
   bool isAtSavedIndex() const;
 
-  QStack<score::Command *> &undoable() { return m_undoable; }
-  QStack<score::Command *> &redoable() { return m_redoable; }
-  const QStack<score::Command *> &undoable() const { return m_undoable; }
-  const QStack<score::Command *> &redoable() const { return m_redoable; }
+  QStack<score::Command*>& undoable() { return m_undoable; }
+  QStack<score::Command*>& redoable() { return m_redoable; }
+  const QStack<score::Command*>& undoable() const { return m_undoable; }
+  const QStack<score::Command*>& redoable() const { return m_redoable; }
 
-  const score::DocumentContext &context() const { return m_ctx; }
+  const score::DocumentContext& context() const { return m_ctx; }
 
   /**
    * @brief Emitted when a command was pushed on the stack
    * @param cmd the command that was pushed
    */
-  void localCommand(score::Command *cmd) W_SIGNAL(localCommand, cmd)
+  void localCommand(score::Command* cmd) W_SIGNAL(localCommand, cmd)
 
       /**
        * @brief Emitted when the user calls "Undo"
@@ -89,18 +93,16 @@ public:
           void localIndexChanged(int v) W_SIGNAL(localIndexChanged, v)
 
               void canUndoChanged(bool b)
-                  W_SIGNAL(canUndoChanged, b) void canRedoChanged(bool b)
-                      W_SIGNAL(canRedoChanged, b)
+                  W_SIGNAL(canUndoChanged, b) void canRedoChanged(
+                      bool b) W_SIGNAL(canRedoChanged, b)
 
-                          void undoTextChanged(QString b)
-                              W_SIGNAL(undoTextChanged,
-                                       b) void redoTextChanged(QString b)
-                                  W_SIGNAL(redoTextChanged, b)
+                      void undoTextChanged(QString b)
+                          W_SIGNAL(undoTextChanged, b) void redoTextChanged(
+                              QString b) W_SIGNAL(redoTextChanged, b)
 
-                                      void indexChanged(int b)
-                                          W_SIGNAL(indexChanged,
-                                                   b) void stackChanged()
-                                              W_SIGNAL(stackChanged)
+                              void indexChanged(int b)
+                                  W_SIGNAL(indexChanged, b) void stackChanged()
+                                      W_SIGNAL(stackChanged)
 
       // These signals are low-level and are sent on each operation that
       // affects the stacks
@@ -126,7 +128,7 @@ public:
    *
    * Calls cmd::redo()
    */
-  void redoAndPush(score::Command *cmd);
+  void redoAndPush(score::Command* cmd);
   W_INVOKABLE(redoAndPush)
 
   /**
@@ -135,25 +137,27 @@ public:
    *
    * Does NOT call cmd::redo()
    */
-  void push(score::Command *cmd);
+  void push(score::Command* cmd);
   W_INVOKABLE(push)
 
   /**
    * @brief pushAndEmit Pushes a command on the stack and emit relevant signals
    * @param cmd The command
    */
-  void redoAndPushQuiet(score::Command *cmd);
+  void redoAndPushQuiet(score::Command* cmd);
   W_INVOKABLE(redoAndPushQuiet)
-  void pushQuiet(score::Command *cmd);
+  void pushQuiet(score::Command* cmd);
   W_INVOKABLE(pushQuiet)
 
-  void undo() {
+  void undo()
+  {
     undoQuiet();
     localUndo();
   }
   W_INVOKABLE(undo)
 
-  void redo() {
+  void redo()
+  {
     redoQuiet();
     localRedo();
   }
@@ -168,7 +172,8 @@ public:
    * This function takes care of keeping everything synced
    * in the GUI.
    */
-  void updateStack(Callable &&c) {
+  void updateStack(Callable&& c)
+  {
     bool pre_canUndo{canUndo()}, pre_canRedo{canRedo()};
 
     m_checker();
@@ -198,13 +203,13 @@ public:
   void setSavedIndex(int index);
 
 private:
-  QStack<score::Command *> m_undoable;
-  QStack<score::Command *> m_redoable;
+  QStack<score::Command*> m_undoable;
+  QStack<score::Command*> m_redoable;
 
   int m_savedIndex{};
 
   DocumentValidator m_checker;
-  const score::DocumentContext &m_ctx;
+  const score::DocumentContext& m_ctx;
 };
 } // namespace score
-W_REGISTER_ARGTYPE(score::Command *)
+W_REGISTER_ARGTYPE(score::Command*)

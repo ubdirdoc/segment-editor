@@ -1,9 +1,12 @@
 #pragma once
+#include <score/model/path/ObjectPath.hpp>
+
 #include <QByteArray>
 #include <QObject>
-#include <score/model/path/ObjectPath.hpp>
-#include <vector>
+
 #include <wobjectdefs.h>
+
+#include <vector>
 namespace score
 {
 /**
@@ -64,4 +67,4 @@ private:
   ObjectLocker& m_locker;
   bool m_locked{false};
 };
-}
+} // namespace score

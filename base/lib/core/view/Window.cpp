@@ -1,5 +1,17 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <score/actions/Menu.hpp>
+#include <score/plugins/application/GUIApplicationPlugin.hpp>
+#include <score/plugins/documentdelegate/DocumentDelegateView.hpp>
+#include <score/plugins/panel/PanelDelegate.hpp>
+#include <score/widgets/MarginLess.hpp>
+
+#include <core/document/Document.hpp>
+#include <core/document/DocumentModel.hpp>
+#include <core/document/DocumentView.hpp>
+#include <core/presenter/Presenter.hpp>
+#include <core/view/Window.hpp>
+
 #include <ossia/detail/algorithms.hpp>
 
 #include <QAction>
@@ -11,26 +23,17 @@
 #include <QRect>
 #include <QTabBar>
 #include <QTabWidget>
+#include <QVBoxLayout>
 #include <QWidget>
-#include <algorithm>
-#include <core/document/Document.hpp>
-#include <core/document/DocumentModel.hpp>
-#include <core/document/DocumentView.hpp>
-#include <core/presenter/Presenter.hpp>
-#include <core/view/Window.hpp>
-#include <iterator>
 #include <qcoreevent.h>
 #include <qnamespace.h>
-#include <score/actions/Menu.hpp>
-#include <score/plugins/application/GUIApplicationPlugin.hpp>
-#include <score/plugins/documentdelegate/DocumentDelegateView.hpp>
-#include <score/plugins/panel/PanelDelegate.hpp>
-#include <score/widgets/MarginLess.hpp>
-#include <score_git_info.hpp>
-#include <set>
 
-#include <QVBoxLayout>
+#include <score_git_info.hpp>
 #include <wobjectimpl.h>
+
+#include <algorithm>
+#include <iterator>
+#include <set>
 W_OBJECT_IMPL(score::View)
 namespace score
 {
@@ -44,9 +47,7 @@ struct PanelComparator
            < rhs.first->defaultPanelStatus().priority;
   }
 };
-View::~View()
-{
-}
+View::~View() {}
 View::View(QObject* parent) : QMainWindow{}, m_tabWidget{new QTabWidget}
 {
   setObjectName("View");
@@ -82,7 +83,9 @@ View::View(QObject* parent) : QMainWindow{}, m_tabWidget{new QTabWidget}
   m_tabWidget->tabBar()->setDrawBase(false);
   m_tabWidget->tabBar()->setAutoHide(true);
   connect(
-      m_tabWidget, &QTabWidget::currentChanged, this,
+      m_tabWidget,
+      &QTabWidget::currentChanged,
+      this,
       [&](int index) {
         auto widg = m_tabWidget->widget(index);
         auto doc = m_documents.find(widg);
@@ -117,7 +120,8 @@ void View::addDocumentView(DocumentView* doc)
 void View::setupPanel(PanelDelegate* v)
 {
   using namespace std;
-  auto dial = new QDockWidget{v->defaultPanelStatus().prettyName.toUpper(), this};
+  auto dial
+      = new QDockWidget{v->defaultPanelStatus().prettyName.toUpper(), this};
   auto w = v->widget();
   dial->setWidget(w);
   dial->toggleViewAction()->setShortcut(v->defaultPanelStatus().shortcut);
@@ -128,7 +132,7 @@ void View::setupPanel(PanelDelegate* v)
   // Note : this only has meaning at initialisation time.
   auto dock = v->defaultPanelStatus().dock;
 
-  switch(dock)
+  switch (dock)
   {
     case Qt::LeftDockWidgetArea:
     {
@@ -149,7 +153,7 @@ void View::setupPanel(PanelDelegate* v)
         {
           // dial is on top
           auto it = ossia::find_if(
-              m_leftPanels, [=] (auto elt) { return elt.second != dial; });
+              m_leftPanels, [=](auto elt) { return elt.second != dial; });
           SCORE_ASSERT(it != m_leftPanels.end());
           tabifyDockWidget(it->second, dial);
         }
@@ -163,7 +167,8 @@ void View::setupPanel(PanelDelegate* v)
       if (m_rightPanels.size() > 1)
       {
         ossia::sort(m_rightPanels, PanelComparator{});
-        for(auto it = m_rightPanels.rbegin(); it != m_rightPanels.rend(); ++it)
+        for (auto it = m_rightPanels.rbegin(); it != m_rightPanels.rend();
+             ++it)
         {
           addDockWidget(dock, it->second);
           it->second->raise();
@@ -282,4 +287,4 @@ void View::resizeEvent(QResizeEvent* e)
   QMainWindow::resizeEvent(e);
   sizeChanged(e->size());
 }
-}
+} // namespace score

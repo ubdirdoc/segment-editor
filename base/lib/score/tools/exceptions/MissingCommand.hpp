@@ -1,5 +1,6 @@
 #pragma once
 #include <score/command/Command.hpp>
+
 #include <stdexcept>
 
 namespace score
@@ -13,11 +14,11 @@ class MissingCommandException : public std::runtime_error
 {
 public:
   MissingCommandException(
-      const CommandGroupKey& parent, const CommandKey& command)
-      : std::runtime_error{
-            ("Could not find " + command.toString() + " in "
-             + parent.toString())}
+      const CommandGroupKey& parent,
+      const CommandKey& command)
+      : std::runtime_error{(
+          "Could not find " + command.toString() + " in " + parent.toString())}
   {
   }
 };
-}
+} // namespace score

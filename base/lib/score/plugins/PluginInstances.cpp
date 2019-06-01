@@ -7,4 +7,4 @@ std::vector<Plugin_QtInterface*>& staticPlugins()
   static std::vector<Plugin_QtInterface*> objs;
   return objs;
 }
-}
+} // namespace score

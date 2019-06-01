@@ -1,10 +1,10 @@
 #pragma once
 
-#include <ossia/network/base/name_validation.hpp>
-
 #include <score/model/Component.hpp>
 #include <score/model/IdentifiedObject.hpp>
 #include <score/model/ModelMetadata.hpp>
+
+#include <ossia/network/base/name_validation.hpp>
 template <typename T>
 class EntityMapInserter;
 
@@ -36,32 +36,20 @@ public:
 
   template <typename Visitor>
   Entity(Visitor&& vis, QObject* parent) noexcept
-    : IdentifiedObject<T>{std::forward<Visitor>(vis), parent}
+      : IdentifiedObject<T>{std::forward<Visitor>(vis), parent}
   {
     using vis_type = typename std::remove_reference_t<Visitor>::type;
     m_metadata.setParent(this);
     TSerializer<vis_type, Entity<T>>::writeTo(vis, *this);
   }
 
-  const score::Components& components() const noexcept
-  {
-    return m_components;
-  }
-  score::Components& components() noexcept
-  {
-    return m_components;
-  }
-  const score::ModelMetadata& metadata() const noexcept
-  {
-    return m_metadata;
-  }
-  score::ModelMetadata& metadata() noexcept
-  {
-    return m_metadata;
-  }
+  const score::Components& components() const noexcept { return m_components; }
+  score::Components& components() noexcept { return m_components; }
+  const score::ModelMetadata& metadata() const noexcept { return m_metadata; }
+  score::ModelMetadata& metadata() noexcept { return m_metadata; }
 
 private:
   score::Components m_components;
   ModelMetadata m_metadata;
 };
-}
+} // namespace score

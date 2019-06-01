@@ -1,10 +1,13 @@
 #pragma once
 #include <Inspector/InspectorWidgetFactoryInterface.hpp>
-#include <QString>
+
 #include <score/plugins/customfactory/FactoryFamily.hpp>
 #include <score/plugins/customfactory/FactoryInterface.hpp>
 #include <score/tools/std/OwningVector.hpp>
 #include <score/tools/std/Pointer.hpp>
+
+#include <QString>
+
 #include <vector>
 class IdentifiedObjectAbstract;
 class QWidget;
@@ -25,4 +28,4 @@ public:
       const QList<const IdentifiedObjectAbstract*>& models,
       QWidget* parent) const;
 };
-}
+} // namespace Inspector

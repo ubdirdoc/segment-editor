@@ -1,10 +1,13 @@
 #ifndef SEGMENTCUSTOMRECTITEM_HPP
 #define SEGMENTCUSTOMRECTITEM_HPP
 
-#include <QGraphicsRectItem>
-#include <vector>
 #include <score/document/DocumentContext.hpp>
+
+#include <QGraphicsRectItem>
+
 #include <wobjectdefs.h>
+
+#include <vector>
 
 namespace SEGMent
 {
@@ -14,9 +17,7 @@ static constexpr qreal borderWidth = 5;
 class ZoomView;
 class Window;
 //! Base class for visual items in the canvas
-class RectItem
-    : public QObject
-    , public QGraphicsRectItem
+class RectItem : public QObject, public QGraphicsRectItem
 {
   W_OBJECT(RectItem)
 public:
@@ -57,32 +58,22 @@ protected:
 
 constexpr inline QPointF expected_pos(const QPointF& pos, const QRectF& prect)
 {
-  return {
-    pos.x() * prect.width(),
-    pos.y() * prect.height()
-  };
+  return {pos.x() * prect.width(), pos.y() * prect.height()};
 }
 
 constexpr inline QSizeF expected_size(const QSizeF& sz, const QRectF& prect)
 {
-  return {
-    sz.width() * prect.width(),
-    sz.height() * prect.width()
-  };
+  return {sz.width() * prect.width(), sz.height() * prect.width()};
 }
 
 constexpr inline QRectF expected_rect(const QSizeF& sz, const QRectF& prect)
 {
-  return {
-    0., 0.,
-    sz.width() * prect.width(),
-    sz.height() * prect.width()
-  };
+  return {0., 0., sz.width() * prect.width(), sz.height() * prect.width()};
 }
 constexpr inline qreal expected_height(const QSizeF& sz, const QRectF& prect)
 {
   return sz.height() * prect.width();
 }
-}
+} // namespace SEGMent
 
 #endif // SEGMENTCUSTOMRECTITEM_HPP

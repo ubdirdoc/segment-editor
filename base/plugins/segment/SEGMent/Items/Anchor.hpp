@@ -2,8 +2,10 @@
 #define SEGMENTANCHOR_HPP
 
 #include <QGraphicsEllipseItem>
-#include <vector>
+
 #include <wobjectdefs.h>
+
+#include <vector>
 class SEGMentArrow;
 
 namespace SEGMent
@@ -12,9 +14,7 @@ using anchor_id = int8_t;
 class ZoomView;
 
 //! Graphical anchor used around objects when selecting them
-class Anchor final
-    : public QObject
-    , public QGraphicsItem
+class Anchor final : public QObject, public QGraphicsItem
 {
   W_OBJECT(Anchor)
 public:
@@ -31,21 +31,24 @@ private:
   QPainterPath shape() const override;
   bool contains(const QPointF& point) const override;
 
-  void dragEnterEvent(QGraphicsSceneDragDropEvent *event) override;
+  void dragEnterEvent(QGraphicsSceneDragDropEvent* event) override;
   void dropEvent(QGraphicsSceneDragDropEvent* event) override;
-  void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) override;
+  void dragLeaveEvent(QGraphicsSceneDragDropEvent* event) override;
 
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
-  QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+  QVariant
+  itemChange(GraphicsItemChange change, const QVariant& value) override;
 
-  void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
+  void paint(
+      QPainter* painter,
+      const QStyleOptionGraphicsItem* option,
+      QWidget* widget) override;
 
   qreal m_width{5.};
-
 };
-}
+} // namespace SEGMent
 
 #endif // SEGMENTANCHOR_HPP

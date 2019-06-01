@@ -21,4 +21,4 @@ optional<ColorRef> ColorRef::SimilarColor(QColor other)
   SCORE_TODO_("Load similar colors");
   return {};
 }
-}
+} // namespace score

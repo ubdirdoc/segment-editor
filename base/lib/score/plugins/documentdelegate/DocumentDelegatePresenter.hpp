@@ -1,8 +1,9 @@
 #pragma once
 #include <QObject>
-#include <wobjectdefs.h>
 #include <QString>
+
 #include <score_lib_base_export.h>
+#include <wobjectdefs.h>
 
 class Selection;
 namespace score
@@ -23,11 +24,12 @@ public:
   virtual ~DocumentDelegatePresenter();
 
 public:
-  virtual void setNewSelection(const Selection& s) = 0; W_SLOT(setNewSelection);
+  virtual void setNewSelection(const Selection& s) = 0;
+  W_SLOT(setNewSelection);
 
 protected:
   const DocumentDelegateModel& m_model;
   DocumentDelegateView& m_view;
   DocumentPresenter* m_parentPresenter{};
 };
-}
+} // namespace score

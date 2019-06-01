@@ -1,8 +1,10 @@
 #pragma once
-#include <QString>
 #include <score/document/DocumentContext.hpp>
 #include <score/plugins/customfactory/SerializableInterface.hpp>
 #include <score/serialization/VisitorCommon.hpp>
+
+#include <QString>
+
 #include <vector>
 
 class QWidget;
@@ -30,14 +32,13 @@ public:
 
   virtual ~DocumentPlugin();
 
-  const score::DocumentContext& context() const
-  {
-    return m_context;
-  }
+  const score::DocumentContext& context() const { return m_context; }
 
   template <typename Impl>
   explicit DocumentPlugin(
-      const score::DocumentContext& ctx, Impl& vis, QObject* parent)
+      const score::DocumentContext& ctx,
+      Impl& vis,
+      QObject* parent)
       : IdentifiedObject{vis, parent}, m_context{ctx}
   {
   }
@@ -49,4 +50,4 @@ protected:
 };
 
 class DocumentPluginFactory;
-}
+} // namespace score

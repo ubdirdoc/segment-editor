@@ -2,18 +2,15 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ValidityChecker.hpp"
 
-#include <core/document/Document.hpp>
 #include <score/document/DocumentContext.hpp>
+
+#include <core/document/Document.hpp>
 namespace score
 {
 
-ValidityChecker::~ValidityChecker()
-{
-}
+ValidityChecker::~ValidityChecker() {}
 
-ValidityCheckerList::~ValidityCheckerList()
-{
-}
+ValidityCheckerList::~ValidityCheckerList() {}
 
 DocumentValidator ValidityCheckerList::make(const Document& ctx)
 {
@@ -21,7 +18,8 @@ DocumentValidator ValidityCheckerList::make(const Document& ctx)
 }
 
 DocumentValidator::DocumentValidator(
-    const ValidityCheckerList& l, const Document& doc)
+    const ValidityCheckerList& l,
+    const Document& doc)
     : m_list{l}, m_doc{doc}
 {
 }
@@ -33,4 +31,4 @@ bool DocumentValidator::operator()() const
     b &= e.validate(m_doc.context());
   return b;
 }
-}
+} // namespace score

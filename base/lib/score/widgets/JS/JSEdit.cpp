@@ -33,18 +33,28 @@
 #include "JSEdit.hpp"
 
 #include <QtGui>
-#include <array>
 
 #include <wobjectimpl.h>
 
+#include <array>
+
 W_OBJECT_IMPL(JSEdit)
-const std::array<QColor, 16> colors{
-    QColor{"#151515"}, QColor{"#202020"}, QColor{"#303030"},
-    QColor{"#505050"}, QColor{"#b0b0b0"}, QColor{"#d0d0d0"},
-    QColor{"#e0e0e0"}, QColor{"#f5f5f5"}, QColor{"#ac4142"},
-    QColor{"#d28445"}, QColor{"#f4bf75"}, QColor{"#90a959"},
-    QColor{"#75b5aa"}, QColor{"#6a9fb5"}, QColor{"#aa759f"},
-    QColor{"#8f5536"}};
+const std::array<QColor, 16> colors{QColor{"#151515"},
+                                    QColor{"#202020"},
+                                    QColor{"#303030"},
+                                    QColor{"#505050"},
+                                    QColor{"#b0b0b0"},
+                                    QColor{"#d0d0d0"},
+                                    QColor{"#e0e0e0"},
+                                    QColor{"#f5f5f5"},
+                                    QColor{"#ac4142"},
+                                    QColor{"#d28445"},
+                                    QColor{"#f4bf75"},
+                                    QColor{"#90a959"},
+                                    QColor{"#75b5aa"},
+                                    QColor{"#6a9fb5"},
+                                    QColor{"#aa759f"},
+                                    QColor{"#8f5536"}};
 
 class JSBlockData final : public QTextBlockUserData
 {
@@ -88,186 +98,193 @@ JSHighlighter::JSHighlighter(QTextDocument* parent)
   m_colors[JSEdit::Marker] = colors[0x02];     // base16 - 02
 
   // https://developer.mozilla.org/en/JavaScript/Reference/Reserved_Words
-  m_keywords = {
-     "break"
-    , "case"
-    , "catch"
-    , "continue"
-    , "default"
-    , "delete"
-    , "do"
-    , "else"
-    , "finally"
-    , "for"
-    , "function"
-    , "if"
-    , "in"
-    , "instanceof"
-    , "new"
-    , "return"
-    , "switch"
-    , "this"
-    , "throw"
-    , "try"
-    , "typeof"
-    , "var"
-    , "void"
-    , "while"
-    , "with"
+  m_keywords = {"break",
+                "case",
+                "catch",
+                "continue",
+                "default",
+                "delete",
+                "do",
+                "else",
+                "finally",
+                "for",
+                "function",
+                "if",
+                "in",
+                "instanceof",
+                "new",
+                "return",
+                "switch",
+                "this",
+                "throw",
+                "try",
+                "typeof",
+                "var",
+                "void",
+                "while",
+                "with"
 
-    , "true"
-    , "false"
-    , "null"
-  };
+                ,
+                "true",
+                "false",
+                "null"};
 
   // built-in and other popular objects + properties
-  m_knownIds = {
-    "Object"
-  , "prototype"
-  , "create"
-  , "defineProperty"
-  , "defineProperties"
-  , "getOwnPropertyDescriptor"
-  , "keys"
-  , "getOwnPropertyNames"
-  , "constructor"
-  , "__parent__"
-  , "__proto__"
-  , "__defineGetter__"
-  , "__defineSetter__"
-  , "eval"
-  , "hasOwnProperty"
-  , "isPrototypeOf"
-  , "__lookupGetter__"
-  , "__lookupSetter__"
-  , "__noSuchMethod__"
-  , "propertyIsEnumerable"
-  , "toSource"
-  , "toLocaleString"
-  , "toString"
-  , "unwatch"
-  , "valueOf"
-  , "watch"
+  m_knownIds = {"Object",
+                "prototype",
+                "create",
+                "defineProperty",
+                "defineProperties",
+                "getOwnPropertyDescriptor",
+                "keys",
+                "getOwnPropertyNames",
+                "constructor",
+                "__parent__",
+                "__proto__",
+                "__defineGetter__",
+                "__defineSetter__",
+                "eval",
+                "hasOwnProperty",
+                "isPrototypeOf",
+                "__lookupGetter__",
+                "__lookupSetter__",
+                "__noSuchMethod__",
+                "propertyIsEnumerable",
+                "toSource",
+                "toLocaleString",
+                "toString",
+                "unwatch",
+                "valueOf",
+                "watch"
 
-  , "Function"
-  , "arguments"
-  , "arity"
-  , "caller"
-  , "constructor"
-  , "length"
-  , "name"
-  , "apply"
-  , "bind"
-  , "call"
+                ,
+                "Function",
+                "arguments",
+                "arity",
+                "caller",
+                "constructor",
+                "length",
+                "name",
+                "apply",
+                "bind",
+                "call"
 
-  , "String"
-  , "fromCharCode"
-  , "length"
-  , "charAt"
-  , "charCodeAt"
-  , "concat"
-  , "indexOf"
-  , "lastIndexOf"
-  , "localCompare"
-  , "match"
-  , "quote"
-  , "replace"
-  , "search"
-  , "slice"
-  , "split"
-  , "substr"
-  , "substring"
-  , "toLocaleLowerCase"
-  , "toLocaleUpperCase"
-  , "toLowerCase"
-  , "toUpperCase"
-  , "trim"
-  , "trimLeft"
-  , "trimRight"
+                ,
+                "String",
+                "fromCharCode",
+                "length",
+                "charAt",
+                "charCodeAt",
+                "concat",
+                "indexOf",
+                "lastIndexOf",
+                "localCompare",
+                "match",
+                "quote",
+                "replace",
+                "search",
+                "slice",
+                "split",
+                "substr",
+                "substring",
+                "toLocaleLowerCase",
+                "toLocaleUpperCase",
+                "toLowerCase",
+                "toUpperCase",
+                "trim",
+                "trimLeft",
+                "trimRight"
 
-  , "Array"
-  , "isArray"
-  , "index"
-  , "input"
-  , "pop"
-  , "push"
-  , "reverse"
-  , "shift"
-  , "sort"
-  , "splice"
-  , "unshift"
-  , "concat"
-  , "join"
-  , "filter"
-  , "forEach"
-  , "every"
-  , "map"
-  , "some"
-  , "reduce"
-  , "reduceRight"
+                ,
+                "Array",
+                "isArray",
+                "index",
+                "input",
+                "pop",
+                "push",
+                "reverse",
+                "shift",
+                "sort",
+                "splice",
+                "unshift",
+                "concat",
+                "join",
+                "filter",
+                "forEach",
+                "every",
+                "map",
+                "some",
+                "reduce",
+                "reduceRight"
 
-  , "RegExp"
-  , "global"
-  , "ignoreCase"
-  , "lastIndex"
-  , "multiline"
-  , "source"
-  , "exec"
-  , "test"
+                ,
+                "RegExp",
+                "global",
+                "ignoreCase",
+                "lastIndex",
+                "multiline",
+                "source",
+                "exec",
+                "test"
 
-  , "JSON"
-  , "parse"
-  , "stringify"
+                ,
+                "JSON",
+                "parse",
+                "stringify"
 
-  , "decodeURI"
-  , "decodeURIComponent"
-  , "encodeURI"
-  , "encodeURIComponent"
-  , "eval"
-  , "isFinite"
-  , "isNaN"
-  , "parseFloat"
-  , "parseInt"
-  , "Infinity"
-  , "NaN"
-  , "undefined"
+                ,
+                "decodeURI",
+                "decodeURIComponent",
+                "encodeURI",
+                "encodeURIComponent",
+                "eval",
+                "isFinite",
+                "isNaN",
+                "parseFloat",
+                "parseInt",
+                "Infinity",
+                "NaN",
+                "undefined"
 
-  , "Math"
-  , "E"
-  , "LN2"
-  , "LN10"
-  , "LOG2E"
-  , "LOG10E"
-  , "PI"
-  , "SQRT1_2"
-  , "SQRT2"
-  , "abs"
-  , "acos"
-  , "asin"
-  , "atan"
-  , "atan2"
-  , "ceil"
-  , "cos"
-  , "exp"
-  , "floor"
-  , "log"
-  , "max"
-  , "min"
-  , "pow"
-  , "random"
-  , "round"
-  , "sin"
-  , "sqrt"
-  , "tan"
+                ,
+                "Math",
+                "E",
+                "LN2",
+                "LN10",
+                "LOG2E",
+                "LOG10E",
+                "PI",
+                "SQRT1_2",
+                "SQRT2",
+                "abs",
+                "acos",
+                "asin",
+                "atan",
+                "atan2",
+                "ceil",
+                "cos",
+                "exp",
+                "floor",
+                "log",
+                "max",
+                "min",
+                "pow",
+                "random",
+                "round",
+                "sin",
+                "sqrt",
+                "tan"
 
-  , "document"
-  , "window"
-  , "navigator"
-  , "userAgent"};
+                ,
+                "document",
+                "window",
+                "navigator",
+                "userAgent"};
 }
 
 void JSHighlighter::setColor(
-    JSEdit::ColorComponent component, const QColor& color)
+    JSEdit::ColorComponent component,
+    const QColor& color)
 {
   m_colors[component] = color;
   rehighlight();
@@ -490,7 +507,8 @@ void JSHighlighter::highlightBlock(const QString& text)
 }
 
 void JSHighlighter::mark(
-    const QString& str, Qt::CaseSensitivity caseSensitivity)
+    const QString& str,
+    Qt::CaseSensitivity caseSensitivity)
 {
   m_markString = str;
   m_markCaseSensitivity = caseSensitivity;
@@ -586,7 +604,11 @@ void SidebarWidget::paintEvent(QPaintEvent* event)
   {
     p.setPen(ln.number != errorLine ? linePen : errorPen);
     p.drawText(
-        0, ln.position, width() - 4 - foldIndicatorWidth, fh, Qt::AlignRight,
+        0,
+        ln.position,
+        width() - 4 - foldIndicatorWidth,
+        fh,
+        Qt::AlignRight,
         QString::number(ln.number));
   }
 
@@ -708,9 +730,7 @@ public:
   void forceUpdate();
 };
 
-JSDocLayout::JSDocLayout(QTextDocument* doc) : QPlainTextDocumentLayout(doc)
-{
-}
+JSDocLayout::JSDocLayout(QTextDocument* doc) : QPlainTextDocumentLayout(doc) {}
 
 void JSDocLayout::forceUpdate()
 {
@@ -753,14 +773,17 @@ JSEdit::JSEdit(QWidget* parent)
   document()->setDocumentLayout(d_ptr->layout);
 
   connect(
-      this, &QPlainTextEdit::cursorPositionChanged, this,
+      this,
+      &QPlainTextEdit::cursorPositionChanged,
+      this,
       &JSEdit::updateCursor);
   connect(this, &QPlainTextEdit::blockCountChanged, this, [=] {
     updateSidebar();
   });
   connect(
-      this, &QPlainTextEdit::updateRequest, this,
-      [=](const QRect& r, int d) { do_updateSidebar(r, d); });
+      this, &QPlainTextEdit::updateRequest, this, [=](const QRect& r, int d) {
+        do_updateSidebar(r, d);
+      });
   this->setContextMenuPolicy(Qt::NoContextMenu);
 
 #if defined(Q_OS_MAC)

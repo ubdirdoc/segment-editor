@@ -1,13 +1,12 @@
 #pragma once
 #include <QGraphicsItem>
-#include <wobjectdefs.h>
+
 #include <score_lib_base_export.h>
+#include <wobjectdefs.h>
 namespace score
 {
 
-class SCORE_LIB_BASE_EXPORT RectItem
-    : public QObject
-    , public QGraphicsItem
+class SCORE_LIB_BASE_EXPORT RectItem : public QObject, public QGraphicsItem
 {
   W_OBJECT(RectItem)
   Q_INTERFACES(QGraphicsItem)
@@ -35,9 +34,8 @@ private:
   bool m_highlight{false};
 };
 
-class SCORE_LIB_BASE_EXPORT EmptyRectItem
-    : public QObject
-    , public QGraphicsItem
+class SCORE_LIB_BASE_EXPORT EmptyRectItem : public QObject,
+                                            public QGraphicsItem
 {
   W_OBJECT(EmptyRectItem)
   Q_INTERFACES(QGraphicsItem)
@@ -61,4 +59,4 @@ private:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) final override;
   QRectF m_rect{};
 };
-}
+} // namespace score

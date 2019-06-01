@@ -5,10 +5,12 @@
 #include "Implementation/InspectorPanel.hpp"
 
 #include <Inspector/InspectorWidgetList.hpp>
-#include <QVBoxLayout>
+
 #include <score/selection/SelectionStack.hpp>
 #include <score/widgets/ClearLayout.hpp>
 #include <score/widgets/MarginLess.hpp>
+
+#include <QVBoxLayout>
 
 namespace InspectorPanel
 {
@@ -29,7 +31,9 @@ QWidget* PanelDelegate::widget()
 
 const score::PanelStatus& PanelDelegate::defaultPanelStatus() const
 {
-  static const score::PanelStatus status{true, Qt::RightDockWidgetArea, 10,
+  static const score::PanelStatus status{true,
+                                         Qt::RightDockWidgetArea,
+                                         10,
                                          QObject::tr("Inspector"),
                                          QObject::tr("Ctrl+Shift+I")};
 
@@ -37,7 +41,8 @@ const score::PanelStatus& PanelDelegate::defaultPanelStatus() const
 }
 
 void PanelDelegate::on_modelChanged(
-    score::MaybeDocument oldm, score::MaybeDocument newm)
+    score::MaybeDocument oldm,
+    score::MaybeDocument newm)
 {
   using namespace score;
   delete m_inspectorPanel;
@@ -62,4 +67,4 @@ void PanelDelegate::setNewSelection(const Selection& s)
   if (m_inspectorPanel)
     m_inspectorPanel->newItemsInspected(s);
 }
-}
+} // namespace InspectorPanel

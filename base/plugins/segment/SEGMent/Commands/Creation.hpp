@@ -1,5 +1,13 @@
 #pragma once
+#include <score/command/Command.hpp>
+#include <score/command/PropertyCommand.hpp>
+#include <score/document/DocumentContext.hpp>
+#include <score/model/path/PathSerialization.hpp>
+#include <score/selection/SelectionStack.hpp>
+#include <score/tools/IdentifierGeneration.hpp>
+
 #include <QUrl>
+
 #include <SEGMent/Commands/CommandFactory.hpp>
 #include <SEGMent/Model/BackClickArea.hpp>
 #include <SEGMent/Model/ClickArea.hpp>
@@ -10,17 +18,10 @@
 #include <SEGMent/Model/Sound.hpp>
 #include <SEGMent/Model/TextArea.hpp>
 #include <SEGMent/Model/Transition.hpp>
-#include <score/command/Command.hpp>
-#include <score/command/PropertyCommand.hpp>
-#include <score/selection/SelectionStack.hpp>
-#include <score/document/DocumentContext.hpp>
-#include <score/model/path/PathSerialization.hpp>
-#include <score/tools/IdentifierGeneration.hpp>
 namespace SEGMent
 {
 
-class PasteScene final
-    : public score::Command
+class PasteScene final : public score::Command
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), PasteScene, "Paste a scene")
 public:
@@ -61,40 +62,35 @@ private:
   QJsonObject m_json{};
 };
 
-template<typename T>
-class PasteObject final
-    : public score::Command
+template <typename T>
+class PasteObject final : public score::Command
 {
 public:
-    PasteObject() = default;
-    const CommandGroupKey& parentKey() const noexcept override
-    {
-      return CommandFactoryName();
-    }
+  PasteObject() = default;
+  const CommandGroupKey& parentKey() const noexcept override
+  {
+    return CommandFactoryName();
+  }
 
-    static const CommandKey& static_key() noexcept
-    {
-      auto name = QString("PasteObject_") + Metadata<ObjectKey_k, T>::get();
-      static const CommandKey kagi{std::move(name)};
-      return kagi;
-    }
+  static const CommandKey& static_key() noexcept
+  {
+    auto name = QString("PasteObject_") + Metadata<ObjectKey_k, T>::get();
+    static const CommandKey kagi{std::move(name)};
+    return kagi;
+  }
 
-    const CommandKey& key() const noexcept override
-    {
-      return static_key();
-    }
+  const CommandKey& key() const noexcept override { return static_key(); }
 
-    QString description() const override
-    {
-      return QObject::tr("Paste %1")
-          .arg(Metadata<Description_k, T>::get());
-    }
-    PasteObject(const SceneModel& scene, QJsonObject obj)
+  QString description() const override
+  {
+    return QObject::tr("Paste %1").arg(Metadata<Description_k, T>::get());
+  }
+  PasteObject(const SceneModel& scene, QJsonObject obj)
       : m_path{scene}
       , m_newId{getStrongId(SceneAccessor<T>::get(scene))}
       , m_json{std::move(obj)}
-    {
-    }
+  {
+  }
 
   void undo(const score::DocumentContext& ctx) const override
   {
@@ -126,10 +122,8 @@ private:
   QJsonObject m_json{};
 };
 
-
 //! Used when a scene is dropped from the library on the canvas
-class DropScene final
-    : public score::Command
+class DropScene final : public score::Command
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), DropScene, "Add a scene")
 public:
@@ -175,8 +169,7 @@ private:
 };
 
 //! Used when a simple image is dropped from the library on the scene
-class DropImage final
-    : public score::Command
+class DropImage final : public score::Command
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), DropImage, "Add an image")
 public:
@@ -224,8 +217,7 @@ private:
 };
 
 //! Used when a gif is dropped from the library on the scene
-class DropGif final
-    : public score::Command
+class DropGif final : public score::Command
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), DropGif, "Add a gif")
 public:
@@ -273,8 +265,7 @@ private:
 };
 
 //! Used when a click area is dropped from the library on the scene
-class DropClickArea final
-    : public score::Command
+class DropClickArea final : public score::Command
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), DropClickArea, "Add a click area")
 public:
@@ -319,10 +310,12 @@ private:
 };
 
 //! Used when a back-click area is dropped from the library on the scene
-class DropBackClickArea final
-    : public score::Command
+class DropBackClickArea final : public score::Command
 {
-  SCORE_COMMAND_DECL(CommandFactoryName(), DropBackClickArea, "Add a back click area")
+  SCORE_COMMAND_DECL(
+      CommandFactoryName(),
+      DropBackClickArea,
+      "Add a back click area")
 public:
   DropBackClickArea(const SceneModel& scene, QPointF pos, QSizeF sz)
       : m_path{scene}
@@ -365,8 +358,7 @@ private:
 };
 
 //! Used when a text area is dropped from the library on the scene
-class DropTextArea final
-    : public score::Command
+class DropTextArea final : public score::Command
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), DropTextArea, "Add a text area")
 public:
@@ -411,11 +403,12 @@ private:
 };
 
 //! Used when creating a transition between any two objects
-class CreateTransition final
-    : public score::Command
+class CreateTransition final : public score::Command
 {
   SCORE_COMMAND_DECL(
-      CommandFactoryName(), CreateTransition, "Add a transition")
+      CommandFactoryName(),
+      CreateTransition,
+      "Add a transition")
 public:
   CreateTransition(const ProcessModel& obj, transition_t trans)
       : m_path{obj}, m_newId{getStrongId(obj.transitions)}, m_trans{trans}
@@ -451,10 +444,10 @@ private:
   transition_t m_trans;
 };
 
-}
+} // namespace SEGMent
 
-  SCORE_COMMAND_DECL_T(SEGMent::PasteObject<SEGMent::ImageModel>)
-  SCORE_COMMAND_DECL_T(SEGMent::PasteObject<SEGMent::GifModel>)
-  SCORE_COMMAND_DECL_T(SEGMent::PasteObject<SEGMent::ClickAreaModel>)
-  SCORE_COMMAND_DECL_T(SEGMent::PasteObject<SEGMent::BackClickAreaModel>)
-  SCORE_COMMAND_DECL_T(SEGMent::PasteObject<SEGMent::TextAreaModel>)
+SCORE_COMMAND_DECL_T(SEGMent::PasteObject<SEGMent::ImageModel>)
+SCORE_COMMAND_DECL_T(SEGMent::PasteObject<SEGMent::GifModel>)
+SCORE_COMMAND_DECL_T(SEGMent::PasteObject<SEGMent::ClickAreaModel>)
+SCORE_COMMAND_DECL_T(SEGMent::PasteObject<SEGMent::BackClickAreaModel>)
+SCORE_COMMAND_DECL_T(SEGMent::PasteObject<SEGMent::TextAreaModel>)

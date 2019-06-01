@@ -1,15 +1,18 @@
 #pragma once
+#include <score/model/Identifier.hpp>
+#include <score/tools/std/ArrayView.hpp>
+#include <score/tools/std/Optional.hpp>
+
 #include <ossia/detail/algorithms.hpp>
+
+#include <sys/types.h>
 
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
-#include <score/model/Identifier.hpp>
-#include <score/tools/std/ArrayView.hpp>
-#include <score/tools/std/Optional.hpp>
-#include <sys/types.h>
-#include <type_traits>
 #include <vector>
+
+#include <type_traits>
 
 namespace score
 {
@@ -23,10 +26,7 @@ struct SCORE_LIB_BASE_EXPORT random_id_generator
    * @return a random int32
    */
   static int32_t getRandomId();
-  static int32_t getFirstId()
-  {
-    return getRandomId();
-  }
+  static int32_t getFirstId() { return getRandomId(); }
 
   /**
    * @brief getNextId
@@ -54,10 +54,7 @@ struct SCORE_LIB_BASE_EXPORT random_id_generator
  */
 struct SCORE_LIB_BASE_EXPORT linear_id_generator
 {
-  static int32_t getFirstId()
-  {
-    return 1;
-  }
+  static int32_t getFirstId() { return 1; }
 
   template <typename Vector>
   static auto getNextId(const Vector& ids)
@@ -75,18 +72,12 @@ private:
   {
     return other.val();
   }
-  static int32_t getId(const optional<int32_t>& i)
-  {
-    return *i;
-  }
-  static int32_t getId(int32_t i)
-  {
-    return i;
-  }
+  static int32_t getId(const optional<int32_t>& i) { return *i; }
+  static int32_t getId(int32_t i) { return i; }
 };
 
 using id_generator = score::linear_id_generator;
-}
+} // namespace score
 template <typename T>
 auto getStrongId(const std::vector<Id<T>>& v)
 {
@@ -112,7 +103,9 @@ auto getStrongId(const Container& v)
   vector<int32_t> ids(v.size()); // Map reduce
 
   transform(
-      v.begin(), v.end(), ids.begin(),
+      v.begin(),
+      v.end(),
+      ids.begin(),
       [](const typename Container::value_type& elt) {
         return elt->id().val();
       });
@@ -163,7 +156,9 @@ auto getStrongIdRange(std::size_t s, const Vector& existing)
 
   // Copy the existing ids
   std::transform(
-      existing.begin(), existing.end(), std::back_inserter(vec),
+      existing.begin(),
+      existing.end(),
+      std::back_inserter(vec),
       [](const auto& elt) { return elt.id(); });
 
   // Then generate the new ones
@@ -177,15 +172,21 @@ auto getStrongIdRange(std::size_t s, const Vector& existing)
 
 template <typename T, typename Vector1, typename Vector2>
 static auto getStrongIdRange2(
-    std::size_t s, const Vector1& existing1, const Vector2& existing2)
+    std::size_t s,
+    const Vector1& existing1,
+    const Vector2& existing2)
 {
   std::vector<Id<T>> vec;
   vec.reserve(s + existing1.size() + existing2.size());
   std::transform(
-      existing1.begin(), existing1.end(), std::back_inserter(vec),
+      existing1.begin(),
+      existing1.end(),
+      std::back_inserter(vec),
       [](const auto& elt) { return elt.id(); });
   std::transform(
-      existing2.begin(), existing2.end(), std::back_inserter(vec),
+      existing2.begin(),
+      existing2.end(),
+      std::back_inserter(vec),
       [](const auto& elt) { return elt->id(); });
 
   for (std::size_t i = 0; i < s; i++)
@@ -204,7 +205,9 @@ auto getStrongIdRangePtr(std::size_t s, const Vector& existing)
   std::vector<Id<T>> vec;
   vec.reserve(s + existing.size());
   std::transform(
-      existing.begin(), existing.end(), std::back_inserter(vec),
+      existing.begin(),
+      existing.end(),
+      std::back_inserter(vec),
       [](const auto& elt) { return elt->id(); });
 
   for (; s-- > 0;)

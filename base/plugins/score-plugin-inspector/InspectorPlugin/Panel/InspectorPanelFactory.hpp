@@ -11,4 +11,4 @@ class PanelDelegateFactory final : public score::PanelDelegateFactory
   std::unique_ptr<score::PanelDelegate>
   make(const score::GUIApplicationContext& ctx) override;
 };
-}
+} // namespace InspectorPanel

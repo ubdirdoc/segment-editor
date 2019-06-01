@@ -89,4 +89,4 @@ public:
 private:
   mutable DefaultFactory_T m_default;
 };
-}
+} // namespace score

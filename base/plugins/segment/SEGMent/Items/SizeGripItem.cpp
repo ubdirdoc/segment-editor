@@ -46,7 +46,8 @@ int SizeGripItem::HandleItem::positionFlags() const
 }
 
 QVariant SizeGripItem::HandleItem::itemChange(
-    GraphicsItemChange change, const QVariant& value)
+    GraphicsItemChange change,
+    const QVariant& value)
 {
   QVariant retVal = value;
 
@@ -114,7 +115,9 @@ QPointF SizeGripItem::HandleItem::restrictPosition(const QPointF& newPos)
 }
 
 SizeGripItem::SizeGripItem(
-    Resizer* resizer, QGraphicsItem* parent, bool onlyBottomRight)
+    Resizer* resizer,
+    QGraphicsItem* parent,
+    bool onlyBottomRight)
     : QGraphicsItem(parent), resizer_(resizer)
 {
   if (parentItem())
@@ -162,7 +165,9 @@ QRectF SizeGripItem::boundingRect() const
 }
 
 void SizeGripItem::paint(
-    QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
 }
 
@@ -207,7 +212,6 @@ void SizeGripItem::finishMove()
   }
 }
 
-
 void SizeGripItem::updateHandleItemPositions()
 {
   for (HandleItem* item : handleItems_)
@@ -246,7 +250,6 @@ void SizeGripItem::updateHandleItemPositions()
   }
 }
 
-
 void SizeGripItem::HandleItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
   QGraphicsItem::mousePressEvent(event);
@@ -260,7 +263,8 @@ void SizeGripItem::HandleItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   event->accept();
 }
 
-void SizeGripItem::HandleItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+void SizeGripItem::HandleItem::mouseReleaseEvent(
+    QGraphicsSceneMouseEvent* event)
 {
   QGraphicsItem::mouseReleaseEvent(event);
   parent_->finishMove();

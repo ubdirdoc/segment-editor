@@ -1,5 +1,6 @@
 #pragma once
 #include <score/application/GUIApplicationContext.hpp>
+
 #include <score_lib_base_export.h>
 namespace score
 {
@@ -63,4 +64,4 @@ public:
       score::Settings& m_settings,
       score::Presenter& m_presenter);
 };
-}
+} // namespace score

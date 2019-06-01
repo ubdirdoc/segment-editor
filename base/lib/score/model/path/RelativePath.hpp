@@ -44,4 +44,4 @@ findById_weak_unsafe(const Container& c, int32_t id) noexcept
 
   return nullptr;
 }
-}
+} // namespace score

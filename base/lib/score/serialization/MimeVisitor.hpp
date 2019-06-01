@@ -1,6 +1,7 @@
 #pragma once
-#include <QMimeData>
 #include <score/serialization/VisitorCommon.hpp>
+
+#include <QMimeData>
 
 template <typename T>
 struct Mime;
@@ -16,26 +17,19 @@ struct Mime
   using Serializer = Visitor<Reader<Mime<T>>>;
   using Deserializer = Visitor<Writer<Mime<T>>>;
 
-  static constexpr SerializationIdentifier type()
-  {
-    return 4;
-  }
+  static constexpr SerializationIdentifier type() { return 4; }
 };
 
 // Reads into a QMimeData
 struct MimeDataReader
 {
   QMimeData& m_mime;
-  MimeDataReader(QMimeData& p) : m_mime{p}
-  {
-  }
+  MimeDataReader(QMimeData& p) : m_mime{p} {}
 };
 
 // Writes from a QMimeData to an object.
 struct MimeDataWriter
 {
   const QMimeData& m_mime;
-  MimeDataWriter(const QMimeData& p) : m_mime{p}
-  {
-  }
+  MimeDataWriter(const QMimeData& p) : m_mime{p} {}
 };

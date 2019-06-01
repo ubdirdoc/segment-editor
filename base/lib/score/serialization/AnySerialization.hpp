@@ -1,9 +1,9 @@
 #pragma once
-#include <ossia/detail/any_map.hpp>
-
 #include <score/serialization/DataStreamVisitor.hpp>
 #include <score/serialization/JSONVisitor.hpp>
 #include <score/tools/std/String.hpp>
+
+#include <ossia/detail/any_map.hpp>
 
 /**
  * \file AnySerialization.hpp
@@ -58,7 +58,7 @@ using any_serializer_map
 
 //! The serializers for types that go in ossia::any should fit in here.
 SCORE_LIB_BASE_EXPORT any_serializer_map& anySerializers();
-}
+} // namespace score
 
 template <typename Vis, typename Any>
 void apply(Vis& s, const std::string& key, Any& v)

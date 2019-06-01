@@ -2,9 +2,11 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "UndoListWidget.hpp"
 
-#include <QItemSelectionModel>
-#include <core/command/CommandStack.hpp>
 #include <score/command/Command.hpp>
+
+#include <core/command/CommandStack.hpp>
+
+#include <QItemSelectionModel>
 
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(score::UndoListWidget)
@@ -14,10 +16,14 @@ UndoListWidget::UndoListWidget(score::CommandStack& s) : m_stack{s}
 {
   on_stackChanged();
 
-  con(m_stack, &score::CommandStack::stackChanged, this,
+  con(m_stack,
+      &score::CommandStack::stackChanged,
+      this,
       &score::UndoListWidget::on_stackChanged);
   connect(
-      this, &QListWidget::currentRowChanged, &m_stack,
+      this,
+      &QListWidget::currentRowChanged,
+      &m_stack,
       &CommandStack::setIndex);
 }
 
@@ -40,4 +46,4 @@ void UndoListWidget::on_stackChanged()
 
   this->blockSignals(false);
 }
-}
+} // namespace score

@@ -2,6 +2,10 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "DocumentBackups.hpp"
 
+#include <score/tools/QMapHelper.hpp>
+
+#include <core/application/OpenDocumentsFile.hpp>
+
 #include <QApplication>
 #include <QByteArray>
 #include <QFile>
@@ -12,8 +16,6 @@
 #include <QSettings>
 #include <QString>
 #include <QVariant>
-#include <core/application/OpenDocumentsFile.hpp>
-#include <score/tools/QMapHelper.hpp>
 
 bool score::DocumentBackups::canRestoreDocuments()
 {
@@ -21,7 +23,8 @@ bool score::DocumentBackups::canRestoreDocuments()
   if (OpenDocumentsFile::exists())
   {
     if (QMessageBox::question(
-            qApp->activeWindow(), QObject::tr("Reload?"),
+            qApp->activeWindow(),
+            QObject::tr("Reload?"),
             QObject::tr("It seems that score previously crashed. Do you "
                         "wish to reload your work?"))
         == QMessageBox::Yes)

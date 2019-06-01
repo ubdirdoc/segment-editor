@@ -1,26 +1,28 @@
-#include <SEGMent/Items/ObjectWindow.hpp>
+#include <score/command/Dispatchers/CommandDispatcher.hpp>
 #include <score/selection/SelectionStack.hpp>
+
 #include <QGraphicsSceneDragDropEvent>
+#include <QGraphicsTextItem>
 #include <QMenu>
 #include <QMovie>
+#include <QPainter>
+
 #include <SEGMent/Commands/CommandFactory.hpp>
 #include <SEGMent/Commands/Deletion.hpp>
 #include <SEGMent/Commands/Properties.hpp>
-#include <score/command/Dispatchers/CommandDispatcher.hpp>
-#include <SEGMent/Items/GlobalVariables.hpp>
 #include <SEGMent/FilePath.hpp>
-#include <QGraphicsTextItem>
-#include <QPainter>
+#include <SEGMent/Items/GlobalVariables.hpp>
+#include <SEGMent/Items/ObjectWindow.hpp>
 namespace SEGMent
 {
 void WindowWithBackground::sizeChanged()
 {
   m_backgroundImgDisplay.setScale(
-        boundingRect().width() / (m_backgroundImgRealWidth));
+      boundingRect().width() / (m_backgroundImgRealWidth));
 
   m_anchorsSetter.updateAnchorsPos();
 
-  if(m_sizeGripItem)
+  if (m_sizeGripItem)
     m_sizeGripItem->reset();
 }
 
@@ -32,43 +34,46 @@ void WindowWithBackground::setBackgroundImage(QPixmap img)
   on_sizeChanged();
 }
 
-ImageWindow::ImageWindow(const ImageModel& p,
-                         const score::DocumentContext& ctx,
-                         ZoomView& view,
-                         QGraphicsItem* parent):
-  ResizableWindow<ImageWindow>{
-      expected_pos(p.pos(), parent->boundingRect())
-    , expected_size(p.size(), parent->boundingRect())
-    ,  true, true, ctx, view, parent}
-  , m_object{p}
+ImageWindow::ImageWindow(
+    const ImageModel& p,
+    const score::DocumentContext& ctx,
+    ZoomView& view,
+    QGraphicsItem* parent)
+    : ResizableWindow<ImageWindow>{expected_pos(
+                                       p.pos(),
+                                       parent->boundingRect()),
+                                   expected_size(
+                                       p.size(),
+                                       parent->boundingRect()),
+                                   true,
+                                   true,
+                                   ctx,
+                                   view,
+                                   parent}
+    , m_object{p}
 {
   setMinSize(20, 20);
   setZValue(5);
   setAcceptDrops(true);
 
-  m_sizeGripItem = new SizeGripItem(new ObjectResizer<ImageWindow, true>{*this}, this, true);
+  m_sizeGripItem = new SizeGripItem(
+      new ObjectResizer<ImageWindow, true>{*this}, this, true);
 
   QObject::connect(
-      this, &ImageWindow::on_sizeChanged, this,
-      &ImageWindow::sizeChanged);
+      this, &ImageWindow::on_sizeChanged, this, &ImageWindow::sizeChanged);
 
-  con(p.selection, &Selectable::changed, this, [=] (bool b) {
+  con(p.selection, &Selectable::changed, this, [=](bool b) {
     m_anchorsSetter.setVisible(b);
   });
-  ::bind(p, ImageModel::p_pos{}, this, [=] (auto pos) {
+  ::bind(p, ImageModel::p_pos{}, this, [=](auto pos) {
     setPos(expected_pos(pos, parentItem()->boundingRect()));
   });
-  ::bind(p, ImageModel::p_size{}, this, [=] (auto sz) {
+  ::bind(p, ImageModel::p_size{}, this, [=](auto sz) {
     setRect(expected_rect(sz, parentItem()->boundingRect()));
   });
-  ::bind(p, ImageModel::p_z{}, this, [=] (auto z) {
-    setZValue(z);
-  });
-  ::bind(p, ImageModel::p_puzzle{}, this, [=] (auto z) {
-    setPuzzle(z);
-  });
-  ::bind(p, ImageModel::p_image{},
-         this, [=,&ctx] (const Image& img) {
+  ::bind(p, ImageModel::p_z{}, this, [=](auto z) { setZValue(z); });
+  ::bind(p, ImageModel::p_puzzle{}, this, [=](auto z) { setPuzzle(z); });
+  ::bind(p, ImageModel::p_image{}, this, [=, &ctx](const Image& img) {
     setBackgroundImage(QPixmap(toLocalFile(img.path, ctx)));
   });
 
@@ -78,18 +83,26 @@ ImageWindow::ImageWindow(const ImageModel& p,
 
 void ImageWindow::setPuzzle(bool b)
 {
-  if(b)
+  if (b)
   {
-    m_puzzle = new QGraphicsPixmapItem(QPixmap(":/puzzle.png").scaled(32, 32, Qt::AspectRatioMode::KeepAspectRatio, Qt::FastTransformation), this);
-    m_puzzle->setX(boundingRect().width() - m_puzzle->boundingRect().width() / 2.);
-    m_puzzle->setY(- m_puzzle->boundingRect().height() / 2.);
+    m_puzzle = new QGraphicsPixmapItem(
+        QPixmap(":/puzzle.png")
+            .scaled(
+                32,
+                32,
+                Qt::AspectRatioMode::KeepAspectRatio,
+                Qt::FastTransformation),
+        this);
+    m_puzzle->setX(
+        boundingRect().width() - m_puzzle->boundingRect().width() / 2.);
+    m_puzzle->setY(-m_puzzle->boundingRect().height() / 2.);
   }
-  else {
+  else
+  {
     delete m_puzzle;
     m_puzzle = nullptr;
   }
 }
-
 
 void ImageWindow::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
@@ -122,41 +135,43 @@ transition_t ImageWindow::createTransitionFrom(
   return ObjectToScene{model(), target, source_anchor, target_anchor};
 }
 
-
-GifWindow::GifWindow(const GifModel& p,
-                     const score::DocumentContext& ctx,
-                     ZoomView& view,
-                     QGraphicsItem* parent):
-  ResizableWindow<GifWindow>(
-    expected_pos(p.pos(), parent->boundingRect())
-    , expected_size(p.size(), parent->boundingRect())
-    , true, false, ctx, view, parent)
-, m_object{p}
+GifWindow::GifWindow(
+    const GifModel& p,
+    const score::DocumentContext& ctx,
+    ZoomView& view,
+    QGraphicsItem* parent)
+    : ResizableWindow<GifWindow>(
+        expected_pos(p.pos(), parent->boundingRect()),
+        expected_size(p.size(), parent->boundingRect()),
+        true,
+        false,
+        ctx,
+        view,
+        parent)
+    , m_object{p}
 {
   setMinSize(20, 20);
   setZValue(5);
   setAcceptDrops(true);
 
-  m_sizeGripItem = new SizeGripItem(new ObjectResizer<GifWindow, true>{*this}, this, true);
+  m_sizeGripItem = new SizeGripItem(
+      new ObjectResizer<GifWindow, true>{*this}, this, true);
 
   QObject::connect(
-      this, &GifWindow::on_sizeChanged, this,
-      &GifWindow::sizeChanged);
+      this, &GifWindow::on_sizeChanged, this, &GifWindow::sizeChanged);
 
-  con(p.selection, &Selectable::changed, this, [=] (bool b) {
+  con(p.selection, &Selectable::changed, this, [=](bool b) {
     m_selection = b;
     update();
   });
-  ::bind(p, GifModel::p_pos{}, this, [=] (auto pos) {
+  ::bind(p, GifModel::p_pos{}, this, [=](auto pos) {
     setPos(expected_pos(pos, parentItem()->boundingRect()));
   });
-  ::bind(p, GifModel::p_size{}, this, [=] (auto sz) {
+  ::bind(p, GifModel::p_size{}, this, [=](auto sz) {
     setRect(expected_rect(sz, parentItem()->boundingRect()));
   });
-  ::bind(p, GifModel::p_z{}, this, [=] (auto z) {
-    setZValue(z);
-  });
-  auto updateimage = [=,&p] (const auto&) {
+  ::bind(p, GifModel::p_z{}, this, [=](auto z) { setZValue(z); });
+  auto updateimage = [=, &p](const auto&) {
     p.gif.jumpToFrame(p.defaultFrame());
     setBackgroundImage(p.gif.currentPixmap());
   };
@@ -167,7 +182,6 @@ GifWindow::GifWindow(const GifModel& p,
   setImageOpacity(0.9);
   updateRect();
 }
-
 
 void GifWindow::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
@@ -200,9 +214,12 @@ transition_t GifWindow::createTransitionFrom(
   return GifToScene{model(), target, source_anchor, target_anchor};
 }
 
-void GifWindow::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+void GifWindow::paint(
+    QPainter* painter,
+    const QStyleOptionGraphicsItem* option,
+    QWidget* widget)
 {
-  if(m_selection)
+  if (m_selection)
   {
     QPen pen = Style::instance().sceneBorderPen;
     QBrush brush = QBrush{Qt::transparent};
@@ -212,6 +229,4 @@ void GifWindow::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
   }
 }
 
-}
-
-
+} // namespace SEGMent

@@ -1,5 +1,6 @@
 #pragma once
 #include <score/plugins/customfactory/StringFactoryKey.hpp>
+
 #include <score_lib_base_export.h>
 
 class QToolBar;
@@ -9,7 +10,10 @@ class SCORE_LIB_BASE_EXPORT Toolbar
 {
 public:
   Toolbar(
-      QToolBar* tb, StringKey<Toolbar> key, int defaultRow, int defaultCol);
+      QToolBar* tb,
+      StringKey<Toolbar> key,
+      int defaultRow,
+      int defaultCol);
 
   QToolBar* toolbar() const;
 
@@ -27,4 +31,4 @@ private:
   int m_row = 0;
   int m_col = 0;
 };
-}
+} // namespace score

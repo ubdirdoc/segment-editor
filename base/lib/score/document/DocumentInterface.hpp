@@ -1,7 +1,9 @@
 #pragma once
 #include <score/model/path/ObjectPath.hpp>
-#include <type_traits>
+
 #include <vector>
+
+#include <type_traits>
 
 class QObject;
 namespace score
@@ -113,5 +115,5 @@ T* try_get(const Document& d)
 {
   return try_modelDelegate<T>(d);
 }
-}
-}
+} // namespace IDocument
+} // namespace score

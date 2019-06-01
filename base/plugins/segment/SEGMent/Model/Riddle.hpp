@@ -8,12 +8,9 @@ namespace std
 template <>
 struct hash<QString>
 {
-  std::size_t operator()(const QString& p) const noexcept
-  {
-    return qHash(p);
-  }
+  std::size_t operator()(const QString& p) const noexcept { return qHash(p); }
 };
-}
+} // namespace std
 namespace SEGMent
 {
 //! Transitions can be :
@@ -28,23 +25,32 @@ namespace SEGMent
 //! - Between object and scene
 //! - Between click area and scene
 
-
 //! The player must set the gifs at the correct frame.
 struct GifRiddle
 {
   friend bool operator==(const GifRiddle& lhs, const GifRiddle& rhs) noexcept
-  { return true; }
+  {
+    return true;
+  }
   friend bool operator!=(const GifRiddle& lhs, const GifRiddle& rhs) noexcept
-  { return false; }
+  {
+    return false;
+  }
 };
 
 //! The player must complete the puzzle.
 struct PuzzleRiddle
 {
-  friend bool operator==(const PuzzleRiddle& lhs, const PuzzleRiddle& rhs) noexcept
-  { return true; }
-  friend bool operator!=(const PuzzleRiddle& lhs, const PuzzleRiddle& rhs) noexcept
-  { return false; }
+  friend bool
+  operator==(const PuzzleRiddle& lhs, const PuzzleRiddle& rhs) noexcept
+  {
+    return true;
+  }
+  friend bool
+  operator!=(const PuzzleRiddle& lhs, const PuzzleRiddle& rhs) noexcept
+  {
+    return false;
+  }
 };
 
 //! The player must input the correct text.
@@ -59,20 +65,20 @@ struct TextRiddle
 
   friend bool operator==(const TextRiddle& lhs, const TextRiddle& rhs) noexcept
   {
-    return lhs.question == rhs.question &&
-        lhs.expected == rhs.expected &&
-        lhs.ifCorrect == rhs.ifCorrect &&
-        lhs.ifWrong == rhs.ifWrong &&
-        lhs.fuzzyMatches == rhs.fuzzyMatches &&
-        lhs.useStars == rhs.useStars;
+    return lhs.question == rhs.question && lhs.expected == rhs.expected
+           && lhs.ifCorrect == rhs.ifCorrect && lhs.ifWrong == rhs.ifWrong
+           && lhs.fuzzyMatches == rhs.fuzzyMatches
+           && lhs.useStars == rhs.useStars;
   }
   friend bool operator!=(const TextRiddle& lhs, const TextRiddle& rhs) noexcept
-  { return !(lhs == rhs); }
+  {
+    return !(lhs == rhs);
+  }
 };
 
 using riddle_t = eggs::variant<GifRiddle, PuzzleRiddle, TextRiddle>;
 
-}
+} // namespace SEGMent
 
 JSON_METADATA(SEGMent::GifRiddle, "Gif")
 JSON_METADATA(SEGMent::PuzzleRiddle, "Puzzle")

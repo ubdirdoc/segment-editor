@@ -6,10 +6,10 @@ namespace SEGMent
 {
 
 ClickAreaModel::ClickAreaModel(Id<ClickAreaModel> id, QObject* parent)
-  : base_type{std::move(id), "ClickArea", parent}
+    : base_type{std::move(id), "ClickArea", parent}
 {
 }
-}
+} // namespace SEGMent
 
 template <>
 void DataStreamReader::read(const SEGMent::ClickAreaModel& v)

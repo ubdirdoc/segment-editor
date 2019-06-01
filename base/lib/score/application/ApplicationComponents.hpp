@@ -1,7 +1,4 @@
 #pragma once
-#include <QByteArray>
-#include <algorithm>
-#include <iterator>
 #include <score/command/CommandData.hpp>
 #include <score/command/CommandGeneratorMap.hpp>
 #include <score/plugins/Addon.hpp>
@@ -11,7 +8,13 @@
 #include <score/tools/Todo.hpp>
 #include <score/tools/std/HashMap.hpp>
 #include <score/tools/std/IndirectContainer.hpp>
+
+#include <QByteArray>
+
 #include <score_lib_base_export.h>
+
+#include <algorithm>
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -53,18 +56,9 @@ public:
   }
 
   // Getters for plugin-registered things
-  const auto& applicationPlugins() const
-  {
-    return m_data.appPlugins;
-  }
-  const auto& guiApplicationPlugins() const
-  {
-    return m_data.guiAppPlugins;
-  }
-  const auto& addons() const
-  {
-    return m_data.addons;
-  }
+  const auto& applicationPlugins() const { return m_data.appPlugins; }
+  const auto& guiApplicationPlugins() const { return m_data.guiAppPlugins; }
+  const auto& addons() const { return m_data.addons; }
 
   template <typename T>
   T& applicationPlugin() const
@@ -124,10 +118,7 @@ public:
     return nullptr;
   }
 
-  auto panels() const
-  {
-    return wrap_indirect(m_data.panels);
-  }
+  auto panels() const { return wrap_indirect(m_data.panels); }
 
   template <typename T>
   T& panel() const
@@ -196,4 +187,4 @@ private:
 };
 
 SCORE_LIB_BASE_EXPORT const ApplicationComponents& AppComponents();
-}
+} // namespace score

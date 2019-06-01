@@ -92,4 +92,4 @@ void MenuManager::insert(std::vector<Menu> vals)
     insert(std::move(val));
   }
 }
-}
+} // namespace score

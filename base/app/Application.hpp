@@ -1,12 +1,16 @@
 #pragma once
-#include <QApplication>
-#include <wobjectdefs.h>
+#include <score/application/ApplicationContext.hpp>
+
 #include <core/application/ApplicationInterface.hpp>
 #include <core/application/ApplicationSettings.hpp>
 #include <core/plugin/PluginManager.hpp>
 #include <core/settings/Settings.hpp>
+
+#include <QApplication>
+
+#include <wobjectdefs.h>
+
 #include <memory>
-#include <score/application/ApplicationContext.hpp>
 
 namespace score
 {
@@ -18,7 +22,7 @@ namespace score
 {
 class Presenter;
 class View;
-}
+} // namespace score
 
 /**
  * @brief Application
@@ -27,9 +31,7 @@ class View;
  * parent of every other object created.
  * It does instantiate the rest of the software (MVP, settings, plugins).
  */
-class Application final
-    : public QObject
-    , public score::GUIApplicationInterface
+class Application final : public QObject, public score::GUIApplicationInterface
 {
   W_OBJECT(Application)
   friend class ChildEventFilter;
@@ -38,7 +40,9 @@ public:
   Application(int& argc, char** argv);
 
   Application(
-      const score::ApplicationSettings& appSettings, int& argc, char** argv);
+      const score::ApplicationSettings& appSettings,
+      int& argc,
+      char** argv);
 
   Application(const Application&) = delete;
   Application& operator=(const Application&) = delete;
@@ -46,10 +50,7 @@ public:
 
   int exec();
 
-  const score::Settings& settings() const
-  {
-    return m_settings;
-  }
+  const score::Settings& settings() const { return m_settings; }
 
   const score::GUIApplicationContext& context() const override;
   const score::ApplicationComponents& components() const override;

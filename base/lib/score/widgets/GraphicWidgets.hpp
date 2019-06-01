@@ -1,27 +1,31 @@
 #pragma once
-#include <ossia/detail/math.hpp>
-#include <wobjectdefs.h>
+#include <score/widgets/SignalUtils.hpp>
 
+#include <ossia/detail/math.hpp>
+
+#include <QDoubleSpinBox>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneEvent>
-#include <QDoubleSpinBox>
 #include <QKeyEvent>
 #include <QPainter>
-#include <score/widgets/SignalUtils.hpp>
+
 #include <score_lib_base_export.h>
+#include <wobjectdefs.h>
 
 namespace score
 {
 class SCORE_LIB_BASE_EXPORT QGraphicsPixmapButton final
-    : public QObject
-    , public QGraphicsPixmapItem
+    : public QObject,
+      public QGraphicsPixmapItem
 {
   W_OBJECT(QGraphicsPixmapButton)
   const QPixmap m_pressed, m_released;
 
 public:
   QGraphicsPixmapButton(
-      QPixmap pressed, QPixmap released, QGraphicsItem* parent);
+      QPixmap pressed,
+      QPixmap released,
+      QGraphicsItem* parent);
 
 public:
   void clicked() W_SIGNAL(clicked);
@@ -33,8 +37,8 @@ protected:
 };
 
 class SCORE_LIB_BASE_EXPORT QGraphicsPixmapToggle final
-    : public QObject
-    , public QGraphicsPixmapItem
+    : public QObject,
+      public QGraphicsPixmapItem
 {
   W_OBJECT(QGraphicsPixmapToggle)
   Q_INTERFACES(QGraphicsItem)
@@ -44,7 +48,9 @@ class SCORE_LIB_BASE_EXPORT QGraphicsPixmapToggle final
 
 public:
   QGraphicsPixmapToggle(
-      QPixmap pressed, QPixmap released, QGraphicsItem* parent);
+      QPixmap pressed,
+      QPixmap released,
+      QGraphicsItem* parent);
 
   void toggle();
   void setState(bool toggled);
@@ -64,13 +70,14 @@ struct DefaultGraphicsSliderImpl
   {
   public:
     using QDoubleSpinBox::QDoubleSpinBox;
+
   public:
     bool event(QEvent* event) override
     {
-      if(event->type() == QEvent::ShortcutOverride)
+      if (event->type() == QEvent::ShortcutOverride)
       {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-        if(keyEvent->key() == Qt::Key_Return)
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Return)
         {
           editingFinished();
         }
@@ -79,7 +86,7 @@ struct DefaultGraphicsSliderImpl
     }
   };
 
-  template<typename T>
+  template <typename T>
   static void mousePressEvent(T& self, QGraphicsSceneMouseEvent* event)
   {
     if (self.isInHandle(event->pos()))
@@ -101,7 +108,7 @@ struct DefaultGraphicsSliderImpl
     event->accept();
   }
 
-  template<typename T>
+  template <typename T>
   static void mouseMoveEvent(T& self, QGraphicsSceneMouseEvent* event)
   {
     if (self.m_grab)
@@ -120,7 +127,7 @@ struct DefaultGraphicsSliderImpl
     event->accept();
   }
 
-  template<typename T>
+  template <typename T>
   static void mouseReleaseEvent(T& self, QGraphicsSceneMouseEvent* event)
   {
     if (self.m_grab)
@@ -139,7 +146,7 @@ struct DefaultGraphicsSliderImpl
     event->accept();
   }
 
-  template<typename T>
+  template <typename T>
   static void mouseDoubleClickEvent(T& self, QGraphicsSceneMouseEvent* event)
   {
     auto w = new DoubleSpinboxWithEnter;
@@ -147,27 +154,30 @@ struct DefaultGraphicsSliderImpl
 
     w->setDecimals(6);
     w->setValue(self.map(self.m_value * (self.max - self.min) + self.min));
-    auto obj = self.scene()->addWidget(w, Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    auto obj = self.scene()->addWidget(
+        w, Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
     obj->setPos(event->scenePos());
     w->setFocus();
 
-    QObject::connect(w, SignalUtils::QDoubleSpinBox_valueChanged_double(),
-            &self, [=,&self] (double v) {
-      self.m_value = (self.unmap(v) - self.min) / (self.max - self.min);
-      self.valueChanged(self.m_value);
-      self.sliderMoved();
-      self.update();
-    });
-    QObject::connect(w, &QDoubleSpinBox::editingFinished,
-                     &self, [=,&self] {
-      self.scene()->removeItem(obj); obj->deleteLater();
+    QObject::connect(
+        w,
+        SignalUtils::QDoubleSpinBox_valueChanged_double(),
+        &self,
+        [=, &self](double v) {
+          self.m_value = (self.unmap(v) - self.min) / (self.max - self.min);
+          self.valueChanged(self.m_value);
+          self.sliderMoved();
+          self.update();
+        });
+    QObject::connect(w, &QDoubleSpinBox::editingFinished, &self, [=, &self] {
+      self.scene()->removeItem(obj);
+      obj->deleteLater();
     });
   }
 };
 
-class SCORE_LIB_BASE_EXPORT QGraphicsSlider final
-    : public QObject
-    , public QGraphicsItem
+class SCORE_LIB_BASE_EXPORT QGraphicsSlider final : public QObject,
+                                                    public QGraphicsItem
 {
   W_OBJECT(QGraphicsSlider)
   Q_INTERFACES(QGraphicsItem)
@@ -193,6 +203,7 @@ public:
   double value() const;
 
   bool moving = false;
+
 public:
   void valueChanged(double arg_1) W_SIGNAL(valueChanged, arg_1);
   void sliderMoved() W_SIGNAL(sliderMoved);
@@ -215,9 +226,8 @@ private:
   QRectF handleRect() const;
 };
 
-class SCORE_LIB_BASE_EXPORT QGraphicsLogSlider final
-    : public QObject
-    , public QGraphicsItem
+class SCORE_LIB_BASE_EXPORT QGraphicsLogSlider final : public QObject,
+                                                       public QGraphicsItem
 {
   W_OBJECT(QGraphicsLogSlider)
   Q_INTERFACES(QGraphicsItem)
@@ -243,6 +253,7 @@ public:
   static double unmap(double v) { return std::log2(v); }
 
   bool moving = false;
+
 public:
   void valueChanged(double arg_1) W_SIGNAL(valueChanged, arg_1);
   void sliderMoved() W_SIGNAL(sliderMoved);
@@ -264,9 +275,8 @@ private:
   QRectF handleRect() const;
 };
 
-class SCORE_LIB_BASE_EXPORT QGraphicsIntSlider final
-    : public QObject
-    , public QGraphicsItem
+class SCORE_LIB_BASE_EXPORT QGraphicsIntSlider final : public QObject,
+                                                       public QGraphicsItem
 {
   W_OBJECT(QGraphicsIntSlider)
   Q_INTERFACES(QGraphicsItem)
@@ -284,6 +294,7 @@ public:
   int value() const;
 
   bool moving = false;
+
 public:
   void valueChanged(int arg_1) W_SIGNAL(valueChanged, arg_1);
   void sliderMoved() W_SIGNAL(sliderMoved);
@@ -304,9 +315,8 @@ private:
   QRectF handleRect() const;
 };
 
-class SCORE_LIB_BASE_EXPORT QGraphicsComboSlider final
-    : public QObject
-    , public QGraphicsItem
+class SCORE_LIB_BASE_EXPORT QGraphicsComboSlider final : public QObject,
+                                                         public QGraphicsItem
 {
   W_OBJECT(QGraphicsComboSlider)
   Q_INTERFACES(QGraphicsItem)
@@ -323,7 +333,8 @@ private:
 public:
   template <std::size_t N>
   QGraphicsComboSlider(
-      const std::array<const char*, N>& arr, QGraphicsItem* parent)
+      const std::array<const char*, N>& arr,
+      QGraphicsItem* parent)
       : QGraphicsItem{parent}
   {
     array.reserve(N);
@@ -333,10 +344,8 @@ public:
     this->setAcceptedMouseButtons(Qt::LeftButton);
   }
 
-  QGraphicsComboSlider(
-      QStringList arr, QGraphicsItem* parent)
-      : QGraphicsItem{parent}
-      , array{std::move(arr)}
+  QGraphicsComboSlider(QStringList arr, QGraphicsItem* parent)
+      : QGraphicsItem{parent}, array{std::move(arr)}
   {
     this->setAcceptedMouseButtons(Qt::LeftButton);
   }
@@ -348,6 +357,7 @@ public:
   int value() const;
 
   bool moving = false;
+
 public:
   void valueChanged(int arg_1) W_SIGNAL(valueChanged, arg_1);
   void sliderMoved() W_SIGNAL(sliderMoved);
@@ -367,4 +377,4 @@ private:
   QRectF sliderRect() const;
   QRectF handleRect() const;
 };
-}
+} // namespace score

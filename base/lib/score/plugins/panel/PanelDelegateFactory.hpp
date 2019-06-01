@@ -6,8 +6,7 @@
 namespace score
 {
 //! Reimplement this interface to register new panels.
-class SCORE_LIB_BASE_EXPORT PanelDelegateFactory
-    : public score::InterfaceBase
+class SCORE_LIB_BASE_EXPORT PanelDelegateFactory : public score::InterfaceBase
 {
   SCORE_INTERFACE(PanelDelegateFactory, "8d6211f7-5244-44f9-94dd-f3e32255c43e")
 public:
@@ -26,4 +25,4 @@ public:
   using object_type = PanelDelegate;
   ~PanelDelegateFactoryList();
 };
-}
+} // namespace score

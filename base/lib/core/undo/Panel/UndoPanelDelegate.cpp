@@ -2,9 +2,10 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "UndoPanelDelegate.hpp"
 
-#include <QVBoxLayout>
 #include <core/document/Document.hpp>
 #include <core/undo/Panel/Widgets/UndoListWidget.hpp>
+
+#include <QVBoxLayout>
 
 namespace score
 {
@@ -15,9 +16,7 @@ UndoPanelDelegate::UndoPanelDelegate(const GUIApplicationContext& ctx)
   m_widget->setObjectName("HistoryExplorer");
 }
 
-UndoPanelDelegate::~UndoPanelDelegate()
-{
-}
+UndoPanelDelegate::~UndoPanelDelegate() {}
 
 QWidget* UndoPanelDelegate::widget()
 {
@@ -27,7 +26,10 @@ QWidget* UndoPanelDelegate::widget()
 const PanelStatus& UndoPanelDelegate::defaultPanelStatus() const
 {
   static const score::PanelStatus status{
-      false, Qt::LeftDockWidgetArea, 1, QObject::tr("History"),
+      false,
+      Qt::LeftDockWidgetArea,
+      1,
+      QObject::tr("History"),
       QKeySequence::fromString("Ctrl+Shift+H")};
 
   return status;
@@ -44,4 +46,4 @@ void UndoPanelDelegate::on_modelChanged(MaybeDocument oldm, MaybeDocument newm)
     m_widget->layout()->addWidget(m_list);
   }
 }
-}
+} // namespace score

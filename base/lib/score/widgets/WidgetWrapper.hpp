@@ -1,8 +1,9 @@
 #pragma once
-#include <QGridLayout>
-#include <QWidget>
 #include <score/widgets/ClearLayout.hpp>
 #include <score/widgets/MarginLess.hpp>
+
+#include <QGridLayout>
+#include <QWidget>
 
 /**
  * @brief The WidgetWrapper class
@@ -28,10 +29,7 @@ public:
       m_lay->addWidget(m_widget);
   }
 
-  Widget* widget() const
-  {
-    return m_widget;
-  }
+  Widget* widget() const { return m_widget; }
 
 private:
   QGridLayout* m_lay{};

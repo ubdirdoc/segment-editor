@@ -8,4 +8,4 @@ inline const CommandGroupKey& CommandFactoryName()
   static const CommandGroupKey key{"SEGMent"};
   return key;
 }
-}
+} // namespace SEGMent

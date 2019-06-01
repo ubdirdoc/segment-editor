@@ -1,5 +1,6 @@
 #pragma once
 #include <QString>
+
 #include <functional>
 #include <string>
 
@@ -19,19 +20,13 @@ class OpaqueString
 public:
   OpaqueString() = default;
 
-  explicit OpaqueString(const char* str) noexcept : impl{str}
-  {
-  }
-  explicit OpaqueString(std::string str) noexcept : impl{std::move(str)}
-  {
-  }
+  explicit OpaqueString(const char* str) noexcept : impl{str} {}
+  explicit OpaqueString(std::string str) noexcept : impl{std::move(str)} {}
   explicit OpaqueString(const QString& str) noexcept : impl{str.toStdString()}
   {
   }
 
-  explicit OpaqueString(const OpaqueString& str) noexcept : impl{str.impl}
-  {
-  }
+  explicit OpaqueString(const OpaqueString& str) noexcept : impl{str.impl} {}
   explicit OpaqueString(OpaqueString&& str) noexcept
       : impl{std::move(str.impl)}
   {
@@ -62,4 +57,4 @@ struct hash<OpaqueString>
     return std::hash<std::string>()(kagi.impl);
   }
 };
-}
+} // namespace std

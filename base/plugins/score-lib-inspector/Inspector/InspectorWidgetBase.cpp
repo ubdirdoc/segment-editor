@@ -2,15 +2,17 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "InspectorWidgetBase.hpp"
 
-#include <QBoxLayout>
-#include <QLayoutItem>
-#include <QScrollArea>
 #include <score/command/Dispatchers/CommandDispatcher.hpp>
 #include <score/document/DocumentContext.hpp>
 #include <score/model/IdentifiedObjectAbstract.hpp>
 #include <score/selection/SelectionDispatcher.hpp>
 #include <score/widgets/MarginLess.hpp>
 #include <score/widgets/TextLabel.hpp>
+
+#include <QBoxLayout>
+#include <QLayoutItem>
+#include <QScrollArea>
+
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(Inspector::InspectorWidgetBase)
 namespace Inspector
@@ -58,7 +60,8 @@ InspectorWidgetBase::~InspectorWidgetBase()
 }
 
 void InspectorWidgetBase::updateSectionsView(
-    QVBoxLayout* layout, const std::vector<QWidget*>& contents)
+    QVBoxLayout* layout,
+    const std::vector<QWidget*>& contents)
 {
   while (!layout->isEmpty())
   {
@@ -123,4 +126,4 @@ const IdentifiedObjectAbstract& InspectorWidgetBase::inspectedObject() const
 {
   return m_inspectedObject;
 }
-}
+} // namespace Inspector

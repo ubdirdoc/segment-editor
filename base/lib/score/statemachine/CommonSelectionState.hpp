@@ -1,8 +1,10 @@
 #pragma once
-#include <QState>
-#include <wobjectdefs.h>
 #include <score/selection/SelectionDispatcher.hpp>
 #include <score/statemachine/StateMachineTools.hpp>
+
+#include <QState>
+
+#include <wobjectdefs.h>
 
 class QGraphicsItem;
 
@@ -40,7 +42,9 @@ public:
 
 protected:
   CommonSelectionState(
-      score::SelectionStack& stack, QObject* process_view, QState* parent);
+      score::SelectionStack& stack,
+      QObject* process_view,
+      QState* parent);
 
 private:
   QState* m_waitState{};

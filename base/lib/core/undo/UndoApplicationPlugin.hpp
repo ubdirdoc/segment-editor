@@ -1,9 +1,12 @@
 #pragma once
 
+#include <score/plugins/application/GUIApplicationPlugin.hpp>
+
 #include <QAction>
 #include <QList>
-#include <score/plugins/application/GUIApplicationPlugin.hpp>
+
 #include <score_lib_base_export.h>
+
 #include <vector>
 
 class QObject;
@@ -28,8 +31,8 @@ public:
   ~UndoApplicationPlugin() override;
 
 private:
-  void on_documentChanged(
-      score::Document* olddoc, score::Document* newdoc) override;
+  void on_documentChanged(score::Document* olddoc, score::Document* newdoc)
+      override;
 
   GUIElements makeGUIElements() override;
 
@@ -39,4 +42,4 @@ private:
   QAction m_undoAction;
   QAction m_redoAction;
 };
-}
+} // namespace score

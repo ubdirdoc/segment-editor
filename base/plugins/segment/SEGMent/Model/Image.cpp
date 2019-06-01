@@ -1,10 +1,10 @@
-#include <SEGMent/Model/Image.hpp>
 #include <score/serialization/DataStreamVisitor.hpp>
 #include <score/serialization/JSONVisitor.hpp>
 
+#include <SEGMent/Model/Image.hpp>
+
 namespace SEGMent
 {
-
 }
 
 template <>

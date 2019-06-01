@@ -20,4 +20,4 @@ private:
   score::UndoListWidget* m_list{};
   QWidget* m_widget{};
 };
-}
+} // namespace score

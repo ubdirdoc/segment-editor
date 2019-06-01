@@ -7,15 +7,17 @@ FactoryInterface_QtInterface::~FactoryInterface_QtInterface() = default;
 
 std::vector<std::unique_ptr<InterfaceBase>>
 FactoryInterface_QtInterface::factories(
-    const ApplicationContext& ctx, const InterfaceKey& key) const
+    const ApplicationContext& ctx,
+    const InterfaceKey& key) const
 {
   return {};
 }
 
 std::vector<std::unique_ptr<InterfaceBase>>
 FactoryInterface_QtInterface::guiFactories(
-    const GUIApplicationContext& ctx, const InterfaceKey& key) const
+    const GUIApplicationContext& ctx,
+    const InterfaceKey& key) const
 {
   return {};
 }
-}
+} // namespace score

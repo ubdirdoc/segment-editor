@@ -2,12 +2,14 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "InspectorSectionWidget.hpp"
 
+#include <score/tools/Todo.hpp>
+#include <score/widgets/SetIcons.hpp>
+
 #include <QAction>
 #include <QLayoutItem>
 #include <QMenu>
 #include <qnamespace.h>
-#include <score/tools/Todo.hpp>
-#include <score/widgets/SetIcons.hpp>
+
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(Inspector::InspectorSectionWidget)
 namespace Inspector
@@ -17,9 +19,10 @@ MenuButton::MenuButton(QWidget* parent)
 {
   setFlat(true);
   setObjectName(QStringLiteral("SettingsMenu"));
-  auto icon = makeIcons(QStringLiteral(":/icons/gear_on.png"),
-                        QStringLiteral(":/icons/gear_off.png"),
-                        QStringLiteral(":/icons/gear_disabled.png"));
+  auto icon = makeIcons(
+      QStringLiteral(":/icons/gear_on.png"),
+      QStringLiteral(":/icons/gear_off.png"),
+      QStringLiteral(":/icons/gear_disabled.png"));
   setIcon(icon);
   setIconSize(QSize(16, 16));
 }
@@ -43,8 +46,9 @@ InspectorSectionWidget::InspectorSectionWidget(bool editable, QWidget* parent)
   m_buttonTitle.setText(QStringLiteral("section name"));
 
   m_sectionTitle.setObjectName("SectionTitle");
-  con(m_sectionTitle, &QLineEdit::editingFinished, this,
-      [=]() { nameChanged(m_sectionTitle.text()); });
+  con(m_sectionTitle, &QLineEdit::editingFinished, this, [=]() {
+    nameChanged(m_sectionTitle.text());
+  });
   if (editable)
     m_buttonTitle.hide();
   else
@@ -66,10 +70,12 @@ InspectorSectionWidget::InspectorSectionWidget(bool editable, QWidget* parent)
   // GENERAL
   m_generalLayout.addWidget(&m_title);
 
-  con(m_unfoldBtn, &QAbstractButton::released, this,
-      [&] { this->expand(!m_isUnfolded); });
-  con(m_buttonTitle, &QAbstractButton::clicked, this,
-      [&] { this->expand(!m_isUnfolded); });
+  con(m_unfoldBtn, &QAbstractButton::released, this, [&] {
+    this->expand(!m_isUnfolded);
+  });
+  con(m_buttonTitle, &QAbstractButton::clicked, this, [&] {
+    this->expand(!m_isUnfolded);
+  });
 
   // INIT
   m_isUnfolded = true;
@@ -78,7 +84,9 @@ InspectorSectionWidget::InspectorSectionWidget(bool editable, QWidget* parent)
 }
 
 InspectorSectionWidget::InspectorSectionWidget(
-    QString name, bool editable, QWidget* parent)
+    QString name,
+    bool editable,
+    QWidget* parent)
     : InspectorSectionWidget(editable, parent)
 {
   renameSection(name);
@@ -149,4 +157,4 @@ void InspectorSectionWidget::showMenu(bool b)
 {
   m_menuBtn.setHidden(!b);
 }
-}
+} // namespace Inspector

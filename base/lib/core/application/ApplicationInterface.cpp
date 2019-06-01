@@ -2,21 +2,23 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ApplicationInterface.hpp"
 
-#include <QModelIndex>
-#include <core/application/ApplicationRegistrar.hpp>
-#include <core/plugin/PluginManager.hpp>
-#include <core/presenter/CoreApplicationPlugin.hpp>
-#include <core/settings/Settings.hpp>
-#include <core/undo/Panel/UndoPanelFactory.hpp>
-#include <core/undo/UndoApplicationPlugin.hpp>
-#include <core/view/Window.hpp>
 #include <score/application/ApplicationContext.hpp>
 #include <score/model/ComponentSerialization.hpp>
 #include <score/plugins/ProjectSettings/ProjectSettingsFactory.hpp>
 #include <score/plugins/documentdelegate/DocumentDelegateFactory.hpp>
 #include <score/plugins/documentdelegate/plugin/DocumentPlugin.hpp>
 #include <score/plugins/settingsdelegate/SettingsDelegateFactory.hpp>
+
+#include <core/application/ApplicationRegistrar.hpp>
 #include <core/messages/MessagesPanel.hpp>
+#include <core/plugin/PluginManager.hpp>
+#include <core/presenter/CoreApplicationPlugin.hpp>
+#include <core/settings/Settings.hpp>
+#include <core/undo/Panel/UndoPanelFactory.hpp>
+#include <core/undo/UndoApplicationPlugin.hpp>
+#include <core/view/Window.hpp>
+
+#include <QModelIndex>
 namespace score
 {
 ApplicationInterface* ApplicationInterface::m_instance;
@@ -44,9 +46,7 @@ GUIApplicationInterface& GUIApplicationInterface::instance()
       ApplicationInterface::m_instance);
 }
 
-GUIApplicationInterface::~GUIApplicationInterface()
-{
-}
+GUIApplicationInterface::~GUIApplicationInterface() {}
 void GUIApplicationInterface::loadPluginData(
     const score::GUIApplicationContext& ctx,
     score::GUIApplicationRegistrar& registrar,
@@ -142,4 +142,4 @@ SCORE_LIB_BASE_EXPORT const ApplicationComponents& AppComponents()
 {
   return ApplicationInterface::instance().components();
 }
-}
+} // namespace score

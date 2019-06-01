@@ -1,15 +1,16 @@
 #pragma once
-#include <SEGMent/Model/ClickArea.hpp>
-#include <SEGMent/Model/GifObject.hpp>
-#include <SEGMent/Model/Riddle.hpp>
-#include <SEGMent/Model/Scene.hpp>
-#include <SEGMent/Items/Anchor.hpp>
-#include <SEGMent/Model/SimpleObject.hpp>
-#include <SEGMent/Model/Model.hpp>
 #include <score/model/Entity.hpp>
 #include <score/model/path/PathSerialization.hpp>
 #include <score/selection/Selectable.hpp>
 #include <score/serialization/VariantSerialization.hpp>
+
+#include <SEGMent/Items/Anchor.hpp>
+#include <SEGMent/Model/ClickArea.hpp>
+#include <SEGMent/Model/GifObject.hpp>
+#include <SEGMent/Model/Model.hpp>
+#include <SEGMent/Model/Riddle.hpp>
+#include <SEGMent/Model/Scene.hpp>
+#include <SEGMent/Model/SimpleObject.hpp>
 
 namespace SEGMent
 {
@@ -55,7 +56,7 @@ struct Transition<SceneModel, SceneModel>
   bool operator==(const Transition& other) const MSVC_NOEXCEPT
   {
     return from == other.from && to == other.to && source == other.source
-        && target == other.target && riddle == other.riddle;
+           && target == other.target && riddle == other.riddle;
   }
   bool operator!=(const Transition& other) const MSVC_NOEXCEPT
   {
@@ -71,7 +72,6 @@ using ClickToScene = Transition<ClickAreaModel, SceneModel>;
 using transition_t
     = eggs::variant<SceneToScene, ObjectToScene, GifToScene, ClickToScene>;
 
-
 class TransitionModel : public score::Entity<TransitionModel>
 {
 public:
@@ -79,10 +79,12 @@ public:
   SCORE_SERIALIZE_FRIENDS
 
 public:
-    Selectable selection{this};
+  Selectable selection{this};
 
   TransitionModel(
-      transition_t, const Id<TransitionModel>& id, QObject* parent);
+      transition_t,
+      const Id<TransitionModel>& id,
+      QObject* parent);
 
   template <typename DeserializerVisitor>
   TransitionModel(DeserializerVisitor&& vis, QObject* parent)
@@ -133,7 +135,7 @@ private:
   Sound m_sound{};
 };
 
-}
+} // namespace SEGMent
 
 JSON_METADATA(SEGMent::SceneToScene, "SceneToScene")
 JSON_METADATA(SEGMent::ObjectToScene, "ObjectToScene")
@@ -181,18 +183,18 @@ struct TSerializer<JSONObject, SEGMent::Transition<T, U>>
 };
 
 template <>
-struct TSerializer<DataStream, SEGMent::Transition<SEGMent::SceneModel,SEGMent::SceneModel>>
+struct TSerializer<
+    DataStream,
+    SEGMent::Transition<SEGMent::SceneModel, SEGMent::SceneModel>>
 {
-  using type = SEGMent::Transition<SEGMent::SceneModel,SEGMent::SceneModel>;
-  static void
-  readFrom(DataStream::Serializer& s, const type& v)
+  using type = SEGMent::Transition<SEGMent::SceneModel, SEGMent::SceneModel>;
+  static void readFrom(DataStream::Serializer& s, const type& v)
   {
     auto& st = s.stream();
     st << v.from << v.to << v.source << v.target << v.riddle;
   }
 
-  static void
-  writeTo(DataStream::Deserializer& s, type& v)
+  static void writeTo(DataStream::Deserializer& s, type& v)
   {
     auto& st = s.stream();
     st >> v.from >> v.to >> v.source >> v.target >> v.riddle;
@@ -200,11 +202,12 @@ struct TSerializer<DataStream, SEGMent::Transition<SEGMent::SceneModel,SEGMent::
 };
 
 template <>
-struct TSerializer<JSONObject, SEGMent::Transition<SEGMent::SceneModel,SEGMent::SceneModel>>
+struct TSerializer<
+    JSONObject,
+    SEGMent::Transition<SEGMent::SceneModel, SEGMent::SceneModel>>
 {
-  using type = SEGMent::Transition<SEGMent::SceneModel,SEGMent::SceneModel>;
-  static void
-  readFrom(JSONObject::Serializer& s, const type& v)
+  using type = SEGMent::Transition<SEGMent::SceneModel, SEGMent::SceneModel>;
+  static void readFrom(JSONObject::Serializer& s, const type& v)
   {
     s.obj["From"] = pathToString(v.from);
     s.obj["To"] = pathToString(v.to);
@@ -213,11 +216,12 @@ struct TSerializer<JSONObject, SEGMent::Transition<SEGMent::SceneModel,SEGMent::
     s.obj["Riddle"] = toJsonObject(v.riddle);
   }
 
-  static void
-  writeTo(JSONObject::Deserializer& s,type& v)
+  static void writeTo(JSONObject::Deserializer& s, type& v)
   {
-    v.from = SEGMent::pathFromString<SEGMent::SceneModel>(s.obj["From"].toString());
-    v.to = SEGMent::pathFromString<SEGMent::SceneModel>(s.obj["To"].toString());
+    v.from = SEGMent::pathFromString<SEGMent::SceneModel>(
+        s.obj["From"].toString());
+    v.to
+        = SEGMent::pathFromString<SEGMent::SceneModel>(s.obj["To"].toString());
     v.source = s.obj["Source"].toInt();
     v.target = s.obj["Target"].toInt();
     v.riddle = fromJsonObject<SEGMent::riddle_t>(s.obj["Riddle"].toObject());

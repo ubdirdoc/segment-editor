@@ -11,11 +11,13 @@ namespace score
 ProjectSettingsFactory::~ProjectSettingsFactory() = default;
 
 ProjectSettingsPresenter* ProjectSettingsFactory::makePresenter(
-    ProjectSettingsModel& m, ProjectSettingsView& v, QObject* parent)
+    ProjectSettingsModel& m,
+    ProjectSettingsView& v,
+    QObject* parent)
 {
   auto p = makePresenter_impl(m, v, parent);
   v.setPresenter(p);
 
   return p;
 }
-}
+} // namespace score

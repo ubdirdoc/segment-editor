@@ -49,11 +49,7 @@ const GUIApplicationContext& PanelDelegate::context() const
   return m_context;
 }
 
-void PanelDelegate::setNewSelection(const Selection& s)
-{
-}
+void PanelDelegate::setNewSelection(const Selection& s) {}
 
-void PanelDelegate::on_modelChanged(MaybeDocument oldm, MaybeDocument newm)
-{
-}
-}
+void PanelDelegate::on_modelChanged(MaybeDocument oldm, MaybeDocument newm) {}
+} // namespace score

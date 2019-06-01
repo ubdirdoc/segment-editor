@@ -1,7 +1,8 @@
 #pragma once
+#include <score/command/CommandFactoryKey.hpp>
+
 #include <QByteArray>
 #include <QString>
-#include <score/command/CommandFactoryKey.hpp>
 
 namespace score
 {
@@ -50,7 +51,7 @@ protected:
     // TODO check if this is UTC
     std::chrono::milliseconds m_timestamp;*/
 };
-}
+} // namespace score
 
 /**
  * \macro SCORE_COMMAND_DECL
@@ -70,29 +71,21 @@ protected:
  * IScoreFunctions.cmake. See score_generate_command_list_file.
  *
  */
-#define SCORE_COMMAND_DECL(parentNameFun, name, desc)        \
-public:                                                      \
-  name() noexcept                                            \
-  {                                                          \
-  }                                                          \
-  const CommandGroupKey& parentKey() const noexcept override \
-  {                                                          \
-    return parentNameFun;                                    \
-  }                                                          \
-  const CommandKey& key() const noexcept override            \
-  {                                                          \
-    return static_key();                                     \
-  }                                                          \
-  QString description() const override                       \
-  {                                                          \
-    return QObject::tr(desc);                                \
-  }                                                          \
-  static const CommandKey& static_key() noexcept             \
-  {                                                          \
-    static const CommandKey var{#name};                      \
-    return var;                                              \
-  }                                                          \
-                                                             \
+#define SCORE_COMMAND_DECL(parentNameFun, name, desc)                      \
+public:                                                                    \
+  name() noexcept {}                                                       \
+  const CommandGroupKey& parentKey() const noexcept override               \
+  {                                                                        \
+    return parentNameFun;                                                  \
+  }                                                                        \
+  const CommandKey& key() const noexcept override { return static_key(); } \
+  QString description() const override { return QObject::tr(desc); }       \
+  static const CommandKey& static_key() noexcept                           \
+  {                                                                        \
+    static const CommandKey var{#name};                                    \
+    return var;                                                            \
+  }                                                                        \
+                                                                           \
 private:
 
 /**

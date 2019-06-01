@@ -18,20 +18,18 @@ DocumentPlugin::DocumentPlugin(
 {
 }
 
-void DocumentPlugin::on_documentClosing()
-{
-}
+void DocumentPlugin::on_documentClosing() {}
 
 DocumentPlugin::~DocumentPlugin() = default;
 SerializableDocumentPlugin::~SerializableDocumentPlugin() = default;
 DocumentPluginFactory::~DocumentPluginFactory() = default;
 
-DocumentPluginFactoryList::~DocumentPluginFactoryList()
-{
-}
+DocumentPluginFactoryList::~DocumentPluginFactoryList() {}
 
 DocumentPluginFactoryList::object_type* DocumentPluginFactoryList::loadMissing(
-    const VisitorVariant& vis, DocumentContext& doc, QObject* parent) const
+    const VisitorVariant& vis,
+    DocumentContext& doc,
+    QObject* parent) const
 {
   SCORE_TODO;
   return nullptr;
@@ -45,7 +43,7 @@ void SerializableDocumentPlugin::serializeAfterDocument(
 void SerializableDocumentPlugin::reloadAfterDocument(const VisitorVariant& vis)
 {
 }
-}
+} // namespace score
 
 template <>
 void DataStreamReader::read(const score::SerializableDocumentPlugin& dpm)

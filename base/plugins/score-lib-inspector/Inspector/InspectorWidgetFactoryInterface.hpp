@@ -1,7 +1,9 @@
 #pragma once
 
-#include <QString>
 #include <score/plugins/customfactory/FactoryInterface.hpp>
+
+#include <QString>
+
 #include <score_lib_inspector_export.h>
 class IdentifiedObjectAbstract;
 namespace score
@@ -29,7 +31,9 @@ class InspectorWidgetBase;
 class SCORE_LIB_INSPECTOR_EXPORT InspectorWidgetFactory
     : public score::InterfaceBase
 {
-  SCORE_INTERFACE(InspectorWidgetFactory, "e7098592-7e2f-400d-9b71-2628d7276f99")
+  SCORE_INTERFACE(
+      InspectorWidgetFactory,
+      "e7098592-7e2f-400d-9b71-2628d7276f99")
 public:
   virtual ~InspectorWidgetFactory();
 
@@ -44,8 +48,9 @@ public:
       QWidget* parent) const = 0;
 
   virtual bool update(
-      QWidget* cur, const QList<const IdentifiedObjectAbstract*>& obj) const;
+      QWidget* cur,
+      const QList<const IdentifiedObjectAbstract*>& obj) const;
 
   virtual bool matches(const QList<const QObject*>& objects) const = 0;
 };
-}
+} // namespace Inspector

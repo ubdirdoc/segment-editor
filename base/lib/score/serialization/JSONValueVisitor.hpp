@@ -1,15 +1,16 @@
 #pragma once
+#include <score/model/EntityBase.hpp>
+#include <score/serialization/StringConstants.hpp>
+#include <score/serialization/VisitorInterface.hpp>
+#include <score/serialization/VisitorTags.hpp>
+
+#include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/small_vector.hpp>
 
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMap>
-#include <ossia/detail/flat_set.hpp>
-#include <score/model/EntityBase.hpp>
-#include <score/serialization/StringConstants.hpp>
-#include <score/serialization/VisitorInterface.hpp>
-#include <score/serialization/VisitorTags.hpp>
 template <class>
 class StringKey;
 
@@ -24,10 +25,7 @@ public:
   using Deserializer = JSONValueWriter;
 
   // TODO this one isn't part of serialize_dyn, etc.
-  static constexpr SerializationIdentifier type()
-  {
-    return 3;
-  }
+  static constexpr SerializationIdentifier type() { return 3; }
 };
 
 class SCORE_LIB_BASE_EXPORT JSONValueReader : public AbstractVisitor
@@ -39,10 +37,7 @@ public:
   JSONValueReader(const JSONValueReader&) = delete;
   JSONValueReader& operator=(const JSONValueReader&) = delete;
 
-  VisitorVariant toVariant()
-  {
-    return {*this, JSONValue::type()};
-  }
+  VisitorVariant toVariant() { return {*this, JSONValue::type()}; }
 
   template <typename T>
   void readFrom(const T& obj)
@@ -81,22 +76,15 @@ public:
   using is_visitor_tag = std::integral_constant<bool, true>;
   using is_deserializer_tag = std::integral_constant<bool, true>;
 
-  VisitorVariant toVariant()
-  {
-    return {*this, JSONValue::type()};
-  }
+  VisitorVariant toVariant() { return {*this, JSONValue::type()}; }
 
   JSONValueWriter() = default;
   JSONValueWriter(const JSONValueReader&) = delete;
   JSONValueWriter& operator=(const JSONValueWriter&) = delete;
 
-  JSONValueWriter(const QJsonValue& obj) : val{obj}
-  {
-  }
+  JSONValueWriter(const QJsonValue& obj) : val{obj} {}
 
-  JSONValueWriter(QJsonValue&& obj) : val{std::move(obj)}
-  {
-  }
+  JSONValueWriter(QJsonValue&& obj) : val{std::move(obj)} {}
 
   template <typename T>
   void writeTo(T& obj)
@@ -206,7 +194,9 @@ struct TSerializer<JSONValue, QRectF>
   {
     auto arr = s.val.toArray();
     SCORE_ASSERT(arr.size() == 4);
-    obj = {arr[0].toDouble(), arr[1].toDouble(), arr[2].toDouble(),
+    obj = {arr[0].toDouble(),
+           arr[1].toDouble(),
+           arr[2].toDouble(),
            arr[3].toDouble()};
   }
 };
@@ -337,7 +327,8 @@ void fromJsonValueArray(const QJsonArray& json_arr, T<Id<V>, Alloc>& arr)
 #if defined(OSSIA_SMALL_VECTOR)
 template <typename V, std::size_t N>
 void fromJsonValueArray(
-    const QJsonArray& json_arr, ossia::small_vector<Id<V>, N>& arr)
+    const QJsonArray& json_arr,
+    ossia::small_vector<Id<V>, N>& arr)
 {
   arr.reserve(json_arr.size());
   for (const auto& elt : json_arr)
@@ -348,7 +339,8 @@ void fromJsonValueArray(
 
 template <typename V, std::size_t N>
 void fromJsonValueArray(
-    const QJsonArray& json_arr, ossia::static_vector<Id<V>, N>& arr)
+    const QJsonArray& json_arr,
+    ossia::static_vector<Id<V>, N>& arr)
 {
   arr.reserve(json_arr.size());
   for (const auto& elt : json_arr)
@@ -570,7 +562,8 @@ struct TSerializer<JSONValue, UuidKey<U>>
 template <typename T, typename Alloc>
 struct TSerializer<JSONValue, std::vector<T, Alloc>>
 {
-  static void readFrom(JSONValue::Serializer& s, const std::vector<T, Alloc>& vec)
+  static void
+  readFrom(JSONValue::Serializer& s, const std::vector<T, Alloc>& vec)
   {
     QJsonArray arr;
     for (const auto& e : vec)
@@ -701,8 +694,7 @@ QJsonArray toJsonArray(const std::array<optional<float>, N>& array)
 }
 
 template <std::size_t N>
-QJsonArray
-toJsonArray(const std::array<ossia::flat_set<float>, N>& array)
+QJsonArray toJsonArray(const std::array<ossia::flat_set<float>, N>& array)
 {
   QJsonArray arr;
   for (auto& v : array)

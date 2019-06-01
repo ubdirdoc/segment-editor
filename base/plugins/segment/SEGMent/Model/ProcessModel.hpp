@@ -1,8 +1,9 @@
 #pragma once
-#include <SEGMent/Model/Scene.hpp>
-#include <SEGMent/Model/Transition.hpp>
 #include <score/model/EntityMap.hpp>
 #include <score/tools/Metadata.hpp>
+
+#include <SEGMent/Model/Scene.hpp>
+#include <SEGMent/Model/Transition.hpp>
 namespace SEGMent
 {
 class ProcessModel final : public score::Entity<ProcessModel>
@@ -10,9 +11,7 @@ class ProcessModel final : public score::Entity<ProcessModel>
   SCORE_SERIALIZE_FRIENDS
 
 public:
-  ProcessModel(
-      Id<ProcessModel> id,
-      QObject* parent);
+  ProcessModel(Id<ProcessModel> id, QObject* parent);
 
   template <typename Impl>
   ProcessModel(Impl&& vis, QObject* parent)
@@ -25,7 +24,7 @@ public:
   score::EntityMap<SceneModel> scenes;
   score::EntityMap<TransitionModel> transitions;
 };
-}
+} // namespace SEGMent
 
 OBJECTKEY_METADATA(, SEGMent::ProcessModel, "SEGMentProcess")
 TR_TEXT_METADATA(, SEGMent::ProcessModel, PrettyName_k, "Process")

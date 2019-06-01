@@ -7,9 +7,7 @@ W_OBJECT_IMPL(score::DocumentMetadata)
 namespace score
 {
 
-DocumentMetadata::DocumentMetadata(QString file) : m_fileName{file}
-{
-}
+DocumentMetadata::DocumentMetadata(QString file) : m_fileName{file} {}
 
 QString DocumentMetadata::fileName() const
 {
@@ -66,4 +64,4 @@ void DocumentMetadata::setLastEdition(QDateTime lastEdition)
   m_lastEdition = lastEdition;
   lastEditionChanged(lastEdition);
 }
-}
+} // namespace score

@@ -52,10 +52,7 @@ class GenericComponentFactoryImpl : public ComponentFactoryBase_T
   using ConcreteKey = typename ComponentFactoryBase_T::ConcreteKey;
   using ComponentFactoryBase_T::ComponentFactoryBase_T;
 
-  static auto static_concreteKey()
-  {
-    return Component_T::static_key().impl();
-  }
+  static auto static_concreteKey() { return Component_T::static_key().impl(); }
 
   ConcreteKey concreteKey() const noexcept final override
   {
@@ -70,4 +67,4 @@ class GenericComponentFactoryImpl : public ComponentFactoryBase_T
     return dynamic_cast<const model_type*>(&p);
   }
 };
-}
+} // namespace score

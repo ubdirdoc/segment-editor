@@ -1,14 +1,17 @@
 #pragma once
+#include <score/command/Dispatchers/CommandDispatcher.hpp>
+
 #include <QColor>
-#include <wobjectdefs.h>
 #include <QLabel>
 #include <QString>
 #include <QWidget>
+#include <qnamespace.h>
+
+#include <score_lib_inspector_export.h>
+#include <wobjectdefs.h>
+
 #include <list>
 #include <memory>
-#include <qnamespace.h>
-#include <score/command/Dispatchers/CommandDispatcher.hpp>
-#include <score_lib_inspector_export.h>
 
 class IdentifiedObjectAbstract;
 class QVBoxLayout;
@@ -17,7 +20,7 @@ namespace score
 {
 struct DocumentContext;
 class SelectionDispatcher;
-}
+} // namespace score
 
 namespace Inspector
 {
@@ -44,13 +47,11 @@ public:
       QString name);
   ~InspectorWidgetBase();
 
-  const score::DocumentContext& context() const
-  {
-    return m_context;
-  }
+  const score::DocumentContext& context() const { return m_context; }
 
   void updateSectionsView(
-      QVBoxLayout* layout, const std::vector<QWidget*>& contents);
+      QVBoxLayout* layout,
+      const std::vector<QWidget*>& contents);
   void updateAreaLayout(const std::vector<QWidget*>& contents);
   void updateAreaLayout(std::initializer_list<QWidget*> contents);
 
@@ -64,10 +65,7 @@ public:
   }
 
   // getters
-  QVBoxLayout* areaLayout()
-  {
-    return m_scrollAreaLayout;
-  }
+  QVBoxLayout* areaLayout() { return m_scrollAreaLayout; }
 
   CommandDispatcher<>* commandDispatcher() const
   {
@@ -88,4 +86,4 @@ private:
   QVBoxLayout* m_layout{};
   QLabel* m_label{};
 };
-}
+} // namespace Inspector

@@ -24,7 +24,6 @@ void ImageModel::setImage(const Image& v) MSVC_NOEXCEPT
   }
 }
 
-
 bool ImageModel::puzzle() const MSVC_NOEXCEPT
 {
   return m_puzzle;
@@ -38,7 +37,7 @@ void ImageModel::setPuzzle(bool v) MSVC_NOEXCEPT
     puzzleChanged(v);
   }
 }
-}
+} // namespace SEGMent
 
 template <>
 void DataStreamReader::read(const SEGMent::ImageModel& v)

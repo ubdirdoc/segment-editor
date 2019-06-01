@@ -1,8 +1,9 @@
 #pragma once
-#include <QImage>
-#include <QObject>
 #include <score/plugins/customfactory/UuidKey.hpp>
 #include <score/plugins/qt_interfaces/PluginRequirements_QtInterface.hpp>
+
+#include <QImage>
+#include <QObject>
 
 namespace score
 {
@@ -37,7 +38,7 @@ struct SCORE_LIB_BASE_EXPORT Addon
  */
 SCORE_LIB_BASE_EXPORT
 QString addonArchitecture();
-}
+} // namespace score
 
 /**
  * Addons are located on-disk in $DOCUMENTS/score/plugins

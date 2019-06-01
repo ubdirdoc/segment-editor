@@ -3,10 +3,12 @@
 #include <score/plugins/documentdelegate/DocumentDelegateModel.hpp>
 #include <score/plugins/documentdelegate/DocumentDelegatePresenter.hpp>
 #include <score/plugins/documentdelegate/DocumentDelegateView.hpp>
+
 #include <QGraphicsView>
-#include <nano_observer.hpp>
+
 #include <SEGMent/Items/Arrow.hpp>
 #include <SEGMent/Items/SceneWindow.hpp>
+#include <nano_observer.hpp>
 
 namespace SEGMent
 {
@@ -15,19 +17,18 @@ class ZoomView;
 class Presenter;
 
 //! The base data model for a SEGMent document.
-class DocumentModel final
-    : public score::DocumentDelegateModel
-    , public Nano::Observer
+class DocumentModel final : public score::DocumentDelegateModel,
+                            public Nano::Observer
 {
   W_OBJECT(DocumentModel)
   SCORE_SERIALIZE_FRIENDS
-  public:
-    DocumentModel(const score::DocumentContext& ctx, QObject* parent);
+public:
+  DocumentModel(const score::DocumentContext& ctx, QObject* parent);
 
   SEGMent::ProcessModel& process() const;
   template <typename Impl>
   DocumentModel(Impl& vis, const score::DocumentContext& ctx, QObject* parent)
-    : score::DocumentDelegateModel{vis, parent}, m_context{ctx}
+      : score::DocumentDelegateModel{vis, parent}, m_context{ctx}
   {
     vis.writeTo(*this);
   }
@@ -41,14 +42,13 @@ private:
   SEGMent::ProcessModel* m_base{};
 };
 
-
 //! Displays a SEGMent document
 class DocumentView final : public score::DocumentDelegateView
 {
   W_OBJECT(DocumentView)
 
-  public:
-    DocumentView(const score::DocumentContext& ctx, QObject* parent);
+public:
+  DocumentView(const score::DocumentContext& ctx, QObject* parent);
   ~DocumentView() override;
 
   ZoomView& graphicsView() { return m_view; }
@@ -107,4 +107,4 @@ class DocumentFactory final : public score::DocumentDelegateFactory
       score::DocumentModel* parent) override;
 };
 
-}
+} // namespace SEGMent

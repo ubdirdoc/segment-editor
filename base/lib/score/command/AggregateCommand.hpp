@@ -1,8 +1,9 @@
 #pragma once
+#include <score/command/Command.hpp>
+
 #include <algorithm>
 #include <list>
 #include <memory>
-#include <score/command/Command.hpp>
 
 namespace score
 {
@@ -47,10 +48,7 @@ public:
   //! Number of commands in this aggregate
   int count() const;
 
-  const auto& commands() const
-  {
-    return m_cmds;
-  }
+  const auto& commands() const { return m_cmds; }
 
 protected:
   void serializeImpl(DataStreamInput&) const override;
@@ -58,4 +56,4 @@ protected:
 
   std::list<score::Command*> m_cmds;
 };
-}
+} // namespace score

@@ -1,6 +1,7 @@
 #pragma once
 #include <score/model/Component.hpp>
 #include <score/plugins/customfactory/SerializableInterface.hpp>
+
 #include <type_traits>
 
 namespace score
@@ -27,10 +28,7 @@ public:
   //! Returns true if all components could be loaded
   bool deserializeRemaining(score::Components& comps, QObject* entity);
 
-  bool finished() const
-  {
-    return data.empty();
-  }
+  bool finished() const { return data.empty(); }
 
   DataStreamComponents data;
 };
@@ -41,24 +39,23 @@ class SCORE_LIB_BASE_EXPORT JSONSerializedComponents : public score::Component
 public:
   static const constexpr bool is_unique = true;
   JSONSerializedComponents(
-      const Id<score::Component>& id, JSONComponents obj, QObject* parent);
+      const Id<score::Component>& id,
+      JSONComponents obj,
+      QObject* parent);
 
   virtual ~JSONSerializedComponents();
 
   //! Returns true if all components could be loaded
   bool deserializeRemaining(score::Components& comps, QObject* entity);
 
-  bool finished() const
-  {
-    return data.empty();
-  }
+  bool finished() const { return data.empty(); }
 
   JSONComponents data;
 };
 
 class SCORE_LIB_BASE_EXPORT SerializableComponent
-    : public score::Component
-    , public score::SerializableInterface<score::SerializableComponent>
+    : public score::Component,
+      public score::SerializableInterface<score::SerializableComponent>
 {
 public:
   using score::Component::Component;
@@ -75,7 +72,9 @@ public:
 struct SCORE_LIB_BASE_EXPORT SerializableComponentFactory
     : public score::InterfaceBase
 {
-  SCORE_INTERFACE(SerializableComponentFactory, "ffafadc2-0ce7-45d8-b673-d9238c37d018")
+  SCORE_INTERFACE(
+      SerializableComponentFactory,
+      "ffafadc2-0ce7-45d8-b673-d9238c37d018")
 public:
   ~SerializableComponentFactory() override;
   virtual score::SerializableComponent* make(
@@ -113,10 +112,7 @@ public:
   {
   }
 
-  System_T& system() const
-  {
-    return m_system;
-  }
+  System_T& system() const { return m_system; }
 
 private:
   System_T& m_system;
@@ -183,4 +179,4 @@ auto deserialize_component(score::Components& comps, Fun f)
 
 SCORE_LIB_BASE_EXPORT
 void deserializeRemainingComponents(score::Components& comps, QObject* obj);
-}
+} // namespace score

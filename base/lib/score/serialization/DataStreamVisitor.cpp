@@ -2,17 +2,16 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "DataStreamVisitor.hpp"
 
-#include <QIODevice>
 #include <score/application/ApplicationContext.hpp>
+
+#include <QIODevice>
 
 template <typename T>
 class Reader;
 template <typename T>
 class Writer;
 
-DataStreamReader::DataStreamReader() : components{score::AppComponents()}
-{
-}
+DataStreamReader::DataStreamReader() : components{score::AppComponents()} {}
 
 DataStreamReader::DataStreamReader(QByteArray* array)
     : m_stream_impl{array, QIODevice::WriteOnly}
@@ -26,9 +25,7 @@ DataStreamReader::DataStreamReader(QIODevice* dev)
 {
 }
 
-DataStreamWriter::DataStreamWriter() : components{score::AppComponents()}
-{
-}
+DataStreamWriter::DataStreamWriter() : components{score::AppComponents()} {}
 
 DataStreamWriter::DataStreamWriter(const QByteArray& array)
     : m_stream_impl{array}, components{score::AppComponents()}

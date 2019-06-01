@@ -3,6 +3,7 @@
 #include <score/plugins/settingsdelegate/SettingsDelegateModel.hpp>
 #include <score/plugins/settingsdelegate/SettingsDelegatePresenter.hpp>
 #include <score/plugins/settingsdelegate/SettingsDelegateView.hpp>
+
 #include <score_lib_base_export.h>
 
 class QSettings;
@@ -20,7 +21,9 @@ class SettingsPresenter;
 class SCORE_LIB_BASE_EXPORT SettingsDelegateFactory
     : public score::InterfaceBase
 {
-  SCORE_INTERFACE(SettingsDelegateFactory, "f18653bc-7ca9-44aa-a08b-4188d086b46e")
+  SCORE_INTERFACE(
+      SettingsDelegateFactory,
+      "f18653bc-7ca9-44aa-a08b-4188d086b46e")
 
 public:
   virtual ~SettingsDelegateFactory();
@@ -54,18 +57,15 @@ class SettingsDelegateFactory_T : public SettingsDelegateFactory
     return std::make_unique<Model_T>(settings, ctx);
   }
 
-  score::GlobalSettingsView* makeView() override
-  {
-    return new View_T;
-  }
+  score::GlobalSettingsView* makeView() override { return new View_T; }
 
   score::GlobalSettingsPresenter* makePresenter_impl(
       score::SettingsDelegateModel& m,
       score::GlobalSettingsView& v,
       QObject* parent) override
   {
-    return new Presenter_T{safe_cast<Model_T&>(m), safe_cast<View_T&>(v),
-                           parent};
+    return new Presenter_T{
+        safe_cast<Model_T&>(m), safe_cast<View_T&>(v), parent};
   }
 };
 
@@ -75,4 +75,4 @@ class SettingsDelegateFactory_T : public SettingsDelegateFactory
   {                                                                           \
     SCORE_CONCRETE(Uuid)                                                      \
   };
-}
+} // namespace score

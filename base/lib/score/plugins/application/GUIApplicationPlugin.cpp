@@ -3,10 +3,11 @@
 
 #include "GUIApplicationPlugin.hpp"
 
-#include <QApplication>
 #include <core/document/Document.hpp>
 #include <core/presenter/DocumentManager.hpp>
 #include <core/presenter/Presenter.hpp>
+
+#include <QApplication>
 
 class QAction;
 class QObject;
@@ -26,9 +27,7 @@ ApplicationPlugin::ApplicationPlugin(const ApplicationContext& ctx)
 {
 }
 
-void ApplicationPlugin::initialize()
-{
-}
+void ApplicationPlugin::initialize() {}
 
 GUIApplicationPlugin::GUIApplicationPlugin(
     const score::GUIApplicationContext& app)
@@ -43,9 +42,7 @@ GUIElements GUIApplicationPlugin::makeGUIElements()
   return {};
 }
 
-void GUIApplicationPlugin::initialize()
-{
-}
+void GUIApplicationPlugin::initialize() {}
 
 Document* GUIApplicationPlugin::currentDocument() const
 {
@@ -57,32 +54,21 @@ bool GUIApplicationPlugin::handleStartup()
   return false;
 }
 
-void GUIApplicationPlugin::prepareNewDocument()
-{
-}
+void GUIApplicationPlugin::prepareNewDocument() {}
 
 void GUIApplicationPlugin::on_documentChanged(
-    score::Document* olddoc, score::Document* newdoc)
+    score::Document* olddoc,
+    score::Document* newdoc)
 {
 }
 
-void GUIApplicationPlugin::on_activeWindowChanged()
-{
-}
+void GUIApplicationPlugin::on_activeWindowChanged() {}
 
-void GUIApplicationPlugin::on_initDocument(score::Document& doc)
-{
-}
+void GUIApplicationPlugin::on_initDocument(score::Document& doc) {}
 
-void GUIApplicationPlugin::on_newDocument(score::Document& doc)
-{
-}
+void GUIApplicationPlugin::on_newDocument(score::Document& doc) {}
 
-void GUIApplicationPlugin::on_loadedDocument(score::Document& doc)
-{
-}
+void GUIApplicationPlugin::on_loadedDocument(score::Document& doc) {}
 
-void GUIApplicationPlugin::on_createdDocument(score::Document& doc)
-{
-}
-}
+void GUIApplicationPlugin::on_createdDocument(score::Document& doc) {}
+} // namespace score

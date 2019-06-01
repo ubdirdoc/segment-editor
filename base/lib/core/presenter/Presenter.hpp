@@ -1,14 +1,18 @@
 #pragma once
-#include <QMenuBar>
-#include <wobjectdefs.h>
-#include <core/presenter/DocumentManager.hpp>
-#include <core/settings/Settings.hpp>
 #include <score/actions/ActionManager.hpp>
 #include <score/actions/MenuManager.hpp>
 #include <score/actions/ToolbarManager.hpp>
 #include <score/application/ApplicationComponents.hpp>
 #include <score/application/GUIApplicationContext.hpp>
+
+#include <core/presenter/DocumentManager.hpp>
+#include <core/settings/Settings.hpp>
+
+#include <QMenuBar>
+
 #include <score_lib_base_export.h>
+#include <wobjectdefs.h>
+
 #include <vector>
 class QObject;
 
@@ -46,40 +50,22 @@ public:
 
   View* view() const;
 
-  auto& menuManager()
-  {
-    return m_menus;
-  }
-  auto& toolbarManager()
-  {
-    return m_toolbars;
-  }
-  auto& actionManager()
-  {
-    return m_actions;
-  }
+  auto& menuManager() { return m_menus; }
+  auto& toolbarManager() { return m_toolbars; }
+  auto& actionManager() { return m_actions; }
 
   // Called after all the classes
   // have been loaded from plug-ins.
   void setupGUI();
 
-  auto& documentManager()
-  {
-    return m_docManager;
-  }
+  auto& documentManager() { return m_docManager; }
   const ApplicationComponents& applicationComponents()
   {
     return m_components_readonly;
   }
-  const GUIApplicationContext& applicationContext()
-  {
-    return m_context;
-  }
+  const GUIApplicationContext& applicationContext() { return m_context; }
 
-  auto& components()
-  {
-    return m_components;
-  }
+  auto& components() { return m_components; }
 
   void optimize();
 
@@ -100,4 +86,4 @@ private:
   ToolbarManager m_toolbars;
   ActionManager m_actions;
 };
-}
+} // namespace score

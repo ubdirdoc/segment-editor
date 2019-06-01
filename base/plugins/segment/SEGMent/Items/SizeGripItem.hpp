@@ -50,8 +50,8 @@ private:
     int positionFlags() const;
 
   protected:
-    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-
+    QVariant
+    itemChange(GraphicsItemChange change, const QVariant& value) override;
 
   private:
     QPointF restrictPosition(const QPointF& newPos);
@@ -98,13 +98,13 @@ public:
 
   void startMove();
   void finishMove();
+
 private:
   void doResize();
 
   QList<HandleItem*> handleItems_;
   QRectF rect_;
   Resizer* resizer_;
-
 };
 
 #endif // SIZEGRIPITEM_H

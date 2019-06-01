@@ -1,6 +1,8 @@
 #pragma once
-#include <QStringList>
 #include <score/tools/Version.hpp>
+
+#include <QStringList>
+
 #include <score_lib_base_export.h>
 namespace score
 {
@@ -33,4 +35,4 @@ struct SCORE_LIB_BASE_EXPORT ApplicationSettings
 
 SCORE_LIB_BASE_EXPORT
 void setQApplicationMetadata();
-}
+} // namespace score

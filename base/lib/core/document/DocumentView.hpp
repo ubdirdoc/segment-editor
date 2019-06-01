@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+
 #include <wobjectdefs.h>
 
 namespace score
@@ -25,20 +26,14 @@ public:
       const Document& doc,
       QObject* parent);
 
-  DocumentDelegateView& viewDelegate() const
-  {
-    return *m_view;
-  }
+  DocumentDelegateView& viewDelegate() const { return *m_view; }
 
-  const Document& document() const
-  {
-    return m_document;
-  }
+  const Document& document() const { return m_document; }
 
 private:
   const Document& m_document;
   DocumentDelegateView* m_view{};
 };
-}
+} // namespace score
 
 W_REGISTER_ARGTYPE(score::DocumentView*)

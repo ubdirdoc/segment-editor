@@ -1,6 +1,7 @@
 #pragma once
-#include <QLabel>
 #include <score/tools/Todo.hpp>
+
+#include <QLabel>
 
 namespace score
 {
@@ -14,4 +15,4 @@ public:
     con(model, Property_T::notify(), this, &QLabel::setText);
   }
 };
-}
+} // namespace score

@@ -1,105 +1,98 @@
 #pragma once
 #include <score/serialization/DataStreamVisitor.hpp>
 #include <score/serialization/JSONVisitor.hpp>
-#include <SEGMent/Model/Sound.hpp>
+
 #include <SEGMent/Model/Model.hpp>
+#include <SEGMent/Model/Sound.hpp>
 #include <wobjectimpl.h>
 
 namespace SEGMent
 {
 //! A trait for objects that are positioned relatively to their parent
-template<typename T>
-class RelativePositionable
-    : public T
+template <typename T>
+class RelativePositionable : public T
 {
   W_OBJECT(RelativePositionable)
   friend struct TSerializer<JSONObject, SEGMent::RelativePositionable<T>>;
   friend struct TSerializer<DataStream, SEGMent::RelativePositionable<T>>;
 
-    // Pos and size are given relative to parent
-  public:
-    using base_type = T;
-    using T::T;
+  // Pos and size are given relative to parent
+public:
+  using base_type = T;
+  using T::T;
 
-    template <typename DeserializerVisitor>
-    RelativePositionable(DeserializerVisitor&& vis, QObject* parent)
-        : T{std::forward<DeserializerVisitor>(vis), parent}
+  template <typename DeserializerVisitor>
+  RelativePositionable(DeserializerVisitor&& vis, QObject* parent)
+      : T{std::forward<DeserializerVisitor>(vis), parent}
+  {
+    vis.writeTo(*this);
+  }
+
+  const QPointF& pos() const MSVC_NOEXCEPT { return m_pos; }
+
+  void setPos(const QPointF& v) MSVC_NOEXCEPT
+  {
+    if (m_pos != v)
     {
-      vis.writeTo(*this);
+      m_pos = v;
+      posChanged(v);
     }
+  }
+  void posChanged(const QPointF& v) W_SIGNAL(posChanged, v);
+  PROPERTY(QPointF, pos READ pos WRITE setPos NOTIFY posChanged)
+private:
+  QPointF m_pos{};
 
-    const QPointF& pos() const MSVC_NOEXCEPT
+public:
+  const QSizeF& size() const MSVC_NOEXCEPT { return m_size; }
+
+  void setSize(const QSizeF& v) MSVC_NOEXCEPT
+  {
+    if (m_size != v)
     {
-      return m_pos;
+      m_size = v;
+      sizeChanged(v);
     }
+  }
 
-    void setPos(const QPointF& v) MSVC_NOEXCEPT
+  void sizeChanged(const QSizeF& v) W_SIGNAL(sizeChanged, v);
+  PROPERTY(QSizeF, size READ size WRITE setSize NOTIFY sizeChanged)
+private:
+  QSizeF m_size{};
+
+public:
+  int z() const MSVC_NOEXCEPT { return m_z; }
+
+  void setZ(int v) MSVC_NOEXCEPT
+  {
+    if (m_z != v)
     {
-      if (m_pos != v)
-      {
-        m_pos = v;
-        posChanged(v);
-      }
+      m_z = v;
+      zChanged(v);
     }
-    void posChanged(const QPointF& v) W_SIGNAL(posChanged, v);
-    PROPERTY(QPointF, pos READ pos WRITE setPos NOTIFY posChanged)
-  private:
-    QPointF m_pos{};
+  }
 
-  public:
-    const QSizeF& size() const MSVC_NOEXCEPT
-    {
-      return m_size;
-    }
-
-    void setSize(const QSizeF& v) MSVC_NOEXCEPT
-    {
-      if (m_size != v)
-      {
-        m_size = v;
-        sizeChanged(v);
-      }
-    }
-
-    void sizeChanged(const QSizeF& v) W_SIGNAL(sizeChanged, v);
-    PROPERTY(QSizeF, size READ size WRITE setSize NOTIFY sizeChanged)
-  private:
-    QSizeF m_size{};
-
-  public:
-    int z() const MSVC_NOEXCEPT
-    {
-      return m_z;
-    }
-
-    void setZ(int v) MSVC_NOEXCEPT
-    {
-      if (m_z != v)
-      {
-        m_z = v;
-        zChanged(v);
-      }
-    }
-
-    void zChanged(int v) W_SIGNAL(zChanged, v);
-    PROPERTY(int, z READ z WRITE setZ NOTIFY zChanged)
-  private:
-    int m_z{};
+  void zChanged(int v) W_SIGNAL(zChanged, v);
+  PROPERTY(int, z READ z WRITE setZ NOTIFY zChanged)
+private:
+  int m_z{};
 };
 
 W_OBJECT_IMPL(RelativePositionable<T>, template <typename T>)
-}
-
+} // namespace SEGMent
 
 template <typename T>
 struct TSerializer<DataStream, SEGMent::RelativePositionable<T>>
 {
-  static void readFrom(DataStream::Serializer& s, const SEGMent::RelativePositionable<T>& v)
+  static void readFrom(
+      DataStream::Serializer& s,
+      const SEGMent::RelativePositionable<T>& v)
   {
     s.stream() << v.m_pos << v.m_size;
   }
 
-  static void writeTo(DataStream::Deserializer& s, SEGMent::RelativePositionable<T>& v)
+  static void
+  writeTo(DataStream::Deserializer& s, SEGMent::RelativePositionable<T>& v)
   {
     s.stream() >> v.m_pos >> v.m_size;
   }
@@ -108,14 +101,17 @@ struct TSerializer<DataStream, SEGMent::RelativePositionable<T>>
 template <typename T>
 struct TSerializer<JSONObject, SEGMent::RelativePositionable<T>>
 {
-  static void readFrom(JSONObject::Serializer& s, const SEGMent::RelativePositionable<T>& v)
+  static void readFrom(
+      JSONObject::Serializer& s,
+      const SEGMent::RelativePositionable<T>& v)
   {
     s.obj["Pos"] = toJsonValue(v.m_pos);
     s.obj["Size"] = toJsonValue(v.m_size);
     s.obj["Z"] = v.m_z;
   }
 
-  static void writeTo(JSONObject::Deserializer& s, SEGMent::RelativePositionable<T>& v)
+  static void
+  writeTo(JSONObject::Deserializer& s, SEGMent::RelativePositionable<T>& v)
   {
     v.m_pos = fromJsonValue<QPointF>(s.obj["Pos"]);
     v.m_size = fromJsonValue<QSizeF>(s.obj["Size"]);
@@ -128,14 +124,11 @@ struct is_custom_serialized<SEGMent::RelativePositionable<T>> : std::true_type
 {
 };
 
-
-
 namespace SEGMent
 {
 //! A trait for objects that have a sound
-template<typename T>
-class WithSound
-    : public T
+template <typename T>
+class WithSound : public T
 {
   W_OBJECT(WithSound)
   friend struct TSerializer<JSONObject, SEGMent::WithSound<T>>;
@@ -148,20 +141,14 @@ public:
 
   template <typename DeserializerVisitor>
   WithSound(DeserializerVisitor&& vis, QObject* parent)
-    : T{std::forward<DeserializerVisitor>(vis), parent}
+      : T{std::forward<DeserializerVisitor>(vis), parent}
   {
     vis.writeTo(*this);
   }
 
 public:
-  const Sound& sound() const MSVC_NOEXCEPT
-  {
-    return m_sound;
-  }
-  Sound& sound_ref() MSVC_NOEXCEPT
-  {
-    return m_sound;
-  }
+  const Sound& sound() const MSVC_NOEXCEPT { return m_sound; }
+  Sound& sound_ref() MSVC_NOEXCEPT { return m_sound; }
   void setSound(const Sound& v) MSVC_NOEXCEPT
   {
     if (m_sound != v)
@@ -172,18 +159,18 @@ public:
   }
   void soundChanged(const Sound& v) W_SIGNAL(soundChanged, v);
   PROPERTY(Sound, sound READ sound WRITE setSound NOTIFY soundChanged)
-  private:
-    Sound m_sound;
+private:
+  Sound m_sound;
 };
 
 W_OBJECT_IMPL(WithSound<T>, template <typename T>)
-}
-
+} // namespace SEGMent
 
 template <typename T>
 struct TSerializer<DataStream, SEGMent::WithSound<T>>
 {
-  static void readFrom(DataStream::Serializer& s, const SEGMent::WithSound<T>& v)
+  static void
+  readFrom(DataStream::Serializer& s, const SEGMent::WithSound<T>& v)
   {
     s.stream() << v.m_sound;
   }
@@ -197,7 +184,8 @@ struct TSerializer<DataStream, SEGMent::WithSound<T>>
 template <typename T>
 struct TSerializer<JSONObject, SEGMent::WithSound<T>>
 {
-  static void readFrom(JSONObject::Serializer& s, const SEGMent::WithSound<T>& v)
+  static void
+  readFrom(JSONObject::Serializer& s, const SEGMent::WithSound<T>& v)
   {
     s.obj["Sound"] = toJsonObject(v.m_sound);
   }
@@ -213,12 +201,10 @@ struct is_custom_serialized<SEGMent::WithSound<T>> : std::true_type
 {
 };
 
-
-
 namespace SEGMent
 {
-template<typename T>
+template <typename T>
 using Object = PathAsId<WithSound<RelativePositionable<score::Entity<T>>>>;
-template<typename T>
+template <typename T>
 using SilentObject = PathAsId<RelativePositionable<score::Entity<T>>>;
-}
+} // namespace SEGMent

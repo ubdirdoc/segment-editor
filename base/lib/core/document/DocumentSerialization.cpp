@@ -3,25 +3,6 @@
 #include "Document.hpp"
 #include "DocumentModel.hpp"
 
-#include <QByteArray>
-#include <QCryptographicHash>
-#include <QDataStream>
-#include <QIODevice>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QMetaType>
-#include <QPair>
-#include <QString>
-#include <QVariant>
-#include <QVector>
-#include <QtGlobal>
-#include <algorithm>
-#include <core/application/ApplicationSettings.hpp>
-#include <core/command/CommandStack.hpp>
-#include <core/document/DocumentPresenter.hpp>
-#include <core/document/DocumentView.hpp>
-#include <core/presenter/DocumentManager.hpp>
-#include <iterator>
 #include <score/application/ApplicationComponents.hpp>
 #include <score/application/ApplicationContext.hpp>
 #include <score/document/DocumentContext.hpp>
@@ -36,6 +17,28 @@
 #include <score/serialization/JSONVisitor.hpp>
 #include <score/tools/IdentifierGeneration.hpp>
 #include <score/tools/std/Optional.hpp>
+
+#include <core/application/ApplicationSettings.hpp>
+#include <core/command/CommandStack.hpp>
+#include <core/document/DocumentPresenter.hpp>
+#include <core/document/DocumentView.hpp>
+#include <core/presenter/DocumentManager.hpp>
+
+#include <QByteArray>
+#include <QCryptographicHash>
+#include <QDataStream>
+#include <QIODevice>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QMetaType>
+#include <QPair>
+#include <QString>
+#include <QVariant>
+#include <QVector>
+#include <QtGlobal>
+
+#include <algorithm>
+#include <iterator>
 #include <stdexcept>
 #include <vector>
 
@@ -328,7 +331,8 @@ DocumentModel::DocumentModel(
     DocumentDelegateFactory& fact,
     QObject* parent)
     : IdentifiedObject{Id<DocumentModel>(score::id_generator::getFirstId()),
-                       "DocumentModel", parent}
+                       "DocumentModel",
+                       parent}
 {
   using namespace std;
 
@@ -362,4 +366,4 @@ DocumentModel::DocumentModel(
     throw;
   }
 }
-}
+} // namespace score

@@ -57,10 +57,7 @@ struct SCORE_LIB_BASE_EXPORT ApplicationContext
    *
    * @see score::Addon
    */
-  const auto& addons() const
-  {
-    return components.addons();
-  }
+  const auto& addons() const { return components.addons(); }
 
   /**
    * @brief Access to a specific interface list
@@ -102,4 +99,4 @@ private:
 
 // By default this is defined in score::Application
 SCORE_LIB_BASE_EXPORT const ApplicationContext& AppContext();
-}
+} // namespace score

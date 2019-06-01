@@ -1,9 +1,10 @@
 #pragma once
 #include <score/model/Entity.hpp>
 #include <score/selection/Selectable.hpp>
-#include <SEGMent/FilePath.hpp>
 
 #include <QMediaPlayer>
+
+#include <SEGMent/FilePath.hpp>
 #if defined(Q_CC_MSVC)
 #define MSVC_NOEXCEPT
 #else
@@ -23,7 +24,7 @@ public:
   Sound& operator=(const Sound&);
   Sound& operator=(Sound&&);
 
-  Sound(const QString& s): m_path{s} { }
+  Sound(const QString& s) : m_path{s} {}
 
   friend bool operator==(const Sound& lhs, const Sound& rhs);
   friend bool operator!=(const Sound& lhs, const Sound& rhs);
@@ -58,7 +59,7 @@ public:
   void repeatChanged(bool v) W_SIGNAL(repeatChanged, v);
   PROPERTY(bool, repeat READ repeat WRITE setRepeat NOTIFY repeatChanged)
 private:
-      bool m_repeat{true};
+  bool m_repeat{true};
 };
 
 struct SoundPlayer
@@ -66,11 +67,18 @@ struct SoundPlayer
   QMediaPlayer player;
 
   static SoundPlayer& instance()
-  { static SoundPlayer p; return p; }
+  {
+    static SoundPlayer p;
+    return p;
+  }
 
   static auto convertVolume(double vol)
   {
-    return QAudio::convertVolume(vol / qreal(100.0), QAudio::LogarithmicVolumeScale, QAudio::LinearVolumeScale) * 100.;
+    return QAudio::convertVolume(
+               vol / qreal(100.0),
+               QAudio::LogarithmicVolumeScale,
+               QAudio::LinearVolumeScale)
+           * 100.;
   }
   void play(const Sound& snd, const score::DocumentContext& ctx)
   {
@@ -86,17 +94,11 @@ struct SoundPlayer
     player.play();
   }
 
-  void setVolume(int vol)
-  {
-    player.setVolume(convertVolume(vol));
-  }
+  void setVolume(int vol) { player.setVolume(convertVolume(vol)); }
 
-  void stop()
-  {
-    player.stop();
-  }
+  void stop() { player.stop(); }
 };
 
-}
+} // namespace SEGMent
 
 W_REGISTER_ARGTYPE(SEGMent::Sound)

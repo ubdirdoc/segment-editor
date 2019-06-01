@@ -11,4 +11,4 @@ class UndoPanelDelegateFactory final : public PanelDelegateFactory
   std::unique_ptr<PanelDelegate>
   make(const score::GUIApplicationContext& ctx) override;
 };
-}
+} // namespace score

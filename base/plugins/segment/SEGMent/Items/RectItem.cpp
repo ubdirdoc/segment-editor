@@ -1,16 +1,16 @@
-#include <SEGMent/Items/RectItem.hpp>
-
-#include <SEGMent/Model/Layer/ProcessView.hpp>
-#include <SEGMent/Items/Window.hpp>
-
 #include <score/command/Dispatchers/CommandDispatcher.hpp>
-#include <SEGMent/Commands/CommandFactory.hpp>
+
+#include <QBrush>
+#include <QDebug>
 #include <QDir>
 #include <QGraphicsSceneMouseEvent>
-#include <QPen>
-#include <QBrush>
 #include <QMimeData>
-#include <QDebug>
+#include <QPen>
+
+#include <SEGMent/Commands/CommandFactory.hpp>
+#include <SEGMent/Items/RectItem.hpp>
+#include <SEGMent/Items/Window.hpp>
+#include <SEGMent/Model/Layer/ProcessView.hpp>
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(SEGMent::RectItem)
 
@@ -23,8 +23,8 @@ RectItem::RectItem(
     qreal w,
     qreal h,
     bool constrainPosToParent,
-      const score::DocumentContext& ctx,
-            ZoomView& view,
+    const score::DocumentContext& ctx,
+    ZoomView& view,
     QGraphicsItem* parent)
     : QGraphicsRectItem(x, y, w, h, parent)
     , context{ctx}
@@ -84,7 +84,7 @@ void RectItem::setRect(qreal x, qreal y, qreal w, qreal h)
 
 void RectItem::dragMoveEvent(QGraphicsSceneDragDropEvent* event)
 {
-   m_view.dragMove(event->scenePos());
+  m_view.dragMove(event->scenePos());
 }
 
 void RectItem::moveBy(qreal dx, qreal dy)
@@ -92,10 +92,7 @@ void RectItem::moveBy(qreal dx, qreal dy)
   QGraphicsRectItem::moveBy(dx, dy);
 }
 
-void RectItem::updateRect()
-{
-
-}
+void RectItem::updateRect() {}
 
 void RectItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
@@ -112,4 +109,4 @@ void RectItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   event->ignore();
 }
 
-}
+} // namespace SEGMent

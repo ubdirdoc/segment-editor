@@ -1,7 +1,9 @@
 #pragma once
-#include <QFileInfo>
-#include <core/document/Document.hpp>
 #include <score/document/DocumentContext.hpp>
+
+#include <core/document/Document.hpp>
+
+#include <QFileInfo>
 
 namespace score
 {
@@ -25,4 +27,4 @@ locateFilePath(const QString& filename, const score::DocumentContext& ctx)
 
   return path;
 }
-}
+} // namespace score

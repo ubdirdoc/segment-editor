@@ -8,18 +8,17 @@
 namespace SEGMent
 {
 
-class Minimap final
-    : public QObject
-    , public score::PanelDelegate
+class Minimap final : public QObject, public score::PanelDelegate
 {
-    W_OBJECT(Minimap)
+  W_OBJECT(Minimap)
 public:
   Minimap(const score::GUIApplicationContext& ctx);
 
 private:
   QWidget* widget() override;
   const score::PanelStatus& defaultPanelStatus() const override;
-  void on_modelChanged(score::MaybeDocument oldm, score::MaybeDocument newm) override;
+  void on_modelChanged(score::MaybeDocument oldm, score::MaybeDocument newm)
+      override;
 
   QWidget* m_widget{};
   QGraphicsScene* m_scene{};
@@ -34,4 +33,4 @@ class MinimapFactory final : public score::PanelDelegateFactory
   make(const score::GUIApplicationContext& ctx) override;
 };
 
-}
+} // namespace SEGMent

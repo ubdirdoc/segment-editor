@@ -1,5 +1,7 @@
 #include "ProcessModel.hpp"
 
+#include <QApplication>
+
 #include <SEGMent/Model/BackClickArea.hpp>
 #include <SEGMent/Model/ClickArea.hpp>
 #include <SEGMent/Model/GifObject.hpp>
@@ -8,13 +10,10 @@
 #include <SEGMent/Model/Sound.hpp>
 #include <SEGMent/Model/TextArea.hpp>
 #include <SEGMent/Model/Transition.hpp>
-#include <QApplication>
 namespace SEGMent
 {
 
-ProcessModel::ProcessModel(
-    Id<SEGMent::ProcessModel> id,
-    QObject* parent)
+ProcessModel::ProcessModel(Id<SEGMent::ProcessModel> id, QObject* parent)
     : score::Entity<ProcessModel>{id, "SEGMentProcess", parent}
 {
   metadata().setInstanceName(*this);
@@ -62,7 +61,7 @@ ProcessModel::~ProcessModel()
   identified_object_destroying(this);
 }
 
-}
+} // namespace SEGMent
 
 template <>
 void DataStreamReader::read(const SEGMent::ProcessModel& proc)

@@ -12,4 +12,4 @@ UndoPanelDelegateFactory::make(const GUIApplicationContext& ctx)
 {
   return std::make_unique<UndoPanelDelegate>(ctx);
 }
-}
+} // namespace score

@@ -6,20 +6,20 @@ namespace SEGMent
 {
 
 Sound::Sound(const Sound& other)
-  : QObject{}
-  , m_path{other.m_path}
-  , m_volume{other.m_volume}
-  , m_range{other.m_range}
-  , m_repeat{other.m_repeat}
+    : QObject{}
+    , m_path{other.m_path}
+    , m_volume{other.m_volume}
+    , m_range{other.m_range}
+    , m_repeat{other.m_repeat}
 {
 }
 
 Sound::Sound(Sound&& other)
-  : QObject{}
-  , m_path{other.m_path}
-  , m_volume{other.m_volume}
-  , m_range{other.m_range}
-  , m_repeat{other.m_repeat}
+    : QObject{}
+    , m_path{other.m_path}
+    , m_volume{other.m_volume}
+    , m_range{other.m_range}
+    , m_repeat{other.m_repeat}
 {
 }
 
@@ -43,11 +43,8 @@ Sound& Sound::operator=(Sound&& other)
 
 bool operator==(const Sound& lhs, const Sound& rhs)
 {
-  return lhs.m_path == rhs.m_path
-      && lhs.m_volume == rhs.m_volume
-      && lhs.m_range == rhs.m_range
-      && lhs.m_repeat == rhs.m_repeat
-      ;
+  return lhs.m_path == rhs.m_path && lhs.m_volume == rhs.m_volume
+         && lhs.m_range == rhs.m_range && lhs.m_repeat == rhs.m_repeat;
 }
 
 bool operator!=(const Sound& lhs, const Sound& rhs)
@@ -97,7 +94,6 @@ void Sound::setRange(const double& v) MSVC_NOEXCEPT
   }
 }
 
-
 bool Sound::repeat() const MSVC_NOEXCEPT
 {
   return m_repeat;
@@ -112,7 +108,7 @@ void Sound::setRepeat(bool v) MSVC_NOEXCEPT
   }
 }
 
-}
+} // namespace SEGMent
 
 template <>
 void DataStreamReader::read(const SEGMent::Sound& v)
@@ -145,8 +141,8 @@ void JSONObjectWriter::write(SEGMent::Sound& v)
   v.m_path = obj["Path"].toString();
   v.m_volume = obj["Volume"].toDouble();
   v.m_range = obj["Range"].toDouble();
-  if(auto it = obj.find("Repeat"); it != obj.end())
-      v.m_repeat = it->toBool();
+  if (auto it = obj.find("Repeat"); it != obj.end())
+    v.m_repeat = it->toBool();
   else
-      v.m_repeat = true;
+    v.m_repeat = true;
 }

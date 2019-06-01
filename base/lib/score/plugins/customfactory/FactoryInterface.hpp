@@ -1,5 +1,6 @@
 #pragma once
 #include <score/plugins/customfactory/UuidKey.hpp>
+
 #include <score_lib_base_export.h>
 
 namespace score
@@ -57,7 +58,7 @@ public:
   virtual InterfaceKey interfaceKey() const noexcept = 0;
 };
 
-}
+} // namespace score
 
 /**
  * \macro SCORE_INTERFACE
@@ -84,6 +85,7 @@ public:                                                            \
                                                                    \
   using ConcreteKey = UuidKey<Type>;                               \
   virtual ConcreteKey concreteKey() const noexcept = 0;            \
+                                                                   \
 private:
 
 /**

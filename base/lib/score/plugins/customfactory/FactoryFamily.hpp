@@ -1,15 +1,17 @@
 ﻿#ifndef FACTORY_FAMILY_HPP_2016_12_08_18_31
 #define FACTORY_FAMILY_HPP_2016_12_08_18_31
 
-#include <ossia/detail/algorithms.hpp>
-
-#include <QMetaType>
 #include <score/plugins/customfactory/FactoryInterface.hpp>
 #include <score/tools/ForEachType.hpp>
 #include <score/tools/Todo.hpp>
 #include <score/tools/std/HashMap.hpp>
 #include <score/tools/std/IndirectContainer.hpp>
 #include <score/tools/std/Pointer.hpp>
+
+#include <ossia/detail/algorithms.hpp>
+
+#include <QMetaType>
+
 #include <score_lib_base_export.h>
 
 namespace score
@@ -114,46 +116,25 @@ public:
     return (it != this->map.end()) ? it->second.get() : nullptr;
   }
 
-  auto begin() noexcept
-  {
-    return make_indirect_map_iterator(map.begin());
-  }
+  auto begin() noexcept { return make_indirect_map_iterator(map.begin()); }
   auto begin() const noexcept
   {
     return make_indirect_map_iterator(map.begin());
   }
 
-  auto cbegin() noexcept
-  {
-    return make_indirect_map_iterator(map.cbegin());
-  }
+  auto cbegin() noexcept { return make_indirect_map_iterator(map.cbegin()); }
   auto cbegin() const noexcept
   {
     return make_indirect_map_iterator(map.cbegin());
   }
 
-  auto end() noexcept
-  {
-    return make_indirect_map_iterator(map.end());
-  }
-  auto end() const noexcept
-  {
-    return make_indirect_map_iterator(map.end());
-  }
+  auto end() noexcept { return make_indirect_map_iterator(map.end()); }
+  auto end() const noexcept { return make_indirect_map_iterator(map.end()); }
 
-  auto cend() noexcept
-  {
-    return make_indirect_map_iterator(map.cend());
-  }
-  auto cend() const noexcept
-  {
-    return make_indirect_map_iterator(map.cend());
-  }
+  auto cend() noexcept { return make_indirect_map_iterator(map.cend()); }
+  auto cend() const noexcept { return make_indirect_map_iterator(map.cend()); }
 
-  auto empty() const noexcept
-  {
-    return map.empty();
-  }
+  auto empty() const noexcept { return map.empty(); }
 
   template <typename K>
   auto find(K&& key) const noexcept
@@ -161,10 +142,7 @@ public:
     return make_indirect_map_iterator(map.find(std::forward<K>(key)));
   }
 
-  auto size() const noexcept
-  {
-    return map.size();
-  }
+  auto size() const noexcept { return map.size(); }
 
 protected:
   score::
@@ -214,5 +192,5 @@ public:
                : decltype(((*it).*f)(std::forward<Args>(args)...)){};
   }
 };
-}
+} // namespace score
 #endif

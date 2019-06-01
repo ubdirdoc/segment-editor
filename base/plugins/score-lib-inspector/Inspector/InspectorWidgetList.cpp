@@ -5,6 +5,7 @@
 #include "InspectorWidgetBase.hpp"
 
 #include <Inspector/InspectorWidgetFactoryInterface.hpp>
+
 #include <score/document/DocumentInterface.hpp>
 #include <score/model/IdentifiedObjectAbstract.hpp>
 
@@ -12,12 +13,11 @@ class QWidget;
 
 namespace Inspector
 {
-InspectorWidgetList::~InspectorWidgetList()
-{
-}
+InspectorWidgetList::~InspectorWidgetList() {}
 
 bool InspectorWidgetList::update(
-    QWidget* cur, const QList<const IdentifiedObjectAbstract*>& models) const
+    QWidget* cur,
+    const QList<const IdentifiedObjectAbstract*>& models) const
 {
   for (const InspectorWidgetFactory& factory : *this)
   {
@@ -53,4 +53,4 @@ QList<QWidget*> InspectorWidgetList::make(
 
   return widgs;
 }
-}
+} // namespace Inspector

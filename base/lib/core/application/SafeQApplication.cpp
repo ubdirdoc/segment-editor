@@ -5,9 +5,7 @@
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(SafeQApplication)
 
-SafeQApplication::~SafeQApplication()
-{
-}
+SafeQApplication::~SafeQApplication() {}
 
 #ifdef __APPLE__
 bool SafeQApplication::event(QEvent* ev)

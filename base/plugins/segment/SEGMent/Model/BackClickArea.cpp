@@ -6,12 +6,13 @@ namespace SEGMent
 {
 
 BackClickAreaModel::BackClickAreaModel(
-    const Id<BackClickAreaModel>& id, QObject* parent)
+    const Id<BackClickAreaModel>& id,
+    QObject* parent)
     : base_type{id, "BackClickArea", parent}
 {
 }
 
-}
+} // namespace SEGMent
 
 template <>
 void DataStreamReader::read(const SEGMent::BackClickAreaModel& v)

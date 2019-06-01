@@ -12,4 +12,4 @@ PanelDelegateFactory::make(const score::GUIApplicationContext& ctx)
 {
   return std::make_unique<PanelDelegate>(ctx);
 }
-}
+} // namespace InspectorPanel

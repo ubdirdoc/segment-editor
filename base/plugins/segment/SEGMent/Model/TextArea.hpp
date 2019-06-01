@@ -1,19 +1,25 @@
 #pragma once
 #include <score/model/Entity.hpp>
-#include <SEGMent/Model/Traits.hpp>
-#include <SEGMent/Model/Model.hpp>
 #include <score/selection/Selectable.hpp>
+
+#include <SEGMent/Model/Model.hpp>
+#include <SEGMent/Model/Traits.hpp>
 namespace SEGMent
 {
 
-class TextAreaModel
-    : public Object<TextAreaModel>
+class TextAreaModel : public Object<TextAreaModel>
 {
   W_OBJECT(TextAreaModel)
   SCORE_SERIALIZE_FRIENDS
 public:
   using base_type = Object<TextAreaModel>;
-  enum Behaviour { Add, Replace, Clear, Validate };
+  enum Behaviour
+  {
+    Add,
+    Replace,
+    Clear,
+    Validate
+  };
   Selectable selection{this};
 
   TextAreaModel(const Id<TextAreaModel>& id, QObject* parent);
@@ -37,11 +43,13 @@ public:
   Behaviour behaviour() const MSVC_NOEXCEPT;
   void setBehaviour(Behaviour v) MSVC_NOEXCEPT;
   void behaviourChanged(Behaviour v) W_SIGNAL(behaviourChanged, v);
-  PROPERTY(Behaviour, behaviour READ behaviour WRITE setBehaviour NOTIFY behaviourChanged)
+  PROPERTY(
+      Behaviour,
+      behaviour READ behaviour WRITE setBehaviour NOTIFY behaviourChanged)
 private:
   Behaviour m_behaviour{};
 };
-}
+} // namespace SEGMent
 
 Q_DECLARE_METATYPE(SEGMent::TextAreaModel::Behaviour)
 W_REGISTER_ARGTYPE(SEGMent::TextAreaModel::Behaviour)

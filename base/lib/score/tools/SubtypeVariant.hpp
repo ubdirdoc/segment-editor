@@ -1,6 +1,7 @@
 #pragma once
 #include <brigand/algorithms/transform.hpp>
 #include <eggs/variant.hpp>
+
 #include <type_traits>
 
 namespace score
@@ -22,10 +23,7 @@ struct dereference_visitor
     return impl(*std::forward<Arg>(arg));
   }
 
-  auto operator()() const
-  {
-    return impl();
-  }
+  auto operator()() const { return impl(); }
 };
 
 template <typename Variant, typename Base>
@@ -46,7 +44,7 @@ Variant make_subtype_variant(const Base& base)
 
   return make_subtype_variant<Variant, Base, SubArgs...>(base);
 }
-}
+} // namespace detail
 
 /**
  * \class SubtypeVariant
@@ -84,4 +82,4 @@ public:
     }
   }
 };
-}
+} // namespace score
