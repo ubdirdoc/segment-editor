@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(score_lib_base LANGUAGES CXX)
 score_common_setup()
-
+set(CMAKE_AUTOUIC ON)
 # Packages
 find_package(Qt5 5.7 REQUIRED COMPONENTS Core Widgets Svg )
 

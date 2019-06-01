@@ -13,8 +13,9 @@ class ClickWindow
     friend struct ObjectMover;
 public:
   ClickWindow(const ClickAreaModel& r,
-               const score::DocumentContext& ctx,
-               QGraphicsItem* parent);
+              const score::DocumentContext& ctx,
+              ZoomView& view,
+              QGraphicsItem* parent);
 
   static constexpr auto static_type() { return Qt::UserRole + 9567; }
   int type() const final override { return static_type(); }
@@ -47,6 +48,7 @@ class BackClickWindow
 public:
   BackClickWindow(const BackClickAreaModel& r,
                const score::DocumentContext& ctx,
+                  ZoomView& view,
                QGraphicsItem* parent);
 
   static constexpr auto static_type() { return Qt::UserRole + 9547; }
@@ -79,6 +81,7 @@ class TextWindow
 public:
   TextWindow(const TextAreaModel& r,
                const score::DocumentContext& ctx,
+             ZoomView& view,
                QGraphicsItem* parent);
 
   static constexpr auto static_type() { return Qt::UserRole + 9537; }

@@ -46,6 +46,7 @@ protected:
       bool constrainPosToParent,
       bool anchors,
       const score::DocumentContext& ctx,
+      ZoomView& view,
       QGraphicsItem* parent = 0);
 
     SizeGripItem* m_sizeGripItem{};

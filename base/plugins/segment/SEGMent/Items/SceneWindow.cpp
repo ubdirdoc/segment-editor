@@ -51,17 +51,18 @@ public:
 };
 SceneWindow::SceneWindow(const SceneModel& p,
                          const score::DocumentContext& ctx,
+                         ZoomView& view,
                          QGraphicsItem* parent):
   Window(
     QPointF{p.rect().x(), p.rect().y()},
     QSizeF{p.rect().width() + (2 * borderWidth),
-           p.rect().height() + titleBarHeight + (2 * borderWidth)}, false, true, ctx, parent)
+           p.rect().height() + titleBarHeight + (2 * borderWidth)}, false, true, ctx, view, parent)
 , m_scene{p}
-, m_titleBar{0, 0, p.rect().width(), titleBarHeight, false, this, ctx, this}
+, m_view(view)
+, m_titleBar{0, 0, p.rect().width(), titleBarHeight, false, ctx, view, this}
 , m_titleProxy{&m_titleBar}
 , m_title{m_titleProxy.widget()}
-, m_sceneArea{0, 0, p.rect().width(), p.rect().height()
-              , false, this, ctx, this}
+, m_sceneArea{0, 0, p.rect().width(), p.rect().height(), false, ctx, view, this}
 {
   setMinSize(200, 200);
   m_sceneArea.setBrush(score::Skin::instance().TransparentBrush);
@@ -189,7 +190,7 @@ SceneWindow::~SceneWindow()
 
 void SceneWindow::on_objectCreated(const ImageModel& object)
 {
-  auto sc = new ImageWindow{object, context, &m_sceneArea};
+  auto sc = new ImageWindow{object, context, m_view, &m_sceneArea};
   m_childWindows.push_back(sc);
   m_objects.insert({&object, sc});
 }
@@ -215,7 +216,7 @@ void SceneWindow::on_objectRemoved(const ImageModel& object)
 
 void SceneWindow::on_gifCreated(const GifModel& object)
 {
-  auto sc = new GifWindow{object, context, &m_sceneArea};
+  auto sc = new GifWindow{object, context, m_view, &m_sceneArea};
   m_childWindows.push_back(sc);
   m_gifs.insert({&object, sc});
 }
@@ -241,7 +242,7 @@ void SceneWindow::on_gifRemoved(const GifModel& object)
 
 void SceneWindow::on_clickAreaCreated(const ClickAreaModel& object)
 {
-  auto sc = new ClickWindow{object, context, &m_sceneArea};
+  auto sc = new ClickWindow{object, context, m_view, &m_sceneArea};
   m_childWindows.push_back(sc);
   m_clickAreas.insert({&object, sc});
 }
@@ -267,7 +268,7 @@ void SceneWindow::on_clickAreaRemoved(const ClickAreaModel& object)
 
 void SceneWindow::on_backClickAreaCreated(const BackClickAreaModel& object)
 {
-  auto sc = new BackClickWindow{object, context, &m_sceneArea};
+  auto sc = new BackClickWindow{object, context, m_view, &m_sceneArea};
   m_childWindows.push_back(sc);
   m_backClickAreas.insert({&object, sc});
 }
@@ -293,7 +294,7 @@ void SceneWindow::on_backClickAreaRemoved(const BackClickAreaModel& object)
 
 void SceneWindow::on_textAreaCreated(const TextAreaModel& object)
 {
-  auto sc = new TextWindow{object, context, &m_sceneArea};
+  auto sc = new TextWindow{object, context, m_view, &m_sceneArea};
   m_childWindows.push_back(sc);
   m_textAreas.insert({&object, sc});
 }

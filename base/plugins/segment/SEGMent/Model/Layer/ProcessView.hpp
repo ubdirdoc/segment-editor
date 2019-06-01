@@ -30,37 +30,41 @@ struct window_visitor
     }
 };
 
+class RectItem;
+//! A QGraphicsView which allows zooming / dezooming through wheel events
 //! SEGMent Canvas. Receives scenes drops and handles arrow creation
-class View final
-    : public QObject
-    , public QGraphicsItem
+class ZoomView : public QGraphicsView
 {
-  W_OBJECT(View)
-  friend class RectItem;
-  friend class Anchor;
+  W_OBJECT(ZoomView)
 public:
-  explicit View(const ProcessModel& proc, const score::DocumentContext&, QGraphicsItem* parent);
+  ZoomView(const score::DocumentContext& ctx);
 
-  static constexpr auto static_type() noexcept
-  { return UserType + 1579; }
+  void zoom(int amount)
+  {
+    const ViewportAnchor anchor = transformationAnchor();
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    int angle = amount;
+    qreal factor;
 
-  int type() const override
-  { return static_type(); }
+    if (angle > 0) {
+      factor = 1.1 - std::clamp(0.1 / std::abs(angle), 0., 0.1);
+    } else {
+      factor = 0.9 + std::clamp(0.1 / std::abs(angle), 0., 0.1);
+    }
+
+    double curscale = transform().m11() * factor;
+    if(curscale > 0.001 && curscale < 4)
+    {
+      scale(factor, factor);
+    }
+    setTransformationAnchor(anchor);
+  }
 
   void setStartAnchorForNewArrow(Anchor& startAnchor);
   void setEndAnchorForNewArrow(Anchor& endAnchor);
   void finishArrowDrop();
 
   Window* findItem(ImageModel* obj);
-
-  void addScene(SceneWindow* s);
-
-  void removeScene(const SceneWindow* s);
-  void addTransition(Arrow* a);
-  void removeTransition(const Arrow* a);
-
-  void doubleClicked() W_SIGNAL(doubleClicked);
-
   template<typename View, typename Model>
   Window* findItem(Model* obj)
   {
@@ -75,20 +79,31 @@ public:
     return nullptr;
   }
 
+
+  void addScene(SceneWindow* s);
+
+  void removeScene(const SceneWindow* s);
+  void addTransition(Arrow* a);
+  void removeTransition(const Arrow* a);
+
+  void dragMove(QPointF pos);
+
+  void doubleClicked() W_SIGNAL(doubleClicked);
+
 private:
-  void paint(
-      QPainter* painter,
-      const QStyleOptionGraphicsItem* option,
-      QWidget* widget) final override;
+  void enterEvent(QEvent *event) override;
 
-  QRectF boundingRect() const override
-  { return { 0., 0., 500000., 500000. }; }
+  void mousePressEvent(QMouseEvent*) override;
+  void mouseMoveEvent(QMouseEvent*) override;
+  void mouseReleaseEvent(QMouseEvent *event) override;
+  void wheelEvent(QWheelEvent *event) override;
+  void drawBackground(QPainter* painter, const QRectF& s) override;
 
-  void dropEvent(QGraphicsSceneDragDropEvent* event) override;
-  void dragMoveEvent(QGraphicsSceneDragDropEvent* event) override;
+  void dropEvent(QDropEvent* event) override;
+  void dragMoveEvent(QDragMoveEvent* event) override;
 
+  const score::DocumentContext& context;
   const ProcessModel& m_process;
-  const score::DocumentContext& m_ctx;
 
   std::vector<SceneWindow*> m_sceneWindows;
   std::vector<SEGMent::Arrow*> m_sceneArrows;
@@ -96,6 +111,4 @@ private:
 
   QGraphicsLineItem* m_tmpArrow{};
 };
-
-View* GetParentSEGMentView(QGraphicsItem* object);
 }

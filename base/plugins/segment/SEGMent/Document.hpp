@@ -5,11 +5,13 @@
 #include <score/plugins/documentdelegate/DocumentDelegateView.hpp>
 #include <QGraphicsView>
 #include <nano_observer.hpp>
+#include <SEGMent/Items/Arrow.hpp>
+#include <SEGMent/Items/SceneWindow.hpp>
 
 namespace SEGMent
 {
 class ProcessModel;
-class View;
+class ZoomView;
 class Presenter;
 
 //! The base data model for a SEGMent document.
@@ -39,42 +41,6 @@ private:
   SEGMent::ProcessModel* m_base{};
 };
 
-//! A QGraphicsView which allows zooming / dezooming through wheel events
-class ZoomView : public QGraphicsView
-{
-  const score::DocumentContext& context;
-public:
-  ZoomView(const score::DocumentContext& ctx);
-
-  void zoom(int amount)
-  {
-    const ViewportAnchor anchor = transformationAnchor();
-    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    int angle = amount;
-    qreal factor;
-
-    if (angle > 0) {
-      factor = 1.1 - std::clamp(0.1 / std::abs(angle), 0., 0.1);
-    } else {
-      factor = 0.9 + std::clamp(0.1 / std::abs(angle), 0., 0.1);
-    }
-
-    double curscale = transform().m11() * factor;
-    if(curscale > 0.01 && curscale < 4)
-    {
-      scale(factor, factor);
-    }
-    setTransformationAnchor(anchor);
-  }
-private:
-  void enterEvent(QEvent *event) override;
-
-  void mousePressEvent(QMouseEvent*) override;
-  void mouseMoveEvent(QMouseEvent*) override;
-  void mouseReleaseEvent(QMouseEvent *event) override;
-  void wheelEvent(QWheelEvent *event) override;
-  void drawBackground(QPainter* painter, const QRectF& s) override;
-};
 
 //! Displays a SEGMent document
 class DocumentView final : public score::DocumentDelegateView
@@ -86,13 +52,12 @@ class DocumentView final : public score::DocumentDelegateView
   ~DocumentView() override;
 
   ZoomView& graphicsView() { return m_view; }
-  SEGMent::View& view() const;
+  SEGMent::ZoomView& view() const;
   QWidget* getWidget() override;
 
 private:
   QGraphicsScene m_scene;
   ZoomView m_view;
-  SEGMent::View* m_segmentView{};
 };
 
 //! Sets up the view to show the model

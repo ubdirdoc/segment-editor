@@ -53,6 +53,7 @@ class ImageWindow
 public:
   ImageWindow(const ImageModel& r,
                const score::DocumentContext& ctx,
+              ZoomView& view,
                QGraphicsItem* parent);
 
   static constexpr auto static_type() { return Qt::UserRole + 9987; }
@@ -81,6 +82,7 @@ class GifWindow
 public:
   GifWindow(const GifModel& r,
                const score::DocumentContext& ctx,
+            ZoomView& view,
                QGraphicsItem* parent);
 
   static constexpr auto static_type() { return Qt::UserRole + 9984; }

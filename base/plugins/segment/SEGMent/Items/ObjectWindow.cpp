@@ -34,11 +34,12 @@ void WindowWithBackground::setBackgroundImage(QPixmap img)
 
 ImageWindow::ImageWindow(const ImageModel& p,
                          const score::DocumentContext& ctx,
+                         ZoomView& view,
                          QGraphicsItem* parent):
   ResizableWindow<ImageWindow>{
       expected_pos(p.pos(), parent->boundingRect())
     , expected_size(p.size(), parent->boundingRect())
-    ,  true, true, ctx, parent}
+    ,  true, true, ctx, view, parent}
   , m_object{p}
 {
   setMinSize(20, 20);
@@ -124,11 +125,12 @@ transition_t ImageWindow::createTransitionFrom(
 
 GifWindow::GifWindow(const GifModel& p,
                      const score::DocumentContext& ctx,
+                     ZoomView& view,
                      QGraphicsItem* parent):
   ResizableWindow<GifWindow>(
     expected_pos(p.pos(), parent->boundingRect())
     , expected_size(p.size(), parent->boundingRect())
-    , true, false, ctx, parent)
+    , true, false, ctx, view, parent)
 , m_object{p}
 {
   setMinSize(20, 20);

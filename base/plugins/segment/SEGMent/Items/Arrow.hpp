@@ -18,6 +18,7 @@ public:
       Anchor& startItem,
       Anchor& endItem,
       const score::DocumentContext& ctx,
+      ZoomView& view,
       QGraphicsItem* parentItem = 0);
 
   Anchor& startItem() const
@@ -64,7 +65,7 @@ private:
   const TransitionModel& m_model;
   Anchor& m_startItem;
   Anchor& m_endItem;
-  View& m_processView;
+  ZoomView& m_processView;
 
   QPolygonF m_arrowHead;
   QPolygonF m_selectionPolygon;

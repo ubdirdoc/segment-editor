@@ -12,11 +12,12 @@ namespace SEGMent
 
 ClickWindow::ClickWindow(const ClickAreaModel& p,
                          const score::DocumentContext& ctx,
+                         ZoomView& view,
                          QGraphicsItem* parent):
   Window(
       expected_pos(p.pos(), parent->boundingRect())
     , expected_size(p.size(), parent->boundingRect())
-    , true, true, ctx, parent)
+    , true, true, ctx,view, parent)
 , m_object{p}
 {
   setZValue(5);
@@ -99,12 +100,13 @@ transition_t ClickWindow::createTransitionFrom(
 
 
 BackClickWindow::BackClickWindow(const BackClickAreaModel& p,
-                         const score::DocumentContext& ctx,
-                         QGraphicsItem* parent):
+                                 const score::DocumentContext& ctx,
+                                 ZoomView& view,
+                                 QGraphicsItem* parent):
   Window(
     expected_pos(p.pos(), parent->boundingRect())
   , expected_size(p.size(), parent->boundingRect())
-  , true, false, ctx, parent)
+  , true, false, ctx, view, parent)
 , m_object{p}
 {
   setZValue(5);
@@ -207,11 +209,12 @@ transition_t BackClickWindow::createTransitionFrom(
 
 TextWindow::TextWindow(const TextAreaModel& p,
                          const score::DocumentContext& ctx,
+                       ZoomView& view,
                          QGraphicsItem* parent):
   Window(
     expected_pos(p.pos(), parent->boundingRect())
   , expected_size(p.size(), parent->boundingRect())
-  , true, false, ctx, parent)
+  , true, false, ctx, view, parent)
 , m_object{p}
 {
   setZValue(5);

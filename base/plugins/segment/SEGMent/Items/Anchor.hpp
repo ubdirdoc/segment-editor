@@ -9,7 +9,7 @@ class SEGMentArrow;
 namespace SEGMent
 {
 using anchor_id = int8_t;
-class View;
+class ZoomView;
 
 //! Graphical anchor used around objects when selecting them
 class Anchor final
@@ -19,14 +19,14 @@ class Anchor final
   W_OBJECT(Anchor)
 public:
   const anchor_id id;
-  Anchor(qreal w, anchor_id id, QGraphicsItem* parent);
+  Anchor(qreal w, anchor_id id, QGraphicsItem* parent, ZoomView& view);
 
   void moved() W_SIGNAL(moved);
 
   QRectF boundingRect() const override;
 
 private:
-  View& m_processView;
+  ZoomView& m_processView;
 
   QPainterPath shape() const override;
   bool contains(const QPointF& point) const override;

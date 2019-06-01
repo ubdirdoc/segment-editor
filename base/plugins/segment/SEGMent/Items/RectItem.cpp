@@ -23,11 +23,12 @@ RectItem::RectItem(
     qreal w,
     qreal h,
     bool constrainPosToParent,
-    Window* parentWindows,
       const score::DocumentContext& ctx,
+            ZoomView& view,
     QGraphicsItem* parent)
     : QGraphicsRectItem(x, y, w, h, parent)
     , context{ctx}
+    , m_view{view}
     , m_posConstrainedToParent{constrainPosToParent}
 {
   setPen(score::Skin::instance().TransparentPen);
@@ -83,8 +84,7 @@ void RectItem::setRect(qreal x, qreal y, qreal w, qreal h)
 
 void RectItem::dragMoveEvent(QGraphicsSceneDragDropEvent* event)
 {
-  View* currentView = GetParentSEGMentView(this);
-  currentView->dragMoveEvent(event);
+   m_view.dragMove(event->scenePos());
 }
 
 void RectItem::moveBy(qreal dx, qreal dy)

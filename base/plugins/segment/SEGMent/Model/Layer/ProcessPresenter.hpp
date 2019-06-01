@@ -10,7 +10,7 @@
 namespace SEGMent
 {
 class ProcessModel;
-class View;
+class ZoomView;
 
 //! Shows the element of a SEGMent ProcessModel in a View
 class Presenter final
@@ -20,7 +20,7 @@ class Presenter final
 public:
   explicit Presenter(
       const ProcessModel& model,
-      View* view,
+      ZoomView* view,
       const score::DocumentContext& ctx,
       QObject* parent);
 
@@ -31,7 +31,7 @@ public:
 
 private:
   const score::DocumentContext& context;
-  View* m_view{};
+  ZoomView& m_view;
 
   ossia::ptr_map<const SceneModel*, SceneWindow*> m_scenes;
   ossia::ptr_map<const TransitionModel*, Arrow*> m_transitions;

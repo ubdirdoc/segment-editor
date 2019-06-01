@@ -8,6 +8,7 @@
 #include <score/tools/IdentifierGeneration.hpp>
 #include <QScrollBar>
 #include <QMessageBox>
+#include <SEGMent/Commands/Creation.hpp>
 namespace SEGMent
 {
 DocumentModel::DocumentModel(const score::DocumentContext &ctx, QObject *parent)
@@ -37,101 +38,27 @@ void DocumentModel::serialize(const VisitorVariant &vis) const
 DocumentView::DocumentView(const score::DocumentContext &ctx, QObject *parent)
   : score::DocumentDelegateView{parent}
   , m_view{ctx}
-  , m_segmentView{
-      new SEGMent::View{
-      safe_cast<DocumentModel&>(ctx.document.model().modelDelegate()).process(), ctx, nullptr}
-    }
 {
-  constexpr qreal r = 5000;
-  m_segmentView->setPos(-r / 2, -r / 2);
-  m_scene.addItem(m_segmentView);
+  constexpr qreal w = 50000.;
   m_view.setScene(&m_scene);
   m_view.setMinimumSize(400, 400);
   m_view.centerOn(0, 0);
-  m_view.setSceneRect({-20000, -20000, 40000, 40000});
+  m_view.setSceneRect({-w/2., -w/2., w, w});
   m_view.setCursor(QCursor());
-  //m_view.setCacheMode(QGraphicsView::CacheNone);
-  //m_view.setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 }
 
 DocumentView::~DocumentView()
 {
 }
 
-SEGMent::View &DocumentView::view() const
+SEGMent::ZoomView &DocumentView::view() const
 {
-  return *m_segmentView;
+  return const_cast<ZoomView&>(m_view);
 }
 
 QWidget *DocumentView::getWidget()
 {
   return &m_view;
-}
-
-
-
-
-
-ZoomView::ZoomView(const score::DocumentContext& ctx)
-  : context{ctx}
-{
-  setDragMode(QGraphicsView::DragMode::ScrollHandDrag);
-}
-
-void ZoomView::enterEvent(QEvent* event)
-{
-  QGraphicsView::enterEvent(event);
-  viewport()->unsetCursor();
-}
-
-void ZoomView::mousePressEvent(QMouseEvent* e)
-{
-  QGraphicsView::mousePressEvent(e);
-  auto p = this->mapToScene(e->pos());
-  if(QGraphicsItem* item = this->scene()->itemAt(p, transform()); !item || item->type() == View::static_type())
-  {
-    viewport()->setCursor(Qt::ClosedHandCursor);
-     context.selectionStack.deselect();
-  }
-}
-
-void ZoomView::mouseMoveEvent(QMouseEvent* e)
-{
-  QGraphicsView::mouseMoveEvent(e);
-
-  if(e->buttons() & Qt::LeftButton)
-  {
-    auto top_left = mapToScene(QPoint{0,0});
-    auto bottom_right = mapToScene(QPoint{width(),height()});
-    scene()->update(QRectF{top_left, bottom_right});
-  }
-}
-
-void ZoomView::mouseReleaseEvent(QMouseEvent* event)
-{
-  QGraphicsView::mouseReleaseEvent(event);
-  viewport()->unsetCursor();
-  update();
-}
-
-void ZoomView::wheelEvent(QWheelEvent *event)
-{
-  if (event->modifiers() & Qt::ControlModifier) {
-    zoom(event->angleDelta().y());
-  } else {
-    QGraphicsView::wheelEvent(event);
-  }
-}
-
-void ZoomView::drawBackground(QPainter *painter, const QRectF &s)
-{
-  QBrush b = SEGMent::Style::instance().backgroundPen;
-
-  b.setTransform(QTransform(painter->worldTransform().inverted()).scale(2,2));
-  painter->setBackground(SEGMent::Style::instance().backgroundBrush);
-  painter->setBackgroundMode(Qt::OpaqueMode);
-  painter->setBrush(b);
-  painter->fillRect(s, b);
 }
 
 

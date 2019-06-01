@@ -11,6 +11,7 @@ namespace SEGMent
 static constexpr qreal titleBarHeight = 30;
 static constexpr qreal borderWidth = 5;
 
+class ZoomView;
 class Window;
 //! Base class for visual items in the canvas
 class RectItem
@@ -27,8 +28,8 @@ public:
       qreal w,
       qreal h,
       bool constrainPosToParent,
-      Window* parentWindows,
       const score::DocumentContext& ctx,
+      ZoomView& view,
       QGraphicsItem* parent = Q_NULLPTR);
   void setMinSize(qreal minWidth, qreal minHeight);
   void setRect(const QRectF& rect);
@@ -45,6 +46,7 @@ protected:
 
   void dragMoveEvent(QGraphicsSceneDragDropEvent* event) override;
 
+  ZoomView& m_view;
   std::vector<Window*> m_childWindows;
 
   qreal m_minWidth = 0;

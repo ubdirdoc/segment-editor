@@ -14,10 +14,10 @@ W_OBJECT_IMPL(SEGMent::Anchor)
 namespace SEGMent
 {
 
-Anchor::Anchor(qreal w, anchor_id i, QGraphicsItem* parent)
+Anchor::Anchor(qreal w, anchor_id i, QGraphicsItem* parent, ZoomView& view)
     : QGraphicsItem(parent)
     , id{i}
-    , m_processView{*GetParentSEGMentView(this)}
+    , m_processView{view}
     , m_width{w}
 {
   setFlag(ItemSendsScenePositionChanges);
@@ -46,7 +46,6 @@ void Anchor::dragEnterEvent(QGraphicsSceneDragDropEvent* event)
 void Anchor::dropEvent(QGraphicsSceneDragDropEvent* event)
 {
   m_processView.setEndAnchorForNewArrow(*this);
-  m_processView.dropEvent(event);
   prepareGeometryChange();
   m_width /= 1.5;
   update();
@@ -98,8 +97,6 @@ void Anchor::paint(
       const QStyleOptionGraphicsItem* option,
       QWidget* widget)
 {
-  //painter->setRenderHint(QPainter::Antialiasing);
-  //QGraphicsEllipseItem::paint(painter, option, widget);
   const auto& skin = Style::instance();
   painter->setPen(skin.anchorPen);
   painter->setBrush(skin.anchorBrush);

@@ -25,79 +25,83 @@
 #include <QJsonDocument>
 #include <wobjectimpl.h>
 #include <score/document/DocumentContext.hpp>
+#include <core/document/DocumentModel.hpp>
+#include <SEGMent/Document.hpp>
 
-W_OBJECT_IMPL(SEGMent::View)
+//W_OBJECT_IMPL(SEGMent::View)
+W_OBJECT_IMPL(SEGMent::ZoomView)
 
 namespace SEGMent
 {
-View* GetParentSEGMentView(QGraphicsItem* object)
+
+
+
+ZoomView::ZoomView(const score::DocumentContext& ctx)
+  : context{ctx}
+  , m_process{safe_cast<DocumentModel&>(ctx.document.model().modelDelegate()).process()}
 {
-  while (object)
-  {
-    if(object->type() == View::static_type())
-      return static_cast<View*>(object);
-
-    object = object->parentItem();
-  }
-
-  return nullptr;
+  setDragMode(QGraphicsView::DragMode::ScrollHandDrag);
 }
 
-View::View(const ProcessModel& proc, const score::DocumentContext& ctx, QGraphicsItem* parent)
-  : QGraphicsItem{parent}
-  , m_process{proc}
-  , m_ctx{ctx}
+void ZoomView::enterEvent(QEvent* event)
 {
-  QGraphicsItem::setAcceptHoverEvents(false);
-
-  this->setFlag(QGraphicsItem::ItemClipsToShape, false);
-  this->setFlag(QGraphicsItem::ItemClipsChildrenToShape, false);
-  this->setFlag(QGraphicsItem::ItemContainsChildrenInShape, false);
-  this->setFlag(QGraphicsItem::ItemIsSelectable, false);
-  this->setFlag(QGraphicsItem::ItemHasNoContents, true);
-  this->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
-
-  this->setAcceptDrops(true);
+  QGraphicsView::enterEvent(event);
+  viewport()->unsetCursor();
 }
 
-void View::dropEvent(QGraphicsSceneDragDropEvent* event)
+void ZoomView::mousePressEvent(QMouseEvent* e)
 {
-  const QMimeData* currentMimeData = event->mimeData();
-
-  if (currentMimeData->hasText() && currentMimeData->hasUrls())
+  QGraphicsView::mousePressEvent(e);
+  auto p = this->mapToScene(e->pos());
+  if(QGraphicsItem* item = this->scene()->itemAt(p, transform()); !item)
   {
-    if (currentMimeData->text() == SEGMENT_SCENE_ID)
-    {
-      const QPointF localPos = event->pos();
-      const QRectF rect{localPos.x(), localPos.y(), 400, 400};
-      CommandDispatcher<> disp{m_ctx.commandStack};
-
-      QUrl currentUrl = currentMimeData->urls().first();
-      disp.submitCommand(new DropScene{m_process, Image{currentUrl.path()}, rect});
-    }
-    else if (currentMimeData->text() == SEGMENT_TEMPLATE_ID)
-    {
-      QUrl currentUrl = currentMimeData->urls().first();
-      const QPointF localPos = event->pos();
-      auto file = toLocalFile(currentUrl.path(), m_ctx);
-      if(QFile f{file}; f.open(QIODevice::ReadOnly))
-      {
-        auto json = QJsonDocument::fromJson(f.readAll()).object();
-        json.remove("Pixmap");
-        auto rect = fromJsonValue<QRectF>(json["Rect"]);
-        rect = {localPos.x(), localPos.y(), rect.width(), rect.height()};
-        json["Rect"] = toJsonValue(rect);
-
-        CommandDispatcher<> disp{m_ctx.commandStack};
-
-        disp.submitCommand(new PasteScene{m_process, json});
-      }
-    }
+    viewport()->setCursor(Qt::ClosedHandCursor);
+     context.selectionStack.deselect();
   }
 }
+
+void ZoomView::mouseMoveEvent(QMouseEvent* e)
+{
+  QGraphicsView::mouseMoveEvent(e);
+
+  if(e->buttons() & Qt::LeftButton)
+  {
+    auto top_left = mapToScene(QPoint{0,0});
+    auto bottom_right = mapToScene(QPoint{width(),height()});
+    scene()->update(QRectF{top_left, bottom_right});
+  }
+}
+
+void ZoomView::mouseReleaseEvent(QMouseEvent* event)
+{
+  QGraphicsView::mouseReleaseEvent(event);
+  viewport()->unsetCursor();
+  update();
+}
+
+void ZoomView::wheelEvent(QWheelEvent *event)
+{
+  if (event->modifiers() & Qt::ControlModifier) {
+    zoom(event->angleDelta().y());
+  } else {
+    QGraphicsView::wheelEvent(event);
+  }
+}
+
+void ZoomView::drawBackground(QPainter *painter, const QRectF &s)
+{
+  QBrush b = SEGMent::Style::instance().backgroundPen;
+
+  b.setTransform(QTransform(painter->worldTransform().inverted()).scale(2,2));
+  painter->setBackground(SEGMent::Style::instance().backgroundBrush);
+  painter->setBackgroundMode(Qt::OpaqueMode);
+  painter->setBrush(b);
+  painter->fillRect(s, b);
+}
+
 
 tsl::hopscotch_map<QGraphicsItem*, bool> visibility_map;
-void View::setStartAnchorForNewArrow(Anchor& startAnchor)
+void ZoomView::setStartAnchorForNewArrow(Anchor& startAnchor)
 {
   m_startAnchorForNewArrow = &startAnchor;
   auto anchors = this->scene()->items();
@@ -111,7 +115,7 @@ void View::setStartAnchorForNewArrow(Anchor& startAnchor)
   }
 }
 
-void View::setEndAnchorForNewArrow(Anchor& endAnchor)
+void ZoomView::setEndAnchorForNewArrow(Anchor& endAnchor)
 {
   if (m_startAnchorForNewArrow == nullptr)
   {
@@ -131,13 +135,13 @@ void View::setEndAnchorForNewArrow(Anchor& endAnchor)
 
     transition_t trans = source->createTransitionFrom(m_startAnchorForNewArrow->id, target_model, endAnchor.id);
 
-    CommandDispatcher<> c{m_ctx.commandStack};
+    CommandDispatcher<> c{context.commandStack};
     c.submitCommand(new CreateTransition(m_process, trans));
   }
 
 }
 
-void View::finishArrowDrop()
+void ZoomView::finishArrowDrop()
 {
   delete m_tmpArrow;
   m_tmpArrow = nullptr;
@@ -155,13 +159,14 @@ void View::finishArrowDrop()
 }
 
 
-void View::addScene(SceneWindow* s)
+void ZoomView::addScene(SceneWindow* s)
 {
+  scene()->addItem(s);
   m_sceneWindows.push_back(s);
   update();
 }
 
-void View::removeScene(const SceneWindow* s)
+void ZoomView::removeScene(const SceneWindow* s)
 {
   auto it = ossia::find(m_sceneWindows, s);
   if(it != m_sceneWindows.end())
@@ -172,13 +177,14 @@ void View::removeScene(const SceneWindow* s)
   delete s;
 }
 
-void View::addTransition(Arrow* a)
+void ZoomView::addTransition(Arrow* a)
 {
+  scene()->addItem(a);
   m_sceneArrows.push_back(a);
   update();
 }
 
-void View::removeTransition(const Arrow* a)
+void ZoomView::removeTransition(const Arrow* a)
 {
   auto it = ossia::find(m_sceneArrows, a);
   if(it != m_sceneArrows.end())
@@ -189,14 +195,10 @@ void View::removeTransition(const Arrow* a)
   delete a;
 }
 
-void View::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
-{
-}
-
 struct FakeArrow final : QGraphicsLineItem
 {
-  FakeArrow(qreal x1, qreal y1, qreal x2, qreal y2, QGraphicsItem* parent)
-    : QGraphicsLineItem{x1, y1, x2, y2, parent}
+  FakeArrow(qreal x1, qreal y1, qreal x2, qreal y2)
+    : QGraphicsLineItem{x1, y1, x2, y2}
   {
 
   }
@@ -234,26 +236,69 @@ struct FakeArrow final : QGraphicsLineItem
   }
 };
 
-void View::dragMoveEvent(QGraphicsSceneDragDropEvent* event)
+void ZoomView::dragMove(QPointF scenePos)
 {
   if (m_startAnchorForNewArrow != nullptr)
   {
-    auto start = this->mapFromScene(event->scenePos());
-    auto end = m_startAnchorForNewArrow->mapToItem(this, m_startAnchorForNewArrow->boundingRect().center());
+    auto start = scenePos;
+    auto end = m_startAnchorForNewArrow->mapToScene(m_startAnchorForNewArrow->boundingRect().center());
 
     if (m_tmpArrow == nullptr)
     {
       m_tmpArrow
           = new FakeArrow{
             start.x(), start.y(),
-            end.x(), end.y(),
-            this};
+            end.x(), end.y()};
 
+      scene()->addItem(m_tmpArrow);
       m_tmpArrow->setZValue(10);
     }
 
     m_tmpArrow->setLine(start.x(), start.y(), end.x(), end.y());
   }
+}
+
+void ZoomView::dragMoveEvent(QDragMoveEvent* event)
+{
+  dragMove(this->mapToScene(event->pos()));
+  QGraphicsView::dragMoveEvent(event);
+}
+
+void ZoomView::dropEvent(QDropEvent* event)
+{
+  const QPointF localPos = mapToScene(event->pos());
+  const QMimeData* currentMimeData = event->mimeData();
+
+  if (currentMimeData->hasText() && currentMimeData->hasUrls())
+  {
+    if (currentMimeData->text() == SEGMENT_SCENE_ID)
+    {
+      const QRectF rect{localPos.x() - 200, localPos.y()  - 200, 400, 400};
+      CommandDispatcher<> disp{context.commandStack};
+
+      QUrl currentUrl = currentMimeData->urls().first();
+      disp.submitCommand(new DropScene{m_process, Image{currentUrl.path()}, rect});
+    }
+    else if (currentMimeData->text() == SEGMENT_TEMPLATE_ID)
+    {
+      QUrl currentUrl = currentMimeData->urls().first();
+      auto file = toLocalFile(currentUrl.path(), context);
+      if(QFile f{file}; f.open(QIODevice::ReadOnly))
+      {
+        auto json = QJsonDocument::fromJson(f.readAll()).object();
+        json.remove("Pixmap");
+        auto rect = fromJsonValue<QRectF>(json["Rect"]);
+        rect = {localPos.x() - rect.width() / 2., localPos.y() - rect.width() / 2., rect.width(), rect.height()};
+        json["Rect"] = toJsonValue(rect);
+
+        CommandDispatcher<> disp{context.commandStack};
+
+        disp.submitCommand(new PasteScene{m_process, json});
+      }
+    }
+  }
+
+  QGraphicsView::dropEvent(event);
 }
 
 }

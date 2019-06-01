@@ -66,10 +66,10 @@ struct SCORE_LIB_BASE_EXPORT DocumentContext
 
 protected:
   DocumentContext(score::Document& d);
-  DocumentContext(const DocumentContext&) = default;
-  DocumentContext(DocumentContext&&) = default;
-  DocumentContext& operator=(const DocumentContext&) = default;
-  DocumentContext& operator=(DocumentContext&&) = default;
+  DocumentContext(const DocumentContext&) = delete;
+  DocumentContext(DocumentContext&&) = delete;
+  DocumentContext& operator=(const DocumentContext&) = delete;
+  DocumentContext& operator=(DocumentContext&&) = delete;
 };
 
 using MaybeDocument = const score::DocumentContext*;

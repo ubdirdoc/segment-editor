@@ -17,6 +17,7 @@ class SceneWindow
 public:
   SceneWindow(const SceneModel& r,
               const score::DocumentContext& ctx,
+              ZoomView& view,
               QGraphicsItem* parent);
   ~SceneWindow() override;
 
@@ -53,6 +54,7 @@ private:
   transition_t createTransitionFrom(anchor_id source_anchor, const SceneModel& target, anchor_id target_anchor) override;
 
   const SceneModel& m_scene;
+  ZoomView& m_view;
   RectItem m_titleBar;
   QGraphicsProxyWidget m_titleProxy;
   QLineEditAutoResizeAutoCenter m_title;

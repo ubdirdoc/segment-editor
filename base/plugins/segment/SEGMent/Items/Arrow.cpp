@@ -12,13 +12,14 @@ Arrow::Arrow(
     Anchor& startItem,
     Anchor& endItem,
     const score::DocumentContext& c,
+    ZoomView& view,
     QGraphicsItem* parentItem)
     : QGraphicsLineItem(parentItem)
     , context{c}
     , m_model{t}
     , m_startItem{startItem}
     , m_endItem{endItem}
-    , m_processView{*GetParentSEGMentView(this)}
+    , m_processView{view}
 {
   setAcceptDrops(true);
   con(t.selection, &Selectable::changed, this, &Arrow::setSelected);
@@ -90,8 +91,8 @@ void Arrow::paint(
 
 void Arrow::updateShape()
 {
-  QPointF startPoint = m_processView.mapFromItem(&m_startItem, {0., 0.});
-  QPointF endPoint = m_processView.mapFromItem(&m_endItem, {0., 0.});
+  QPointF startPoint = m_startItem.scenePos();
+  QPointF endPoint = m_endItem.scenePos();
 
   startPoint.setX(startPoint.x() + m_startItem.boundingRect().width() / 2.);
   startPoint.setY(startPoint.y() + m_startItem.boundingRect().height() / 2.);

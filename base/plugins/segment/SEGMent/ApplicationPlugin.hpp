@@ -447,9 +447,8 @@ struct ApplicationPlugin
 
         auto obj = json.object();
         auto rect = fromJsonValue<QRectF>(obj["Rect"]);
-        auto pos = view.view().mapFromScene(scene_pos);
 
-        obj["Rect"] = toJsonValue(QRectF{pos.x(), pos.y(), rect.width(), rect.height()});
+        obj["Rect"] = toJsonValue(QRectF{scene_pos.x(), scene_pos.y(), rect.width(), rect.height()});
 
         CommandDispatcher<> c{doc->context().commandStack};
         c.submitCommand(new PasteScene{proc, obj});

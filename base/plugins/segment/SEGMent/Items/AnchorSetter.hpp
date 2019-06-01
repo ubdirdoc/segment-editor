@@ -16,12 +16,13 @@ private:
   std::vector<Anchor*> m_anchors;
 
   QGraphicsItem& m_parent;
+  ZoomView& m_view;
   int m_nbAnchorsPerSide;
   qreal m_anchorSize;
 
 public:
   AnchorSetter(
-      int nbOfAnchorsPerSide, qreal anchorsSize, QGraphicsItem& parent);
+      int nbOfAnchorsPerSide, qreal anchorsSize, ZoomView& view, QGraphicsItem& parent);
   void updateAnchorsPos();
 
   void setVisible(bool b);

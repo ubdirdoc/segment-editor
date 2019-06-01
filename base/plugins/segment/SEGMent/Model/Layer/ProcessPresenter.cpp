@@ -13,12 +13,12 @@ namespace SEGMent
 {
 Presenter::Presenter(
     const ProcessModel& layer,
-    View* view,
+    ZoomView* view,
     const score::DocumentContext& ctx,
     QObject* parent)
     : QObject{parent}
     , context{ctx}
-    , m_view{view}
+    , m_view{*view}
 {
   const SEGMent::ProcessModel& p = layer;
 
@@ -41,9 +41,9 @@ Presenter::Presenter(
 
 void Presenter::on_sceneCreated(const SceneModel& scene)
 {
-  auto sc = new SceneWindow(scene, context, m_view);
+  auto sc = new SceneWindow(scene, context, m_view, nullptr);
   m_scenes.insert({&scene, sc});
-  m_view->addScene(sc);
+  m_view.addScene(sc);
 }
 
 void Presenter::on_sceneRemoved(const SceneModel& scene)
@@ -51,7 +51,7 @@ void Presenter::on_sceneRemoved(const SceneModel& scene)
   auto it = m_scenes.find(&scene);
   if(it != m_scenes.end())
   {
-    m_view->removeScene(it->second);
+    m_view.removeScene(it->second);
     m_scenes.erase(it);
   }
 }
@@ -74,7 +74,7 @@ void Presenter::on_transitionCreated(const TransitionModel& transition)
     ret operator()(const ObjectToScene& t) const
     {
       auto obj = t.from.try_find(self.context);
-      auto obj_item = self.m_view->findItem<ImageWindow>(obj);
+      auto obj_item = self.m_view.findItem<ImageWindow>(obj);
 
       auto it2 = self.m_scenes.find(t.to.try_find(self.context));
       if(!obj_item || it2 == self.m_scenes.end())
@@ -88,7 +88,7 @@ void Presenter::on_transitionCreated(const TransitionModel& transition)
     ret operator()(const ClickToScene& t) const
     {
       auto obj = t.from.try_find(self.context);
-      auto obj_item = self.m_view->findItem<ClickWindow>(obj);
+      auto obj_item = self.m_view.findItem<ClickWindow>(obj);
 
       auto it2 = self.m_scenes.find(t.to.try_find(self.context));
       if(!obj_item || it2 == self.m_scenes.end())
@@ -104,9 +104,9 @@ void Presenter::on_transitionCreated(const TransitionModel& transition)
   auto [start, end] = ossia::apply(transition_matcher, transition.transition());
   if(start && end)
   {
-    auto t = new Arrow(transition, *start, *end, context, m_view);
+    auto t = new Arrow(transition, *start, *end, context, m_view, nullptr);
     m_transitions.insert({&transition, t});
-    m_view->addTransition(t);
+    m_view.addTransition(t);
   }
 }
 void Presenter::on_transitionRemoved(const TransitionModel& transition)
@@ -114,7 +114,7 @@ void Presenter::on_transitionRemoved(const TransitionModel& transition)
   auto it = m_transitions.find(&transition);
   if(it != m_transitions.end())
   {
-    m_view->removeTransition(it->second);
+    m_view.removeTransition(it->second);
     m_transitions.erase(it);
   }
 }

@@ -6,15 +6,16 @@
 namespace SEGMent
 {
 AnchorSetter::AnchorSetter(
-    int nbOfAnchorsPerSide, qreal anchorsSize, QGraphicsItem& parent)
+    int nbOfAnchorsPerSide, qreal anchorsSize, ZoomView& view, QGraphicsItem& parent)
   : m_parent{parent}
+  , m_view{view}
 {
   m_nbAnchorsPerSide = nbOfAnchorsPerSide;
   m_anchorSize = anchorsSize;
 
   for (anchor_id i = 0; i < m_nbAnchorsPerSide * 4; ++i)
   {
-    auto anchor = new Anchor{anchorsSize, i, &m_parent};
+    auto anchor = new Anchor{anchorsSize, i, &m_parent, m_view};
     anchor->setVisible(false);
     m_anchors.push_back(anchor);
   }
