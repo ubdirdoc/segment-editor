@@ -42,7 +42,7 @@ ZoomView::ZoomView(const score::DocumentContext& ctx)
     , m_process{safe_cast<DocumentModel&>(ctx.document.model().modelDelegate())
                     .process()}
 {
-  setDragMode(QGraphicsView::DragMode::ScrollHandDrag);
+  setDragMode(QGraphicsView::DragMode::RubberBandDrag);
 }
 
 void ZoomView::enterEvent(QEvent* event)

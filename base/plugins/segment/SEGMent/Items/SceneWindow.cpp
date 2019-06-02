@@ -142,6 +142,7 @@ SceneWindow::SceneWindow(
 
   this->setAcceptDrops(true);
   this->setFlag(ItemSendsGeometryChanges);
+  this->setFlag(ItemIsSelectable);
 
   QObject::connect(
       this, &RectItem::on_sizeChanged, this, &SceneWindow::sizeChanged);
@@ -528,12 +529,23 @@ constexpr qreal max_dim = 20000.;
 QVariant
 SceneWindow::itemChange(GraphicsItemChange change, const QVariant& value)
 {
-  if (change == GraphicsItemChange::ItemPositionChange)
+  switch (change)
   {
-    QPointF pt = value.toPointF();
-    pt.setX(qBound(-max_dim, pt.x(), max_dim));
-    pt.setY(qBound(-max_dim, pt.y(), max_dim));
-    return pt;
+    case GraphicsItemChange::ItemPositionChange:
+    {
+      QPointF pt = value.toPointF();
+      pt.setX(qBound(-max_dim, pt.x(), max_dim));
+      pt.setY(qBound(-max_dim, pt.y(), max_dim));
+      return pt;
+    }
+    case GraphicsItemChange::ItemSelectedChange:
+    {
+      if(value.toUInt())
+        context.selectionStack.addToSelection(&m_scene);
+      else
+        context.selectionStack.removeFromSelection(&m_scene);
+      return value;
+    }
   }
   return value;
 }
@@ -545,7 +557,6 @@ void SceneWindow::mousePressEvent(QGraphicsSceneMouseEvent* event)
     QGraphicsRectItem::mousePressEvent(event);
     m_moving = true;
   }
-  context.selectionStack.pushNewSelection({&m_scene});
   event->accept();
 }
 
@@ -554,12 +565,6 @@ void SceneWindow::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   if (m_moving)
   {
     QGraphicsRectItem::mouseMoveEvent(event);
-    context.dispatcher.submitCommand<SetSceneRect>(
-        m_scene,
-        QRectF{qBound(-max_dim, this->pos().x(), max_dim),
-               qBound(-max_dim, this->pos().y(), max_dim),
-               this->rect().width(),
-               this->rect().height()});
   }
   event->accept();
 }
@@ -617,14 +622,41 @@ void SceneWindow::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   if (m_moving)
   {
     QGraphicsRectItem::mouseReleaseEvent(event);
+    std::vector<const SceneModel*> scenes;
 
-    context.dispatcher.submitCommand<SetSceneRect>(
-        m_scene,
-        QRectF{qBound(-max_dim, this->pos().x(), max_dim),
-               qBound(-max_dim, this->pos().y(), max_dim),
-               this->rect().width(),
-               this->rect().height()});
-    context.dispatcher.commit();
+    for(auto& obj : context.selectionStack.currentSelection())
+    {
+      if(auto scene = dynamic_cast<const SceneModel*>(obj.data()))
+      {
+        scenes.push_back(scene);
+      }
+    }
+
+    if(!scenes.empty())
+    {
+      QPointF translation = event->scenePos() - event->buttonDownScenePos(Qt::LeftButton);
+      auto aggr = new MoveSceneRects;
+      for(auto scene : scenes)
+      {
+        auto rect = scene->rect();
+        if(scene != &m_scene)
+        {
+          double x = qBound(-max_dim, rect.x() + translation.x(), max_dim);
+          double y = qBound(-max_dim, rect.y() + translation.y(), max_dim);
+
+          aggr->addCommand(new SetSceneRect{*scene, QRectF{x, y, rect.width(), rect.height()}});
+        }
+        else
+        {
+          double x = qBound(-max_dim, this->pos().x(), max_dim);
+          double y = qBound(-max_dim, this->pos().y(), max_dim);
+
+          aggr->addCommand(new SetSceneRect{*scene, QRectF{x, y, rect.width(), rect.height()}});
+        }
+      }
+
+      context.commandStack.redoAndPush(aggr);
+    }
   }
   m_moving = false;
 

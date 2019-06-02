@@ -38,6 +38,8 @@ public:
   // Push a new set of empty selection.
   void deselect();
 
+  void addToSelection(const IdentifiedObjectAbstract* obj);
+  void removeFromSelection(const IdentifiedObjectAbstract* obj);
   Selection currentSelection() const;
 
   void pushNewSelection(const Selection& s)

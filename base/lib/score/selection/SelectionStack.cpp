@@ -108,6 +108,22 @@ void SelectionStack::deselect()
   clear();
 }
 
+void SelectionStack::addToSelection(const IdentifiedObjectAbstract* obj)
+{
+  auto cur = currentSelection();
+  if(!cur.contains(obj))
+    cur.append(obj);
+
+  push(cur);
+}
+
+void SelectionStack::removeFromSelection(const IdentifiedObjectAbstract* obj)
+{
+  auto cur = currentSelection();
+  cur.removeAll(obj);
+  push(cur);
+}
+
 Selection SelectionStack::currentSelection() const
 {
   return canUnselect() ? m_unselectable.top() : Selection{};

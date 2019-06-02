@@ -1,4 +1,5 @@
 #pragma once
+#include <score/command/AggregateCommand.hpp>
 #include <score/command/Command.hpp>
 #include <score/command/PropertyCommand.hpp>
 #include <score/document/DocumentContext.hpp>
@@ -19,6 +20,11 @@
 
 namespace SEGMent
 {
+class MoveSceneRects : public score::AggregateCommand
+{
+  SCORE_COMMAND_DECL(CommandFactoryName(), MoveSceneRects, "Move scenes")
+};
+
 class ChangeRiddle : public score::Command
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), ChangeRiddle, "Change a riddle")
