@@ -66,8 +66,8 @@ struct SCORE_LIB_BASE_EXPORT DocumentContext
 
 protected:
   DocumentContext(score::Document& d);
-  DocumentContext(const DocumentContext&) = delete;
-  DocumentContext(DocumentContext&&) = delete;
+  DocumentContext(const DocumentContext&) = default;
+  DocumentContext(DocumentContext&&) = default;
   DocumentContext& operator=(const DocumentContext&) = delete;
   DocumentContext& operator=(DocumentContext&&) = delete;
 };

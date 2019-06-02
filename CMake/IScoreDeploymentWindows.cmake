@@ -90,8 +90,8 @@ install(FILES "${QT_PLUGINS_DIR}/styles/qwindowsvistastyle${DEBUG_CHAR}.dll" DES
 install(FILES "${QT_PLUGINS_DIR}/sqldrivers/qsqlite${DEBUG_CHAR}.dll" DESTINATION "${plugin_dest_dir}/sqldrivers")
 
 # NSIS metadata
-set(CPACK_GENERATOR "NSIS")
-set(CPACK_PACKAGE_EXECUTABLES "segment-editor.exe;score")
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_PACKAGE_EXECUTABLES "segment-editor.exe;score ")
 
 set(CPACK_COMPONENTS_ALL score)
 
