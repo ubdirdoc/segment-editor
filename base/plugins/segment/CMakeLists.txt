@@ -90,6 +90,7 @@ set(SRCS
     SEGMent/Document.cpp
     SEGMent/ImageList.cpp
 
+    SEGMent/ApplicationPlugin.cpp
     iscore_addon_SEGMent.cpp
 )
 function(add_translation _qm_files)

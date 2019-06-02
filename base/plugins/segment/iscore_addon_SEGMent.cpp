@@ -13,6 +13,7 @@
 #include <SEGMent/Model/Layer/ProcessPresenter.hpp>
 #include <SEGMent/Model/Layer/ProcessView.hpp>
 #include <SEGMent/Panel/Library.hpp>
+#include <QTranslator>
 #include <iscore_addon_SEGMent_commands_files.hpp>
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(SEGMent::EditingFinishedTextEdit)
@@ -61,6 +62,7 @@ iscore_addon_SEGMent::make_commands()
   // \ref SCORE_COMMAND_DECL or \ref SCORE_COMMAND_DECL_T.
 
   ossia::for_each_type<
+#include <QTranslator>
 #include <iscore_addon_SEGMent_commands.hpp>
       >(score::commands::FactoryInserter{cmds.second});
 
