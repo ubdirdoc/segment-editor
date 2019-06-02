@@ -105,7 +105,9 @@ private:
   void drawBackground(QPainter* painter, const QRectF& s) override;
 
   void dropEvent(QDropEvent* event) override;
+  void dragEnterEvent(QDragEnterEvent* event) override;
   void dragMoveEvent(QDragMoveEvent* event) override;
+  void dragLeaveEvent(QDragLeaveEvent* event) override;
 
   const score::DocumentContext& context;
   const ProcessModel& m_process;

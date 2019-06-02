@@ -261,10 +261,23 @@ void ZoomView::dragMove(QPointF scenePos)
   }
 }
 
+void ZoomView::dragEnterEvent(QDragEnterEvent *event)
+{
+  QGraphicsView::dragEnterEvent(event);
+  event->accept();
+}
+
 void ZoomView::dragMoveEvent(QDragMoveEvent* event)
 {
-  dragMove(this->mapToScene(event->pos()));
   QGraphicsView::dragMoveEvent(event);
+  event->acceptProposedAction();
+  dragMove(this->mapToScene(event->pos()));
+}
+
+void ZoomView::dragLeaveEvent(QDragLeaveEvent *event)
+{
+  QGraphicsView::dragLeaveEvent(event);
+  event->accept();
 }
 
 void ZoomView::dropEvent(QDropEvent* event)
