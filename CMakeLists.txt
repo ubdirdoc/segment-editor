@@ -86,7 +86,7 @@ endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-find_package(Qt5 5.12 REQUIRED COMPONENTS Core Widgets Gui)
+find_package(Qt5 5.9 REQUIRED COMPONENTS Core Widgets Gui)
 
 set(3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/")
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libossia/3rdparty")
