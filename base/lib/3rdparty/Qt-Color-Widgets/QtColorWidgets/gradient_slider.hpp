@@ -29,7 +29,7 @@
 #include <QPen>
 #include <QSlider>
 
-#include <wobjectdefs.h>
+#include <verdigris>
 namespace color_widgets
 {
 

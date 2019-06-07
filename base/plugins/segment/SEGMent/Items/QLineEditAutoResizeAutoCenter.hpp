@@ -4,7 +4,7 @@
 #include <QGraphicsProxyWidget>
 #include <QLineEdit>
 
-#include <wobjectdefs.h>
+#include <verdigris>
 
 class QLineEditAutoResizeAutoCenter : public QLineEdit
 {

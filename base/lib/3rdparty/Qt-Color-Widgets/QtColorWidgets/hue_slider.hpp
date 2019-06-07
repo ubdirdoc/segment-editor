@@ -25,7 +25,7 @@
 
 #include "gradient_slider.hpp"
 
-#include <wobjectdefs.h>
+#include <verdigris>
 
 namespace color_widgets
 {

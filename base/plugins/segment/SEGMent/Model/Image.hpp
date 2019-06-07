@@ -2,7 +2,7 @@
 #include <QPixmap>
 #include <QString>
 
-#include <wobjectdefs.h>
+#include <verdigris>
 
 namespace SEGMent
 {

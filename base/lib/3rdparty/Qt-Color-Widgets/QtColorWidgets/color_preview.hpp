@@ -27,7 +27,7 @@
 
 #include <QWidget>
 
-#include <wobjectdefs.h>
+#include <verdigris>
 
 namespace color_widgets
 {

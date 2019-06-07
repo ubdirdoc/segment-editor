@@ -5,7 +5,7 @@
 
 #include <QGraphicsRectItem>
 
-#include <wobjectdefs.h>
+#include <verdigris>
 
 #include <vector>
 

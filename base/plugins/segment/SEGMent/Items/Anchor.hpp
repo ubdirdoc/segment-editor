@@ -3,7 +3,7 @@
 
 #include <QGraphicsEllipseItem>
 
-#include <wobjectdefs.h>
+#include <verdigris>
 
 #include <vector>
 class SEGMentArrow;

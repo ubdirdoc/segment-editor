@@ -28,7 +28,7 @@
 
 #include <QDialog>
 
-#include <wobjectdefs.h>
+#include <verdigris>
 class QAbstractButton;
 
 namespace color_widgets

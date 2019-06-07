@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QStack>
 
-#include <wobjectdefs.h>
+#include <verdigris>
 
 class IdentifiedObjectAbstract;
 
