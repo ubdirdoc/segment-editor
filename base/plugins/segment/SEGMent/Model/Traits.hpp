@@ -88,13 +88,13 @@ struct TSerializer<DataStream, SEGMent::RelativePositionable<T>>
       DataStream::Serializer& s,
       const SEGMent::RelativePositionable<T>& v)
   {
-    s.stream() << v.m_pos << v.m_size;
+    s.stream() << v.m_pos << v.m_size << v.m_z;
   }
 
   static void
   writeTo(DataStream::Deserializer& s, SEGMent::RelativePositionable<T>& v)
   {
-    s.stream() >> v.m_pos >> v.m_size;
+    s.stream() >> v.m_pos >> v.m_size >> v.m_z;
   }
 };
 
@@ -115,7 +115,7 @@ struct TSerializer<JSONObject, SEGMent::RelativePositionable<T>>
   {
     v.m_pos = fromJsonValue<QPointF>(s.obj["Pos"]);
     v.m_size = fromJsonValue<QSizeF>(s.obj["Size"]);
-    v.m_z = s.obj["Size"].toInt();
+    v.m_z = s.obj["Z"].toInt();
   }
 };
 
