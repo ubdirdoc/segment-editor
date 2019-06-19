@@ -149,7 +149,10 @@ SceneWindow::SceneWindow(
 
   con(p.selection, &Selectable::changed, this, [=](bool b) {
     m_anchorsSetter.setVisible(b);
-  });
+    if(!b) {
+      setSelected(false);
+    }
+  }, Qt::QueuedConnection);
 
   // Model -> View setup
   for (const auto& o : p.objects)
@@ -541,9 +544,21 @@ SceneWindow::itemChange(GraphicsItemChange change, const QVariant& value)
     case GraphicsItemChange::ItemSelectedChange:
     {
       if(value.toUInt())
-        context.selectionStack.addToSelection(&m_scene);
+      {
+        const auto& sel = context.selectionStack.currentSelection();
+        if(ossia::any_of(sel, [] (const auto& p){ return !dynamic_cast<const SceneModel*>(p.data()); }))
+        {
+          context.selectionStack.pushNewSelection({&m_scene});
+        }
+        else
+        {
+          context.selectionStack.addToSelection(&m_scene);
+        }
+      }
       else
+      {
         context.selectionStack.removeFromSelection(&m_scene);
+      }
       return value;
     }
   }

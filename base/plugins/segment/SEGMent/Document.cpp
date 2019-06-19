@@ -78,11 +78,18 @@ DocumentPresenter::DocumentPresenter(
 
 DocumentPresenter::~DocumentPresenter() {}
 
+QDebug operator<<(QDebug d, const Selection& s)
+{
+  d << "{";
+  for(auto e : s) d << e;
+  d << "}";
+  return d;
+}
 void DocumentPresenter::setNewSelection(const Selection& s)
 {
   for (auto& obj : m_curSel)
   {
-    if (obj)
+    if (obj && !s.contains(obj))
     {
       auto c = obj->findChild<Selectable*>();
       if (c)
