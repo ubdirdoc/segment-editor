@@ -280,6 +280,11 @@ PROPERTY_COMMAND_T(
     SetSceneRepeatText,
     SceneModel::p_repeatText,
     "Set start text repeats")
+PROPERTY_COMMAND_T(
+    SEGMent,
+    SetSceneSonar,
+    SceneModel::p_sonar,
+    "Enable or disable the sonar")
 PROPERTY_COMMAND_T(SEGMent, SetSceneImage, SceneModel::p_image, "Set image")
 PROPERTY_COMMAND_T(SEGMent, SetSceneRect, SceneModel::p_rect, "Set rect")
 
@@ -334,6 +339,7 @@ SCORE_COMMAND_DECL_T(SEGMent::SetTextAreaBehaviour)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneAmbience)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneStartText)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneRepeatText)
+SCORE_COMMAND_DECL_T(SEGMent::SetSceneSonar)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneImage)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneRect)
 

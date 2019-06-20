@@ -139,6 +139,15 @@ public:
 
 private:
   bool m_repeatText{};
+
+public:
+  bool sonar() const MSVC_NOEXCEPT;
+  void setSonar(bool v) MSVC_NOEXCEPT;
+  void sonarChanged(bool v) W_SIGNAL(sonarChanged, v);
+  PROPERTY(bool, sonar READ sonar WRITE setSonar NOTIFY sonarChanged)
+
+private:
+  bool m_sonar{};
 };
 
 template <typename T>

@@ -103,6 +103,20 @@ void SceneModel::setRepeatText(bool v) MSVC_NOEXCEPT
   }
 }
 
+bool SceneModel::sonar() const MSVC_NOEXCEPT
+{
+  return m_sonar;
+}
+
+void SceneModel::setSonar(bool v) MSVC_NOEXCEPT
+{
+  if (m_sonar != v)
+  {
+    m_sonar = v;
+    sonarChanged(v);
+  }
+}
+
 } // namespace SEGMent
 
 template <>
@@ -129,7 +143,7 @@ void DataStreamReader::read(const SEGMent::SceneModel& v)
         }
       });
   m_stream << v.m_ambience << v.m_image << v.m_rect << v.m_sceneType
-           << v.m_startText << v.m_repeatText;
+           << v.m_startText << v.m_repeatText << v.m_sonar;
 
   insertDelimiter();
 }
@@ -151,7 +165,7 @@ void DataStreamWriter::write(SEGMent::SceneModel& v)
         }
       });
   m_stream >> v.m_ambience >> v.m_image >> v.m_rect >> v.m_sceneType
-      >> v.m_startText >> v.m_repeatText;
+      >> v.m_startText >> v.m_repeatText >> v.m_sonar;
 
   checkDelimiter();
 }
@@ -173,6 +187,7 @@ void JSONObjectReader::read(const SEGMent::SceneModel& v)
   obj["SceneType"] = (int)v.m_sceneType;
   obj["StartText"] = v.m_startText;
   obj["RepeatText"] = v.m_repeatText;
+  obj["Sonar"] = v.m_sonar;
 }
 
 template <>
@@ -230,4 +245,5 @@ void JSONObjectWriter::write(SEGMent::SceneModel& v)
   v.m_sceneType = (SEGMent::SceneModel::SceneType)obj["SceneType"].toInt();
   v.m_startText = obj["StartText"].toString();
   v.m_repeatText = obj["RepeatText"].toBool();
+  v.m_sonar = obj["Sonar"].toBool();
 }
