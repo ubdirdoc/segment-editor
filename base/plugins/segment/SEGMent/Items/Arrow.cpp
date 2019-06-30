@@ -22,7 +22,6 @@ Arrow::Arrow(
     , m_model{t}
     , m_startItem{startItem}
     , m_endItem{endItem}
-    , m_processView{view}
 {
   setAcceptDrops(true);
   con(t.selection, &Selectable::changed, this, &Arrow::setSelected);
@@ -222,7 +221,9 @@ void Arrow::dropEvent(QGraphicsSceneDragDropEvent* event)
         CommandDispatcher<> disp{context.commandStack};
         if (!trans->riddle.target<SEGMent::TextRiddle>())
         {
-          disp.submitCommand(new ChangeRiddle{m_model, SEGMent::TextRiddle{}});
+          auto r = trans->riddle;
+          static_cast<riddle_t::impl_type&>(r) = SEGMent::TextRiddle{};
+          disp.submitCommand(new ChangeRiddle{m_model, std::move(r)});
         }
       }
       else if (txt == SEGMENT_GIFRIDDLE_ID)
@@ -230,7 +231,9 @@ void Arrow::dropEvent(QGraphicsSceneDragDropEvent* event)
         CommandDispatcher<> disp{context.commandStack};
         if (!trans->riddle.target<SEGMent::GifRiddle>())
         {
-          disp.submitCommand(new ChangeRiddle{m_model, SEGMent::GifRiddle{}});
+          auto r = trans->riddle;
+          static_cast<riddle_t::impl_type&>(r) = SEGMent::GifRiddle{};
+          disp.submitCommand(new ChangeRiddle{m_model, std::move(r)});
         }
       }
       else if (txt == SEGMENT_PUZZLERIDDLE_ID)
@@ -238,8 +241,9 @@ void Arrow::dropEvent(QGraphicsSceneDragDropEvent* event)
         CommandDispatcher<> disp{context.commandStack};
         if (!trans->riddle.target<SEGMent::PuzzleRiddle>())
         {
-          disp.submitCommand(
-              new ChangeRiddle{m_model, SEGMent::PuzzleRiddle{}});
+          auto r = trans->riddle;
+          static_cast<riddle_t::impl_type&>(r) = SEGMent::PuzzleRiddle{};
+          disp.submitCommand(new ChangeRiddle{m_model, std::move(r)});
         }
       }
     }

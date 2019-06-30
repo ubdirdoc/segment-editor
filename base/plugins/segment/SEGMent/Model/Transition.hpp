@@ -2,7 +2,6 @@
 #include <score/model/Entity.hpp>
 #include <score/model/path/PathSerialization.hpp>
 #include <score/selection/Selectable.hpp>
-#include <score/serialization/VariantSerialization.hpp>
 
 #include <SEGMent/Items/Anchor.hpp>
 #include <SEGMent/Model/ClickArea.hpp>
@@ -227,7 +226,6 @@ struct TSerializer<
     v.riddle = fromJsonObject<SEGMent::riddle_t>(s.obj["Riddle"].toObject());
   }
 };
-
 Q_DECLARE_METATYPE(SEGMent::transition_t)
 Q_DECLARE_METATYPE(SEGMent::TransitionModel::FadeMode)
 

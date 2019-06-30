@@ -443,8 +443,61 @@ struct WidgetFactory
 
   //// Transitions ////
 
+  static inline const SEGMent::riddle_t& get_riddle(const U& object) {
+    return object.transition()
+                 .template target<SEGMent::SceneToScene>()
+                 ->riddle;
+  }
+
   auto operator()(const SEGMent::SceneToScene& cur)
   {
+    {
+      layout.addRow(new QWidget);
+      QFrame* line = new QFrame();
+      line->setFrameShape(QFrame::HLine);
+      line->setFrameShadow(QFrame::Sunken);
+
+      layout.addRow(line);
+    }
+
+    // Timing
+    {
+      auto time = new QSpinBox;
+      time->setRange(0, 1000);
+      time->setSpecialValueText("Aucun");
+      time->setValue(60);
+      time->setSuffix(QObject::tr(" seconds"));
+      if(cur.riddle.maxTime)
+      {
+        time->setValue(*cur.riddle.maxTime);
+      }
+      else
+      {
+        time->setValue(0);
+      }
+
+      QObject::connect(time, qOverload<int>(&QSpinBox::valueChanged),
+              parent, [&object = this->object, &ctx = this->ctx] (int time) {
+        SEGMent::riddle_t cur = get_riddle(object);
+        if (cur.maxTime != time)
+        {
+          if(time == 0)
+            cur.maxTime = ossia::none;
+          else
+          {
+            cur.maxTime = time;
+          }
+
+
+          CommandDispatcher<> disp{ctx.commandStack};
+          disp.submitCommand(new ChangeRiddle{object, cur});
+        }
+      });
+
+      layout.addRow(QObject::tr("Temps limite"), time);
+    }
+
+    // Riddle choosing
     auto cb = new QComboBox;
     cb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     cb->addItem(QObject::tr("None"));
@@ -463,37 +516,43 @@ struct WidgetFactory
         parent,
         [& object = this->object, &ctx = this->ctx](int idx) {
           CommandDispatcher<> disp{ctx.commandStack};
-          auto riddle = object.transition()
-                            .template target<SEGMent::SceneToScene>()
-                            ->riddle;
+          auto riddle = get_riddle(object);
           switch (idx)
           {
             case 0:
             {
               if (riddle.which() != riddle.npos)
-                disp.submitCommand(
-                    new ChangeRiddle{object, SEGMent::riddle_t{}});
+              {
+                static_cast<riddle_t::impl_type&>(riddle) = riddle_t::impl_type{};
+                disp.submitCommand(new ChangeRiddle{object, std::move(riddle)});
+              }
               break;
             }
             case 1:
             {
               if (riddle.which() != 0)
-                disp.submitCommand(
-                    new ChangeRiddle{object, SEGMent::GifRiddle{}});
+              {
+                static_cast<riddle_t::impl_type&>(riddle) = SEGMent::GifRiddle{};
+                disp.submitCommand(new ChangeRiddle{object, std::move(riddle)});
+              }
               break;
             }
             case 2:
             {
               if (riddle.which() != 1)
-                disp.submitCommand(
-                    new ChangeRiddle{object, SEGMent::PuzzleRiddle{}});
+              {
+                static_cast<riddle_t::impl_type&>(riddle) = SEGMent::PuzzleRiddle{};
+                disp.submitCommand(new ChangeRiddle{object, std::move(riddle)});
+              }
               break;
             }
             case 3:
             {
               if (riddle.which() != 2)
-                disp.submitCommand(
-                    new ChangeRiddle{object, SEGMent::TextRiddle{}});
+              {
+                static_cast<riddle_t::impl_type&>(riddle) = SEGMent::TextRiddle{};
+                disp.submitCommand(new ChangeRiddle{object, std::move(riddle)});
+              }
               break;
             }
           }
@@ -501,6 +560,7 @@ struct WidgetFactory
 
     layout.addRow(QObject::tr("Riddle"), cb);
 
+    {
     auto sw = new QStackedWidget;
     // nothing
     sw->addWidget(new QWidget);
@@ -521,14 +581,15 @@ struct WidgetFactory
           question,
           &QLineEdit::editingFinished,
           parent,
-          [question, &cur = cur, &object = this->object, &ctx = this->ctx] {
-            auto riddle = *cur.riddle.target<TextRiddle>();
+          [question, &object = this->object, &ctx = this->ctx] {
+            auto cur = get_riddle(object);
+            auto& riddle = *cur.template target<TextRiddle>();
             if (riddle.question != question->text())
             {
               riddle.question = question->text();
 
               CommandDispatcher<> disp{ctx.commandStack};
-              disp.submitCommand(new ChangeRiddle{object, riddle});
+              disp.submitCommand(new ChangeRiddle{object, cur});
             }
           });
     }
@@ -538,8 +599,9 @@ struct WidgetFactory
           expected,
           &EditingFinishedTextEdit::editingFinished,
           parent,
-          [expected, &cur = cur, &object = this->object, &ctx = this->ctx] {
-            auto riddle = *cur.riddle.target<TextRiddle>();
+          [expected, &object = this->object, &ctx = this->ctx] {
+            auto cur = get_riddle(object);
+            auto& riddle = *cur.template target<TextRiddle>();
             auto old_riddle = riddle;
             auto str = expected->toPlainText();
             auto answers
@@ -565,7 +627,7 @@ struct WidgetFactory
             if (old_riddle != riddle)
             {
               CommandDispatcher<> disp{ctx.commandStack};
-              disp.submitCommand(new ChangeRiddle{object, riddle});
+              disp.submitCommand(new ChangeRiddle{object, cur});
             }
           });
     }
@@ -575,14 +637,15 @@ struct WidgetFactory
           ifCorrect,
           &QLineEdit::editingFinished,
           parent,
-          [ifCorrect, &cur = cur, &object = this->object, &ctx = this->ctx] {
-            auto riddle = *cur.riddle.target<TextRiddle>();
+          [ifCorrect, &object = this->object, &ctx = this->ctx] {
+            auto cur = get_riddle(object);
+            auto& riddle = *cur.template target<TextRiddle>();
             if (riddle.ifCorrect != ifCorrect->text())
             {
               riddle.ifCorrect = ifCorrect->text();
 
               CommandDispatcher<> disp{ctx.commandStack};
-              disp.submitCommand(new ChangeRiddle{object, riddle});
+              disp.submitCommand(new ChangeRiddle{object, cur});
             }
           });
     }
@@ -592,14 +655,15 @@ struct WidgetFactory
           ifWrong,
           &QLineEdit::editingFinished,
           parent,
-          [ifWrong, &cur = cur, &object = this->object, &ctx = this->ctx] {
-            auto riddle = *cur.riddle.target<TextRiddle>();
+          [ifWrong, &object = this->object, &ctx = this->ctx] {
+            auto cur = get_riddle(object);
+            auto& riddle = *cur.template target<TextRiddle>();
             if (riddle.ifWrong != ifWrong->text())
             {
               riddle.ifWrong = ifWrong->text();
 
               CommandDispatcher<> disp{ctx.commandStack};
-              disp.submitCommand(new ChangeRiddle{object, riddle});
+              disp.submitCommand(new ChangeRiddle{object, cur});
             }
           });
     }
@@ -610,14 +674,14 @@ struct WidgetFactory
           stars,
           &QCheckBox::stateChanged,
           parent,
-          [stars, &cur = cur, &object = this->object, &ctx = this->ctx](
-              int state) {
-            auto riddle = *cur.riddle.target<TextRiddle>();
+          [&object = this->object, &ctx = this->ctx] (int state) {
+            auto cur = get_riddle(object);
+            auto& riddle = *cur.template target<TextRiddle>();
 
             riddle.useStars = bool(state);
 
             CommandDispatcher<> disp{ctx.commandStack};
-            disp.submitCommand(new ChangeRiddle{object, riddle});
+            disp.submitCommand(new ChangeRiddle{object, cur});
           });
     }
 
@@ -683,6 +747,8 @@ struct WidgetFactory
         &object, T::notify(), parent, [=](const transition_t& new_t) {
           set_sw_index(new_t.target<SceneToScene>()->riddle.which());
         });
+    }
+
     return nullptr;
   }
 

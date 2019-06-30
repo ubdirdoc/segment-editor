@@ -2,6 +2,7 @@
 #include <score/model/Entity.hpp>
 #include <score/selection/Selectable.hpp>
 #include <score/tools/std/HashMap.hpp>
+#include <score/serialization/VariantSerialization.hpp>
 
 namespace std
 {
@@ -76,9 +77,78 @@ struct TextRiddle
   }
 };
 
-using riddle_t = eggs::variant<GifRiddle, PuzzleRiddle, TextRiddle>;
+//! A riddle can either be a text, a gif, or a puzzle
+struct riddle_t : eggs::variant<GifRiddle, PuzzleRiddle, TextRiddle>
+{
+  using impl_type = eggs::variant<GifRiddle, PuzzleRiddle, TextRiddle>;
+  riddle_t(impl_type t): variant{std::move(t)} { }
+
+  riddle_t() = default;
+  riddle_t(const riddle_t&) = default;
+  riddle_t(riddle_t&&) = default;
+  riddle_t& operator=(const riddle_t&) = default;
+  riddle_t& operator=(riddle_t&&) = default;
+
+  //! Riddles can have a time limit, expressed in seconds.
+  optional<int> maxTime{};
+
+  friend bool operator==(const riddle_t& lhs, const riddle_t& rhs) noexcept
+  {
+    return static_cast<const impl_type&>(lhs) == static_cast<const impl_type&>(rhs) &&
+        lhs.maxTime == rhs.maxTime;
+  }
+  friend bool operator!=(const riddle_t& lhs, const riddle_t& rhs) noexcept
+  {
+    return !(lhs == rhs);
+  }
+};
+
+
 
 } // namespace SEGMent
+
+template <>
+struct is_custom_serialized<SEGMent::riddle_t>: std::true_type { };
+
+template <>
+struct TSerializer<
+    DataStream,
+    SEGMent::riddle_t>
+{
+  using type = SEGMent::riddle_t;
+  static void readFrom(DataStream::Serializer& s, const SEGMent::riddle_t& v)
+  {
+    s.readFrom(static_cast<const typename type::impl_type&>(v));
+    s.stream() << v.maxTime;
+  }
+
+  static void writeTo(DataStream::Deserializer& s, SEGMent::riddle_t& v)
+  {
+    auto& variant = static_cast<typename type::impl_type&>(v);
+    s.writeTo(variant);
+    s.stream() >> v.maxTime;
+  }
+};
+
+template <>
+struct TSerializer<
+    JSONObject,
+    SEGMent::riddle_t>
+{
+  using type = SEGMent::riddle_t;
+  static void readFrom(JSONObject::Serializer& s, const type& v)
+  {
+    s.readFrom(static_cast<const typename type::impl_type&>(v));
+    s.obj["MaxTime"] = toJsonValue(v.maxTime);
+  }
+
+  static void writeTo(JSONObject::Deserializer& s, type& v)
+  {
+    auto& variant = static_cast<typename type::impl_type&>(v);
+    s.writeTo(variant);
+    v.maxTime = fromJsonValue<optional<int>>(s.obj["MaxTime"]);
+  }
+};
 
 JSON_METADATA(SEGMent::GifRiddle, "Gif")
 JSON_METADATA(SEGMent::PuzzleRiddle, "Puzzle")

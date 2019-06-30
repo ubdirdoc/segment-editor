@@ -56,7 +56,6 @@ private:
   const TransitionModel& m_model;
   Anchor& m_startItem;
   Anchor& m_endItem;
-  ZoomView& m_processView;
 
   QPolygonF m_arrowHead;
   QPolygonF m_selectionPolygon;

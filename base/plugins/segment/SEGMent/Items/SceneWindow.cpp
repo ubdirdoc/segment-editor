@@ -561,8 +561,9 @@ SceneWindow::itemChange(GraphicsItemChange change, const QVariant& value)
       }
       return value;
     }
+    default:
+      return value;
   }
-  return value;
 }
 
 void SceneWindow::mousePressEvent(QGraphicsSceneMouseEvent* event)
