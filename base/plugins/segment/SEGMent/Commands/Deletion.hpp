@@ -2,6 +2,7 @@
 #include <score/command/AggregateCommand.hpp>
 #include <score/command/Command.hpp>
 #include <score/command/PropertyCommand.hpp>
+#include <score/command/Dispatchers/MacroCommandDispatcher.hpp>
 #include <score/document/DocumentContext.hpp>
 #include <score/model/path/PathSerialization.hpp>
 #include <score/selection/SelectionStack.hpp>
@@ -54,20 +55,6 @@ public:
   RemoveScene(const ProcessModel& obj, const SceneModel& sc)
       : m_path{obj}, m_id{sc.id()}, m_scene{score::marshall<DataStream>(sc)}
   {
-    auto sc_path = score::IDocument::path(sc);
-    for (auto& trans : obj.transitions)
-    {
-      eggs::variants::apply(
-          [&](const auto& transition) {
-            if (is_parent(sc_path, transition.from)
-                || is_parent(sc_path, transition.to))
-            {
-              m_transitions.emplace_back(
-                  trans.id(), score::marshall<DataStream>(trans));
-            }
-          },
-          trans.transition());
-    }
   }
 
   void undo(const score::DocumentContext& ctx) const override
@@ -75,11 +62,6 @@ public:
     auto& proc = m_path.find(ctx);
 
     proc.scenes.add(new SceneModel{DataStreamWriter{m_scene}, &proc});
-    for (auto& trans : m_transitions)
-    {
-      proc.transitions.add(
-          new TransitionModel{DataStreamWriter{trans.second}, &proc});
-    }
   }
 
   void redo(const score::DocumentContext& ctx) const override
@@ -87,27 +69,23 @@ public:
     auto& proc = m_path.find(ctx);
     ctx.selectionStack.deselect();
 
-    for (auto& trans : m_transitions)
-      proc.transitions.remove(trans.first);
-
     proc.scenes.remove(m_id);
   }
 
 protected:
   void serializeImpl(DataStreamInput& s) const override
   {
-    s << m_path << m_id << m_scene << m_transitions;
+    s << m_path << m_id << m_scene;
   }
   void deserializeImpl(DataStreamOutput& s) override
   {
-    s >> m_path >> m_id >> m_scene >> m_transitions;
+    s >> m_path >> m_id >> m_scene;
   }
 
 private:
   Path<ProcessModel> m_path;
   Id<SceneModel> m_id{};
   QByteArray m_scene;
-  std::vector<std::pair<Id<TransitionModel>, QByteArray>> m_transitions;
 };
 
 class RemoveTransition : public score::Command
@@ -183,22 +161,6 @@ public:
       , m_id{object.id()}
       , m_object{score::marshall<DataStream>(object)}
   {
-    auto& proc = (SEGMent::ProcessModel&)*scene.parent();
-    auto obj_path = score::IDocument::path(object);
-    for (auto& trans : proc.transitions)
-    {
-      qDebug() << trans.transition().which();
-      eggs::variants::apply(
-          [&](const auto& transition) {
-            if (is_parent(obj_path, transition.from)
-                || is_parent(obj_path, transition.to))
-            {
-              m_transitions.emplace_back(
-                  trans.id(), score::marshall<DataStream>(trans));
-            }
-          },
-          trans.transition());
-    }
   }
 
   void undo(const score::DocumentContext& ctx) const override
@@ -208,11 +170,6 @@ public:
 
     SceneAccessor<T>{}.get(scene).add(
         new T{DataStreamWriter{m_object}, &scene});
-    for (auto& trans : m_transitions)
-    {
-      proc.transitions.add(
-          new TransitionModel{DataStreamWriter{trans.second}, &proc});
-    }
   }
 
   void redo(const score::DocumentContext& ctx) const override
@@ -221,51 +178,92 @@ public:
     auto& proc = (SEGMent::ProcessModel&)*scene.parent();
     ctx.selectionStack.deselect();
 
-    for (auto& trans : m_transitions)
-      proc.transitions.remove(trans.first);
-
     SceneAccessor<T>{}.get(scene).remove(m_id);
   }
 
 protected:
   void serializeImpl(DataStreamInput& s) const override
   {
-    s << m_path << m_id << m_object << m_transitions;
+    s << m_path << m_id << m_object;
   }
   void deserializeImpl(DataStreamOutput& s) override
   {
-    s >> m_path >> m_id >> m_object >> m_transitions;
+    s >> m_path >> m_id >> m_object;
   }
 
 private:
   Path<SceneModel> m_path;
   Id<T> m_id{};
   QByteArray m_object;
-  std::vector<std::pair<Id<TransitionModel>, QByteArray>> m_transitions;
-};
-
-struct RemoveObjectVisitor
-{
-  score::Command* operator()(const SceneModel& obj) const
-  {
-    return new RemoveScene{*static_cast<ProcessModel*>(obj.parent()), obj};
-  }
-  score::Command* operator()(const TransitionModel& obj) const
-  {
-    return new RemoveTransition{*static_cast<ProcessModel*>(obj.parent()),
-                                obj};
-  }
-  template <typename T>
-  score::Command* operator()(const T& obj) const
-  {
-    return new RemoveObject{*static_cast<SceneModel*>(obj.parent()), obj};
-  }
 };
 
 struct RemoveObjects : public score::AggregateCommand
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), RemoveObjects, "Remove objects")
 };
+
+struct RemoveObjectVisitor
+{
+  MacroCommandDispatcher<RemoveObjects>& dispatcher;
+  std::unordered_map<Id<TransitionModel>, score::Command*> transitions;
+  std::vector<score::Command*> others;
+  void operator()(const SceneModel& sc)
+  {
+      auto& proc = *static_cast<ProcessModel*>(sc.parent());
+      auto sc_path = score::IDocument::path(sc);
+      for (auto& trans : proc.transitions)
+      {
+        eggs::variants::apply(
+            [&](const auto& transition) {
+              if (is_parent(sc_path, transition.from)
+                  || is_parent(sc_path, transition.to))
+              {
+                  if(transitions.find(trans.id()) == transitions.end())
+                      transitions[trans.id()] = new RemoveTransition{proc, trans};
+              }
+            },
+            trans.transition());
+      }
+
+      others.push_back(new RemoveScene{proc, sc});
+  }
+  void operator()(const TransitionModel& trans)
+  {
+      auto& proc = *static_cast<ProcessModel*>(trans.parent());
+      if(transitions.find(trans.id()) == transitions.end())
+          transitions[trans.id()] = new RemoveTransition{proc, trans};
+  }
+  template <typename T>
+  void operator()(const T& obj)
+  {
+    auto& scene = *static_cast<SceneModel*>(obj.parent());
+    auto& proc = (SEGMent::ProcessModel&)*scene.parent();
+    auto obj_path = score::IDocument::path(obj);
+    for (auto& trans : proc.transitions)
+    {
+      eggs::variants::apply(
+          [&](const auto& transition) {
+            if (is_parent(obj_path, transition.from)
+                || is_parent(obj_path, transition.to))
+            {
+                if(transitions.find(trans.id()) == transitions.end())
+                    transitions[trans.id()] = new RemoveTransition{proc, trans};
+            }
+          },
+          trans.transition());
+    }
+    others.push_back(new RemoveObject{scene, obj});
+  }
+
+  void finish()
+  {
+      for(auto& [id, cmd] : transitions)
+          dispatcher.submitCommand(cmd);
+      for(auto& cmd : others)
+          dispatcher.submitCommand(cmd);
+  }
+};
+
 } // namespace SEGMent
 
 SCORE_COMMAND_DECL_T(SEGMent::RemoveObject<SEGMent::ImageModel>)

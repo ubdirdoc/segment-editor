@@ -522,12 +522,16 @@ void ApplicationPlugin::on_delete()
 
   MacroCommandDispatcher<RemoveObjects> disp{doc->context().commandStack};
   const auto& sel = doc->context().selectionStack.currentSelection();
+
+  RemoveObjectVisitor vis{disp};
   for (const auto& e : sel)
   {
-    if (auto cmd = dispatch(e.data(), RemoveObjectVisitor{}))
-      disp.submitCommand(cmd);
+    dispatch(e.data(), vis);
   }
-  disp.commit();
+  vis.finish();
+
+  if(disp.command()->count() != 0)
+      disp.commit();
 }
 
 void ApplicationPlugin::on_stop() { SoundPlayer::instance().stop(); }
