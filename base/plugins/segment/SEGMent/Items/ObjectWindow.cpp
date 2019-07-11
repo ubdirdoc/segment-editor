@@ -13,6 +13,8 @@
 #include <SEGMent/FilePath.hpp>
 #include <SEGMent/Items/GlobalVariables.hpp>
 #include <SEGMent/Items/ObjectWindow.hpp>
+#include <SEGMent/ImageCache.hpp>
+
 namespace SEGMent
 {
 void WindowWithBackground::sizeChanged()
@@ -74,7 +76,7 @@ ImageWindow::ImageWindow(
   ::bind(p, ImageModel::p_z{}, this, [=](auto z) { setZValue(z); });
   ::bind(p, ImageModel::p_puzzle{}, this, [=](auto z) { setPuzzle(z); });
   ::bind(p, ImageModel::p_image{}, this, [=, &ctx](const Image& img) {
-    setBackgroundImage(QPixmap(toLocalFile(img.path, ctx)));
+    setBackgroundImage(ImageCache::instance().large(toLocalFile(img.path, ctx)));
   });
 
   setImageOpacity(0.9);
@@ -85,14 +87,13 @@ void ImageWindow::setPuzzle(bool b)
 {
   if (b)
   {
-    m_puzzle = new QGraphicsPixmapItem(
-        QPixmap(":/puzzle.png")
-            .scaled(
-                32,
-                32,
-                Qt::AspectRatioMode::KeepAspectRatio,
-                Qt::FastTransformation),
-        this);
+    static const auto puzzlePixmap = QPixmap(":/puzzle.png")
+        .scaled(
+            32,
+            32,
+            Qt::AspectRatioMode::KeepAspectRatio,
+            Qt::FastTransformation);
+    m_puzzle = new QGraphicsPixmapItem(puzzlePixmap, this);
     m_puzzle->setX(
         boundingRect().width() - m_puzzle->boundingRect().width() / 2.);
     m_puzzle->setY(-m_puzzle->boundingRect().height() / 2.);

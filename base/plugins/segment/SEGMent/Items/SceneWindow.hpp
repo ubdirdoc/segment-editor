@@ -1,6 +1,6 @@
 #pragma once
 #include <SEGMent/Items/Window.hpp>
-
+#include <SEGMent/ImageCache.hpp>
 namespace SEGMent
 {
 class ImageWindow;
@@ -28,7 +28,7 @@ public:
   const SceneModel& model() const { return m_scene; }
 
   void setTitle(QString title);
-  void setBackgroundImage(QPixmap img);
+  void setBackgroundImage(CacheInstance& img);
   void updateRect() override;
   void sizeChanged();
 
@@ -65,7 +65,7 @@ private:
 
   RectItem m_sceneArea;
 
-  QGraphicsPixmapItem m_backgroundImgDisplay;
+  LODPixmapItem m_backgroundImgDisplay;
   qreal m_backgroundImgRealWidth{100.0};
 
   ossia::ptr_map<const ImageModel*, ImageWindow*> m_objects;

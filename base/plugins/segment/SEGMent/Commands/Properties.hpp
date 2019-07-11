@@ -303,6 +303,11 @@ PROPERTY_COMMAND_T(
     SetTransitionColor,
     TransitionModel::p_color,
     "Set color")
+PROPERTY_COMMAND_T(
+    SEGMent,
+    SetTransitionUnique,
+    TransitionModel::p_unique,
+    "Set unique")
 
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectImage)
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectPos)
@@ -346,3 +351,4 @@ SCORE_COMMAND_DECL_T(SEGMent::SetSceneRect)
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionSound)
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionFade)
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionColor)
+SCORE_COMMAND_DECL_T(SEGMent::SetTransitionUnique)

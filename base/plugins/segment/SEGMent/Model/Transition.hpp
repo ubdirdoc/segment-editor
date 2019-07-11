@@ -132,6 +132,14 @@ public:
   PROPERTY(Sound, sound READ sound WRITE setSound NOTIFY soundChanged)
 private:
   Sound m_sound{};
+
+public:
+  bool unique() const MSVC_NOEXCEPT;
+  void setUnique(bool v) MSVC_NOEXCEPT;
+  void uniqueChanged(bool v) W_SIGNAL(uniqueChanged, v);
+  PROPERTY(bool, unique READ unique WRITE setUnique NOTIFY uniqueChanged)
+private:
+  bool m_unique{};
 };
 
 } // namespace SEGMent

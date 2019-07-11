@@ -82,6 +82,7 @@ public:
     setup_inspector(TransitionModel::p_fade{}, sc, doc, *lay, this);
     // setup_inspector(TransitionModel::p_color{}, sc, doc, *lay, this);
     setup_inspector(TransitionModel::p_transition{}, sc, doc, *lay, this);
+    setup_inspector(TransitionModel::p_unique{}, sc, doc, *lay, this);
   }
 };
 

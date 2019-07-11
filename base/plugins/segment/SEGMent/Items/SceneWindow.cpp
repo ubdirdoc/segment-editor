@@ -21,6 +21,7 @@
 #include <SEGMent/Items/ObjectWindow.hpp>
 #include <SEGMent/Items/SceneWindow.hpp>
 #include <SEGMent/Model/Scene.hpp>
+#include <SEGMent/ImageCache.hpp>
 
 namespace SEGMent
 {
@@ -132,7 +133,6 @@ SceneWindow::SceneWindow(
   });
 
   m_backgroundImgDisplay.setParentItem(&m_sceneArea);
-  m_backgroundImgDisplay.setTransformationMode(Qt::SmoothTransformation);
 
   m_sceneArea.moveBy(borderWidth, titleBarHeight + borderWidth);
 
@@ -197,7 +197,7 @@ SceneWindow::SceneWindow(
   p.textAreas.removed.connect<&SceneWindow::on_textAreaRemoved>(this);
 
   ::bind(p, SceneModel::p_image{}, this, [=, &ctx](const Image& img) {
-    setBackgroundImage(QPixmap(toLocalFile(img.path, ctx)));
+    setBackgroundImage(ImageCache::instance().cache(toLocalFile(img.path, ctx)));
   });
   ::bind(p.metadata(), score::ModelMetadata::p_label{}, this, [=](auto img) {
     setTitle(img);
@@ -410,15 +410,17 @@ static const QPixmap& missingImage() noexcept
   return m;
 }
 
-void SceneWindow::setBackgroundImage(QPixmap img)
+void SceneWindow::setBackgroundImage(CacheInstance& img)
 {
-  if (img.isNull())
+  if (img.full_pixmap.isNull())
   {
-    img = missingImage();
+    img.full_pixmap = missingImage();
+    img.large_pixmap = missingImage();
+    img.small_pixmap = missingImage();
   }
-  m_scene.image().cache = img;
+  //m_scene.image().cache = img;
   m_backgroundImgDisplay.setPixmap(img);
-  m_backgroundImgRealWidth = img.width();
+  m_backgroundImgRealWidth = img.full_pixmap.width();
 
   const auto sceneRect = m_sceneArea.boundingRect();
 
@@ -566,25 +568,6 @@ SceneWindow::itemChange(GraphicsItemChange change, const QVariant& value)
   }
 }
 
-void SceneWindow::mousePressEvent(QGraphicsSceneMouseEvent* event)
-{
-  if (m_titleBar.rect().contains(event->pos()))
-  {
-    QGraphicsRectItem::mousePressEvent(event);
-    m_moving = true;
-  }
-  event->accept();
-}
-
-void SceneWindow::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
-{
-  if (m_moving)
-  {
-    QGraphicsRectItem::mouseMoveEvent(event);
-  }
-  event->accept();
-}
-
 void renderGraphicsItemRec(
     QPainter& painter,
     QGraphicsItem& root,
@@ -633,48 +616,68 @@ QString imageToBase64(const QImage& image)
       byteArray.toBase64(QByteArray::Base64Encoding).data());
 }
 
+
+void SceneWindow::mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
+  if(event->button() == Qt::LeftButton)
+  {
+    QGraphicsRectItem::mousePressEvent(event);
+  }
+  event->accept();
+}
+
+void SceneWindow::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+{
+  if(event->buttons() & Qt::LeftButton)
+  {
+    QGraphicsRectItem::mouseMoveEvent(event);
+  }
+  event->accept();
+}
+
 void SceneWindow::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-  if (m_moving)
+  if(event->button() == Qt::LeftButton)
   {
     QGraphicsRectItem::mouseReleaseEvent(event);
-    std::vector<const SceneModel*> scenes;
-
-    for(auto& obj : context.selectionStack.currentSelection())
     {
-      if(auto scene = dynamic_cast<const SceneModel*>(obj.data()))
+      std::vector<const SceneModel*> scenes;
+
+      for(auto& obj : context.selectionStack.currentSelection())
       {
-        scenes.push_back(scene);
-      }
-    }
-
-    if(!scenes.empty())
-    {
-      QPointF translation = event->scenePos() - event->buttonDownScenePos(Qt::LeftButton);
-      auto aggr = new MoveSceneRects;
-      for(auto scene : scenes)
-      {
-        auto rect = scene->rect();
-        if(scene != &m_scene)
+        if(auto scene = dynamic_cast<const SceneModel*>(obj.data()))
         {
-          double x = qBound(-max_dim, rect.x() + translation.x(), max_dim);
-          double y = qBound(-max_dim, rect.y() + translation.y(), max_dim);
-
-          aggr->addCommand(new SetSceneRect{*scene, QRectF{x, y, rect.width(), rect.height()}});
-        }
-        else
-        {
-          double x = qBound(-max_dim, this->pos().x(), max_dim);
-          double y = qBound(-max_dim, this->pos().y(), max_dim);
-
-          aggr->addCommand(new SetSceneRect{*scene, QRectF{x, y, rect.width(), rect.height()}});
+          scenes.push_back(scene);
         }
       }
 
-      context.commandStack.redoAndPush(aggr);
+      if(!scenes.empty())
+      {
+        QPointF translation = event->scenePos() - event->buttonDownScenePos(Qt::LeftButton);
+        auto aggr = new MoveSceneRects;
+        for(auto scene : scenes)
+        {
+          auto rect = scene->rect();
+          if(scene != &m_scene)
+          {
+            double x = qBound(-max_dim, rect.x() + translation.x(), max_dim);
+            double y = qBound(-max_dim, rect.y() + translation.y(), max_dim);
+
+            aggr->addCommand(new SetSceneRect{*scene, QRectF{x, y, rect.width(), rect.height()}});
+          }
+          else
+          {
+            double x = qBound(-max_dim, this->pos().x(), max_dim);
+            double y = qBound(-max_dim, this->pos().y(), max_dim);
+
+            aggr->addCommand(new SetSceneRect{*scene, QRectF{x, y, rect.width(), rect.height()}});
+          }
+        }
+
+        context.commandStack.redoAndPush(aggr);
+      }
     }
   }
-  m_moving = false;
 
   if (event->button() == Qt::RightButton)
   {

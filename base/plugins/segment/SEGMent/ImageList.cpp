@@ -14,7 +14,7 @@
 #include <SEGMent/ImageList.hpp>
 #include <SEGMent/Items/GlobalVariables.hpp>
 #include <SEGMent/Model/Sound.hpp>
-
+#include <SEGMent/ImageCache.hpp>
 namespace SEGMent
 {
 ImageList::ImageList(QString resPath, QString folder, QString id)
@@ -72,25 +72,12 @@ void ImageList::mouseMoveEvent(QMouseEvent* event)
 
 void ImageList::addFile(const QFileInfo& fileInfo)
 {
+  if(fileInfo.suffix() == "meta")
+    return;
   auto item = new QListWidgetItem(fileInfo.fileName());
 
   QTimer::singleShot(64, [=] {
-    QIcon icon;
-    if (fileInfo.completeSuffix().compare("gif", Qt::CaseInsensitive) == 0)
-    {
-      QPixmap pixmap = QPixmap(fileInfo.absoluteFilePath());
-      pixmap = pixmap.scaled(100, 100);
-      QPainter p(&pixmap);
-      p.setPen(Qt::black);
-      p.setBrush(Qt::white);
-      p.drawRect(4, 4, 24, 24);
-      p.drawPixmap(4, 4, 24, 24, QPixmap(":/baseline-videocam-24px.svg"));
-      icon = QIcon(pixmap);
-    }
-    else
-    {
-      icon = QIcon(fileInfo.absoluteFilePath());
-    }
+    QIcon icon = ImageCache::instance().inspector(fileInfo);
 
     auto items
         = this->findItems(fileInfo.fileName(), Qt::MatchFlag::MatchExactly);

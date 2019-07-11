@@ -75,12 +75,26 @@ void TransitionModel::setSound(const Sound& v) MSVC_NOEXCEPT
   }
 }
 
+bool TransitionModel::unique() const MSVC_NOEXCEPT
+{
+  return m_unique;
+}
+
+void TransitionModel::setUnique(bool v) MSVC_NOEXCEPT
+{
+  if (m_unique != v)
+  {
+    m_unique = v;
+    uniqueChanged(v);
+  }
+}
+
 } // namespace SEGMent
 
 template <>
 void DataStreamReader::read(const SEGMent::TransitionModel& v)
 {
-  m_stream << v.m_transition << v.m_fade << v.m_color << v.m_sound;
+  m_stream << v.m_transition << v.m_fade << v.m_color << v.m_sound << v.m_unique;
 
   insertDelimiter();
 }
@@ -88,7 +102,7 @@ void DataStreamReader::read(const SEGMent::TransitionModel& v)
 template <>
 void DataStreamWriter::write(SEGMent::TransitionModel& v)
 {
-  m_stream >> v.m_transition >> v.m_fade >> v.m_color >> v.m_sound;
+  m_stream >> v.m_transition >> v.m_fade >> v.m_color >> v.m_sound >> v.m_unique;
 
   checkDelimiter();
 }
@@ -100,6 +114,7 @@ void JSONObjectReader::read(const SEGMent::TransitionModel& v)
   obj["Fade"] = (int)v.m_fade;
   obj["Color"] = toJsonValue(v.m_color);
   obj["Sound"] = toJsonObject(v.m_sound);
+  obj["Unique"] = v.m_unique;
 }
 
 template <>
@@ -110,4 +125,5 @@ void JSONObjectWriter::write(SEGMent::TransitionModel& v)
   v.m_fade = (SEGMent::TransitionModel::FadeMode)obj["Fade"].toInt();
   v.m_sound = fromJsonObject<SEGMent::Sound>(obj["Sound"]);
   v.m_color = fromJsonValue<QColor>(obj["Color"]);
+  v.m_unique = obj["Unique"].toBool();
 }

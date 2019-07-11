@@ -13,20 +13,30 @@
 #include <SEGMent/Model/Layer/ProcessPresenter.hpp>
 #include <SEGMent/Model/Layer/ProcessView.hpp>
 #include <SEGMent/Panel/Library.hpp>
+#include <SEGMent/ImageCache.hpp>
 #include <QTranslator>
 #include <iscore_addon_SEGMent_commands_files.hpp>
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(SEGMent::EditingFinishedTextEdit)
 iscore_addon_SEGMent::iscore_addon_SEGMent()
 {
+  // Resources
 #if defined(SCORE_STATIC_PLUGINS)
   Q_INIT_RESOURCE(segment);
 #endif
+
+  // Translation
   auto tra = new QTranslator;
   if (tra->load(":/translations/fr.qm"))
   {
     qApp->installTranslator(tra);
   }
+
+  // Image cache
+  qRegisterMetaType<SEGMent::CacheInstance>();
+  qRegisterMetaTypeStreamOperators<SEGMent::CacheInstance>();
+  qRegisterMetaType<QHash<QString, SEGMent::CacheInstance>>();
+  qRegisterMetaTypeStreamOperators<QHash<QString, SEGMent::CacheInstance>>();
 }
 
 iscore_addon_SEGMent::~iscore_addon_SEGMent() {}

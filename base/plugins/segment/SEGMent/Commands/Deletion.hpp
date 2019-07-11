@@ -166,7 +166,6 @@ public:
   void undo(const score::DocumentContext& ctx) const override
   {
     auto& scene = m_path.find(ctx);
-    auto& proc = (SEGMent::ProcessModel&)*scene.parent();
 
     SceneAccessor<T>{}.get(scene).add(
         new T{DataStreamWriter{m_object}, &scene});
@@ -175,7 +174,6 @@ public:
   void redo(const score::DocumentContext& ctx) const override
   {
     auto& scene = m_path.find(ctx);
-    auto& proc = (SEGMent::ProcessModel&)*scene.parent();
     ctx.selectionStack.deselect();
 
     SceneAccessor<T>{}.get(scene).remove(m_id);

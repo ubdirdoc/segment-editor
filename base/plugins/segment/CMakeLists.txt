@@ -50,6 +50,7 @@ set(HDRS
     SEGMent/Items/Anchor.hpp
     SEGMent/Items/AnchorSetter.hpp
 
+    SEGMent/ImageCache.hpp
     SEGMent/ImageList.hpp
     SEGMent/Document.hpp
     SEGMent/FilePath.hpp

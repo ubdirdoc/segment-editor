@@ -113,13 +113,13 @@ struct WidgetFactory
 
   void setup()
   {
-    if (auto widg = make((object.*(T::get()))()))
+    if (auto widg = make((object.*(T::get()))()); widg != nullptr)
       layout.addRow(prettyText(T::name), (QWidget*)widg);
   }
 
   void setup(QString txt)
   {
-    if (auto widg = make((object.*(T::get()))()))
+    if (auto widg = make((object.*(T::get()))()); widg != nullptr)
       layout.addRow(txt, (QWidget*)widg);
   }
 

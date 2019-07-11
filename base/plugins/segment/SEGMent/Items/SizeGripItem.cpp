@@ -23,21 +23,44 @@
  */
 
 #include "SizeGripItem.hpp"
-
+#include <score/application/GUIApplicationContext.hpp>
+#include <score/document/DocumentContext.hpp>
+#include <core/presenter/DocumentManager.hpp>
 #include <QBrush>
 #include <QCursor>
 #include <QGraphicsSceneMouseEvent>
+#include <QPainter>
+#include <QStyleOption>
 
 SizeGripItem::HandleItem::HandleItem(int positionFlags, SizeGripItem* parent)
-    : QGraphicsRectItem(-4, -4, 8, 8, parent)
+    : QGraphicsItem(parent)
     , positionFlags_(positionFlags)
     , parent_(parent)
 {
-  setBrush(QBrush(Qt::lightGray));
+  //setBrush(QBrush(Qt::lightGray));
   setFlag(ItemIsMovable);
   setFlag(ItemSendsGeometryChanges);
   setFlag(ItemIgnoresTransformations);
   setCursor(Qt::SizeAllCursor);
+}
+
+
+QRectF SizeGripItem::HandleItem::boundingRect() const
+{
+  return {-4, -4, 8, 8};
+}
+
+void SizeGripItem::HandleItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+{
+  /*
+  static const auto handlePixmap = [] {
+    QPixmap p(8, 8);
+    p.fill(Qt::lightGray);
+    return p;
+  }();
+
+    painter->drawPixmap(-4, -4, handlePixmap);
+    */
 }
 
 int SizeGripItem::HandleItem::positionFlags() const
@@ -120,6 +143,7 @@ SizeGripItem::SizeGripItem(
     bool onlyBottomRight)
     : QGraphicsItem(parent), resizer_(resizer)
 {
+  setFlag(ItemHasNoContents, true);
   if (parentItem())
   {
 
@@ -252,6 +276,9 @@ void SizeGripItem::updateHandleItemPositions()
 
 void SizeGripItem::HandleItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+  auto doc = score::GUIAppContext().docManager.currentDocument();
+  if(doc)
+    doc->context().selectionStack.deselect();
   QGraphicsItem::mousePressEvent(event);
   parent_->startMove();
   event->accept();

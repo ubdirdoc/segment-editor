@@ -43,7 +43,7 @@ private:
     BottomRight = Bottom | Right
   };
 
-  class HandleItem : public QGraphicsRectItem
+  class HandleItem : public QGraphicsItem
   {
   public:
     HandleItem(int positionFlags, SizeGripItem* parent);
@@ -58,9 +58,12 @@ private:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+    QRectF boundingRect() const override;
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     int positionFlags_;
     SizeGripItem* parent_;
+
   };
 
 public:
