@@ -76,7 +76,7 @@ void ImageList::addFile(const QFileInfo& fileInfo)
     return;
   auto item = new QListWidgetItem(fileInfo.fileName());
 
-  QTimer::singleShot(64, [=] {
+  QTimer::singleShot(64, this, [=] {
     QIcon icon = ImageCache::instance().inspector(fileInfo);
 
     auto items

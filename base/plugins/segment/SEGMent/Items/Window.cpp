@@ -29,7 +29,6 @@ Window::Window(
                parent}
     , m_anchorsSetter{anchors ? 3 : 0, (borderWidth * 3) - 1, view, *this}
 {
-  this->setBrush(score::Skin::instance().TransparentBrush);
   this->moveBy(pos.x(), pos.y());
   this->setFlag(QGraphicsItem::ItemIsMovable);
 

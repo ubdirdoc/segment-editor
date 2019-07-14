@@ -30,7 +30,9 @@
 #include <SEGMent/Items/Arrow.hpp>
 #include <SEGMent/Items/ObjectWindow.hpp>
 #include <wobjectimpl.h>
-
+#include <QGLWidget>
+#include <QGLFormat>
+#include <QGLBuffer>
 // W_OBJECT_IMPL(SEGMent::View)
 W_OBJECT_IMPL(SEGMent::ZoomView)
 
@@ -43,6 +45,11 @@ ZoomView::ZoomView(const score::DocumentContext& ctx)
                     .process()}
 {
   setDragMode(QGraphicsView::DragMode::RubberBandDrag);
+
+  // setViewport(new QGLWidget(
+  //     QGLFormat(QGL::SampleBuffers)));
+  // setViewportUpdateMode(
+  //     QGraphicsView::FullViewportUpdate);
 }
 
 void ZoomView::enterEvent(QEvent* event)

@@ -1,4 +1,6 @@
 #pragma once
+#define NOMINMAX 1
+#define WIN32_MEAN_AND_LEAN 1
 #include <QString>
 #include <QFileInfo>
 #include <QDateTime>
@@ -6,29 +8,109 @@
 #include <QHash>
 #include <QSettings>
 #include <QDir>
+#include <QDebug>
 #include <QStandardPaths>
 #include <QApplication>
 #include <QCryptographicHash>
+#include <QMessageBox>
 #include <QPainter>
 #include <QGraphicsPixmapItem>
 #include <QStyleOption>
+#include <QImageWriter>
+#undef small
+
 namespace SEGMent
 {
-
+class ImageCache;
 struct CacheInstance
 {
+private:
+    friend class ImageCache;
+    mutable QPixmap inspector_pixmap;
+    mutable QPixmap small_pixmap;
+    mutable QPixmap large_pixmap;
+    mutable QPixmap full_pixmap;
+public:
   qint64 lastChangeTimestamp{};
   QString inspector;
   QString small;
   QString large;
   QString full;
-  QPixmap small_pixmap;
-  QPixmap large_pixmap;
-  QPixmap full_pixmap;
+  mutable QSize full_size;
+
+  static const QPixmap& missingImage() noexcept
+  {
+    static const QPixmap m{[] {
+      QPixmap img(640, 480);
+      img.fill();
+      {
+        QPainter p{&img};
+        p.setPen(QPen(Qt::red, 3));
+        p.drawLine(0, 0, 640, 480);
+        p.drawLine(640, 0, 0, 480);
+      }
+
+      return img;
+    }()};
+    return m;
+  }
+  const QPixmap& smallPixmap() const
+  {
+      if(small_pixmap.isNull())
+      {
+          small_pixmap = small;
+          if(small_pixmap.isNull())
+          {
+              small_pixmap = missingImage();
+              full_size = {640, 480};
+          }
+      }
+      return small_pixmap;
+  }
+  const QPixmap& largePixmap() const
+  {
+      if(large_pixmap.isNull())
+      {
+          large_pixmap = large;
+          if(large_pixmap.isNull())
+          {
+              large_pixmap = missingImage();
+              full_size = {640, 480};
+          }
+      }
+      return large_pixmap;
+  }
+  const QPixmap& fullPixmap() const
+  {
+      if(full_pixmap.isNull())
+      {
+          full_pixmap = full;
+          full_size = full_pixmap.size();
+          if(full_pixmap.isNull())
+          {
+              full_pixmap = missingImage();
+              full_size = {640, 480};
+          }
+      }
+      return full_pixmap;
+  }
+  const QPixmap& inspectorPixmap() const
+  {
+      if(inspector_pixmap.isNull())
+      {
+          inspector_pixmap = inspector;
+          if(inspector_pixmap.isNull())
+          {
+              inspector_pixmap = missingImage();
+              full_size = {640, 480};
+          }
+      }
+      return inspector_pixmap;
+  }
 
   friend QDataStream& operator<<(QDataStream& s, const CacheInstance& i)
   {
-    return s << i.lastChangeTimestamp << i.inspector << i.small << i.large << i.full;
+    return s << i.lastChangeTimestamp << i.inspector << i.small << i.large << i.full << i.full_size;
   }
 
   friend QDebug& operator<<(QDebug& s, const CacheInstance& i)
@@ -38,7 +120,7 @@ struct CacheInstance
 
   friend QDataStream& operator>>(QDataStream& s, CacheInstance& i)
   {
-    return s >> i.lastChangeTimestamp >> i.inspector >> i.small >> i.large >> i.full;
+    return s >> i.lastChangeTimestamp >> i.inspector >> i.small >> i.large >> i.full  >> i.full_size;
   }
 };
 }
@@ -80,75 +162,77 @@ public:
     static ImageCache c;
     return c;
   }
-  QPixmap inspector(const QFileInfo& path)
+  const QPixmap& inspector(const QFileInfo& path)
   {
     if(auto it = m_cache.find(path.absoluteFilePath());
-       it != m_cache.end() && path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp)
+       it != m_cache.end() &&
+       path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp &&
+       QFileInfo(it->inspector).exists())
     {
-      return it->inspector;
+        return it->inspectorPixmap();
     }
     else
     {
-      return createCache(path).inspector;
+      return createCache(path).inspectorPixmap();
     }
   }
 
   const QPixmap& small(const QFileInfo& path)
   {
     if(auto it = m_cache.find(path.absoluteFilePath());
-       it != m_cache.end() && path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp)
+       it != m_cache.end() &&
+       path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp &&
+       QFileInfo(it->small).exists())
     {
-      if(it->small_pixmap.isNull())
-        it->small_pixmap = it->small;
-      return it->small_pixmap;
+        return it->smallPixmap();
     }
     else
     {
-      return createCache(path).small_pixmap;
+      return createCache(path).smallPixmap();
     }
   }
 
   const QPixmap& large(const QFileInfo& path)
   {
     if(auto it = m_cache.find(path.absoluteFilePath());
-       it != m_cache.end() && path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp)
+       it != m_cache.end() &&
+       path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp &&
+       QFileInfo(it->large).exists())
     {
-      if(it->large_pixmap.isNull())
-        it->large_pixmap = it->large;
-      return it->large_pixmap;
+      return it->largePixmap();
     }
     else
     {
-      return createCache(path).large_pixmap;
+      return createCache(path).largePixmap();
     }
   }
 
   const QPixmap& full(const QFileInfo& path)
   {
     if(auto it = m_cache.find(path.absoluteFilePath());
-       it != m_cache.end() && path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp)
+       it != m_cache.end() &&
+       path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp &&
+       QFileInfo(it->full).exists())
     {
-      if(it->full_pixmap.isNull())
-        it->full_pixmap = it->full;
-      return it->full_pixmap;
+        return it->fullPixmap();
     }
     else
     {
-      return createCache(path).full_pixmap;
+      return createCache(path).fullPixmap();
     }
   }
 
   CacheInstance& cache(const QFileInfo& path)
   {
     if(auto it = m_cache.find(path.absoluteFilePath());
-       it != m_cache.end() && path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp)
+       it != m_cache.end() &&
+       path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp &&
+       QFileInfo(it->full).exists() &&
+       QFileInfo(it->large).exists() &&
+       QFileInfo(it->small).exists() &&
+       QFileInfo(it->inspector).exists()
+     )
     {
-      if(it->full_pixmap.isNull())
-        it->full_pixmap = it->full;
-      if(it->large_pixmap.isNull())
-        it->large_pixmap = it->large;
-      if(it->small_pixmap.isNull())
-        it->small_pixmap = it->small;
       return *it;
     }
     else
@@ -168,30 +252,37 @@ private:
     if(c.full_pixmap.isNull())
       return c;
 
+    c.full_size = c.full_pixmap.size();
+
     c.large_pixmap = c.full_pixmap.scaled(800 * dpi, 600 * dpi, Qt::KeepAspectRatio);
     c.small_pixmap = c.full_pixmap.scaled(160 * dpi, 120 * dpi, Qt::KeepAspectRatio);
-    auto insp = c.full_pixmap.scaled(80 * dpi, 60 * dpi, Qt::KeepAspectRatio);
+    c.inspector_pixmap = c.full_pixmap.scaled(80 * dpi, 60 * dpi, Qt::KeepAspectRatio);
 
     // Gif : draw the camera icon in the inspector
     if (info.completeSuffix().compare("gif", Qt::CaseInsensitive) == 0)
     {
-      QPainter p(&insp);
+      QPainter p(&c.inspector_pixmap);
       p.setPen(Qt::black);
       p.setBrush(Qt::white);
       p.drawRect(4, 4, 24, 24);
-      p.drawPixmap(4, 4, 24, 24, QPixmap(":/baseline-videocam-24px.svg"));
+      static const auto gif_icon = QPixmap(":/baseline-videocam-24px.svg");
+      p.drawPixmap(4, 4, 24, 24, gif_icon);
     }
 
     auto loc = QStandardPaths::standardLocations(QStandardPaths::CacheLocation);
     if(!loc.isEmpty())
     {
       auto hash = path.toUtf8().toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals);
-      auto large_path = loc.front() + QDir::separator() + hash + "_large.jpeg";
-      auto small_path = loc.front() + QDir::separator() + hash + "_small.jpeg";
-      auto insp_path = loc.front() + QDir::separator() + hash + "_insp.jpeg";
-      c.large_pixmap.save(large_path, "JPG", 60);
-      c.small_pixmap.save(small_path, "JPG", 60);
-      insp.save(insp_path, "JPG", 60);
+      auto large_path = loc.front() + QDir::separator() + hash + "_large.png";
+      auto small_path = loc.front() + QDir::separator() + hash + "_small.png";
+      auto insp_path = loc.front() + QDir::separator() + hash + "_insp.png";
+
+      if(!QDir{loc.front()}.exists())
+          QDir::root().mkpath(loc.front());
+
+      c.large_pixmap.save(QDir::toNativeSeparators(large_path), "PNG", 60);
+      c.small_pixmap.save(QDir::toNativeSeparators(small_path), "PNG", 60);
+      c.inspector_pixmap.save(QDir::toNativeSeparators(insp_path), "PNG", 60);
 
       c.lastChangeTimestamp = info.lastModified().toSecsSinceEpoch();
       c.large = large_path;
@@ -229,37 +320,44 @@ public:
   void setPixmap(const CacheInstance& cache)
   {
     prepareGeometryChange();
-    small= &cache.small_pixmap;
-    large = &cache.large_pixmap;
-    full = &cache.full_pixmap;
+    this->cache = &cache;
+    if(cache.full_size.width() < 1)
+        cache.fullPixmap();
     update();
   }
   QRectF boundingRect() const override
   {
-    if(full)
-      return {0, 0, (qreal)full->width(), (qreal)full->height()};
-    else
+    if(cache) {
+        return {0, 0, (qreal)cache->full_size.width(), (qreal)cache->full_size.height()};
+    }else
       return {};
   }
 
   void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override
   {
     const auto lod = option->levelOfDetailFromTransform(painter->worldTransform());
-    if(full)
+
+    if(cache)
     {
-      const auto rect = QRect{0, 0, full->width(), full->height()};
-      if(lod < 0.3)
-        painter->drawPixmap(rect, *small);
-      else if(lod < 0.8)
-        painter->drawPixmap(rect, *large);
+      const int fw = cache->full_size.width();
+      const int fh = cache->full_size.height();
+      const auto viewWidth = lod * fw;
+      const auto rect = QRect{0, 0, fw, fh};
+
+      painter->drawPixmap(rect, cache->fullPixmap());
+      return;
+      if(viewWidth < 100)
+        painter->drawPixmap(rect, cache->inspectorPixmap());
+      if(viewWidth < 300)
+          painter->drawPixmap(rect, cache->smallPixmap());
+      else if(viewWidth < 800)
+          painter->drawPixmap(rect, cache->largePixmap());
       else
-        painter->drawPixmap(rect, *full);
+          painter->drawPixmap(rect, cache->fullPixmap());
     }
   }
 
 private:
-  const QPixmap* small{};
-  const QPixmap* large{};
-  const QPixmap* full{};
+  const CacheInstance* cache{};
 };
 }

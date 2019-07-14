@@ -4,6 +4,7 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <QGraphicsWidget>
 #include <QPainter>
+#include <QStyleOption>
 
 #include <SEGMent/Commands/CommandFactory.hpp>
 #include <SEGMent/Commands/Properties.hpp>
@@ -27,6 +28,7 @@ ClickWindow::ClickWindow(
         parent)
     , m_object{p}
 {
+  setFlag(ItemHasNoContents, false);
   setZValue(5);
   setAcceptDrops(true);
 
@@ -80,10 +82,19 @@ void ClickWindow::paint(
     const QStyleOptionGraphicsItem* option,
     QWidget* widget)
 {
-  painter->setPen(Style::instance().clickAreaPen);
-  painter->setBrush(Style::instance().clickAreaBrush);
+
+  const auto lod = option->levelOfDetailFromTransform(painter->worldTransform());
+  if(lod < 0.5)
+  {
+      painter->fillRect(rect(), Style::instance().clickAreaBrush);
+  }
+  else
+  {
+      painter->setPen(Style::instance().clickAreaPen);
+      painter->setBrush(Style::instance().clickAreaBrush);
+      painter->drawRoundedRect(rect(), 2, 2);
+  }
   painter->drawRoundedRect(rect(), 2, 2);
-  painter->setFont(QFont("Helvetica", 40));
 }
 
 void ClickWindow::dropEvent(QGraphicsSceneDragDropEvent* e)
@@ -119,6 +130,7 @@ BackClickWindow::BackClickWindow(
         parent)
     , m_object{p}
 {
+  setFlag(ItemHasNoContents, false);
   setZValue(5);
   setAcceptDrops(true);
 
@@ -191,7 +203,14 @@ void BackClickWindow::paint(
     painter->setBrush(Style::instance().backClickAreaBrush);
   }
 
-  painter->drawRoundedRect(rect(), 2, 2);
+  const auto lod = option->levelOfDetailFromTransform(painter->worldTransform());
+  if(lod < 0.5)
+      painter->fillRect(rect(), painter->brush());
+  else
+      painter->drawRoundedRect(rect(), 2, 2);
+
+  if(lod * this->rect().width() < 10. || lod * this->rect().height() < 10. )
+      return;
   painter->setFont(QFont("Helvetica", 40));
   painter->drawText(rect(), "Back", QTextOption(Qt::AlignCenter));
 }
@@ -229,6 +248,7 @@ TextWindow::TextWindow(
         parent)
     , m_object{p}
 {
+  setFlag(ItemHasNoContents, false);
   setZValue(5);
   setAcceptDrops(true);
 
@@ -247,9 +267,10 @@ TextWindow::TextWindow(
   });
   ::bind(p, TextAreaModel::p_size{}, this, [=](auto sz) {
     setRect(expected_rect(sz, parentItem()->boundingRect()));
+    updateFont();
   });
   ::bind(p, TextAreaModel::p_z{}, this, [=](auto z) { setZValue(z); });
-  ::bind(p, TextAreaModel::p_text{}, this, [=](const auto&) { update(); });
+  ::bind(p, TextAreaModel::p_text{}, this, [=](const auto& st) { setText(st); update(); });
 
   setMinSize(20, 20);
 }
@@ -308,9 +329,17 @@ void TextWindow::paint(
     painter->setPen(Style::instance().textAreaPen);
     painter->setBrush(Style::instance().textAreaBrush);
   }
-  painter->drawRoundedRect(rect(), 2, 2);
-  painter->setFont(QFont("Helvetica", 40));
-  painter->drawText(rect(), m_object.text(), QTextOption(Qt::AlignCenter));
+  const auto lod = option->levelOfDetailFromTransform(painter->worldTransform());
+  if(lod < 0.5)
+      painter->fillRect(rect(), painter->brush());
+  else
+      painter->drawRoundedRect(rect(), 2, 2);
+
+  if(lod * this->rect().width() < 10. || lod * this->rect().height() < 10. )
+      return;
+
+  painter->setFont(m_font);
+  painter->drawText(rect(), m_text, QTextOption(Qt::AlignCenter));
 }
 
 void TextWindow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
@@ -332,6 +361,36 @@ void TextWindow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 }
 
 void TextWindow::dropEvent(QGraphicsSceneDragDropEvent* e) {}
+
+
+void TextWindow::updateFont()
+{
+    static QFont font = QFont("Helvetica", 80);
+    double cur = 80;
+    font.setPointSizeF(cur);
+    QFontMetricsF metrics(font);
+    const auto w = 0.8 * rect().width();
+    const auto h = 0.8 * rect().height();
+    while(metrics.height() > h)
+    {
+        cur *= 0.8;
+        font.setPointSizeF(cur);
+        metrics = QFontMetricsF(font);
+    }
+    while(metrics.width(m_object.text()) > w)
+    {
+        cur *= 0.9;
+        font.setPointSizeF(cur);
+        metrics = QFontMetricsF(font);
+    }
+    m_font = font;
+}
+
+void TextWindow::setText(const QString &str)
+{
+    m_text = str;
+    updateFont();
+}
 
 void TextWindow::updateRect()
 {

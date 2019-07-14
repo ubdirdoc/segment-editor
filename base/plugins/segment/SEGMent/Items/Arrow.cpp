@@ -23,6 +23,7 @@ Arrow::Arrow(
     , m_startItem{startItem}
     , m_endItem{endItem}
 {
+    setVisible(false);
   setAcceptDrops(true);
   con(t.selection, &Selectable::changed, this, &Arrow::setSelected);
   connect(&startItem, &Anchor::moved, this, &Arrow::updateShape);

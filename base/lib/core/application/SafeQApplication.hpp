@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <iostream>
 
 #include <verdigris>
 

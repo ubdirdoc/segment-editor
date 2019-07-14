@@ -119,6 +119,8 @@ private:
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
   void dropEvent(QGraphicsSceneDragDropEvent* e) override;
 
+  void setText(const QString& str);
+  void updateFont();
   transition_t createTransitionFrom(
       anchor_id source_anchor,
       const SceneModel& target,
@@ -126,6 +128,8 @@ private:
 
   const TextAreaModel& m_object;
   bool m_selection{false};
+  QFont m_font;
+  QString m_text;
 };
 
 } // namespace SEGMent

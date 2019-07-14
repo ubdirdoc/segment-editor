@@ -86,8 +86,8 @@ SceneWindow::SceneWindow(
                   view,
                   this}
 {
+  m_titleBar.setFlag(ItemHasNoContents, false);
   setMinSize(200, 200);
-  m_sceneArea.setBrush(score::Skin::instance().TransparentBrush);
 
   static const QColor initial_color = QColor::fromRgb(45, 131, 76);
   static const QColor default_color = QColor::fromRgb(67, 121, 131);
@@ -143,6 +143,7 @@ SceneWindow::SceneWindow(
   this->setAcceptDrops(true);
   this->setFlag(ItemSendsGeometryChanges);
   this->setFlag(ItemIsSelectable);
+  this->setFlag(ItemHasNoContents, false);
 
   QObject::connect(
       this, &RectItem::on_sizeChanged, this, &SceneWindow::sizeChanged);
@@ -393,34 +394,13 @@ void SceneWindow::sizeChanged()
       this, &RectItem::on_sizeChanged, this, &SceneWindow::sizeChanged);
 }
 
-static const QPixmap& missingImage() noexcept
-{
-  static const QPixmap m{[] {
-    QPixmap img(640, 480);
-    img.fill();
-    {
-      QPainter p{&img};
-      p.setPen(QPen(Qt::red, 3));
-      p.drawLine(0, 0, 640, 480);
-      p.drawLine(640, 0, 0, 480);
-    }
-
-    return img;
-  }()};
-  return m;
-}
-
 void SceneWindow::setBackgroundImage(CacheInstance& img)
 {
-  if (img.full_pixmap.isNull())
-  {
-    img.full_pixmap = missingImage();
-    img.large_pixmap = missingImage();
-    img.small_pixmap = missingImage();
-  }
   //m_scene.image().cache = img;
   m_backgroundImgDisplay.setPixmap(img);
-  m_backgroundImgRealWidth = img.full_pixmap.width();
+  m_backgroundImgRealWidth = img.full_size.width();
+  if(m_backgroundImgRealWidth < 1)
+      m_backgroundImgRealWidth = img.fullPixmap().width();
 
   const auto sceneRect = m_sceneArea.boundingRect();
 

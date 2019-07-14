@@ -54,6 +54,10 @@ protected:
   qreal m_minHeight = 0;
 
   bool m_posConstrainedToParent = false;
+
+  // QGraphicsItem interface
+public:
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 };
 
 constexpr inline QPointF expected_pos(const QPointF& pos, const QRectF& prect)

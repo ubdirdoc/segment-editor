@@ -11,6 +11,7 @@ public:
   template <typename... Args>
   WindowWithBackground(Args&&... args) : Window{args...}
   {
+      m_backgroundImgDisplay.setVisible(false);
     m_backgroundImgDisplay.setParentItem(this);
     m_backgroundImgDisplay.setTransformationMode(Qt::SmoothTransformation);
   }

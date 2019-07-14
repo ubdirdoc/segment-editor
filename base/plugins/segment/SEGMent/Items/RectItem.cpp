@@ -31,8 +31,7 @@ RectItem::RectItem(
     , m_view{view}
     , m_posConstrainedToParent{constrainPosToParent}
 {
-  setPen(score::Skin::instance().TransparentPen);
-  setBrush(score::Skin::instance().TransparentBrush);
+  setFlag(ItemHasNoContents, true);
   setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 
   setAcceptDrops(false);
@@ -109,4 +108,14 @@ void RectItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   event->ignore();
 }
 
+
+void RectItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    const auto lod = option->levelOfDetailFromTransform(painter->worldTransform());
+    if(lod * this->rect().width() < 5.)
+        return;
+    if(lod * this->rect().height() < 5.)
+        return;
+    painter->fillRect(boundingRect(), this->brush());
+}
 } // namespace SEGMent
