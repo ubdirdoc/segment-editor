@@ -20,7 +20,7 @@
 #include <QStackedWidget>
 #include <QTableWidget>
 #include <QWidget>
-#include <QtColorWidgets/color_wheel.hpp>
+//#include <QtColorWidgets/color_wheel.hpp>
 
 #include <SEGMent/Commands/Properties.hpp>
 #include <SEGMent/Commands/SoundCommands.hpp>
@@ -207,7 +207,7 @@ struct WidgetFactory
     });
     return l;
   }
-
+/*
   auto make(QColor cur)
   {
     using cmd =
@@ -233,7 +233,7 @@ struct WidgetFactory
     });
     return l;
   }
-
+*/
   //// Specialized widgets ////
   struct SoundLineEdit : QLineEdit
   {

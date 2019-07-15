@@ -157,9 +157,6 @@ AboutDialog::AboutDialog(QWidget* parent)
       = License{"https://github.com/pvanek/qlipper/blob/master/qmenuview",
                 "CeCILL license. \nXINX\nCopyright Ulrich Van Den Hekke, "
                 "(2007-2011)\nxinx@shadoware.org"};
-  map["Qt-Color-Widgets"]
-      = License{"https://github.com/jcelerier/Qt-Color-Widgets.git",
-                qtcolorwidgets_LICENSE};
   map["PSIMPL"] = License{"http://psimpl.sf.net", "MPL 1.1"};
   map["miniz"] = License{"https://github.com/richgel999/miniz", "MIT License"};
   map["desktopqqc2style"]
