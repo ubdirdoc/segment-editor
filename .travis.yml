@@ -20,7 +20,7 @@ install:
 
 script:
   - CC=gcc-9 CXX=g++-9 cmake -DSEGMENT_RELEASE=1 -DCMAKE_INSTALL_PREFIX=appdir
-  - cmake --build . --target all_unity -- -j$(nproc)
+  - cmake --build . -- -j$(nproc)
   - cmake --build . --target install/strip/fast
   - find appdir/
   - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
