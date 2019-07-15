@@ -15,7 +15,7 @@ before_install:
   - sudo apt-key --keyring /etc/apt/trusted.gpg del C1F34CDD40CD72DA
 
 install:
-  - sudo apt-get -y install qt512base qt512declarative qt512svg libgl1-mesa-dev cmake g++-9 libboost1.70-dev
+  - sudo apt-get -y install qt512base qt512declarative qt512svg qt512multimedia libgl1-mesa-dev cmake g++-9 libboost1.70-dev
   - source /opt/qt*/bin/qt*-env.sh
 
 script:
