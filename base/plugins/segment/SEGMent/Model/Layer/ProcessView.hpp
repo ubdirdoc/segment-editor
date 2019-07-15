@@ -34,6 +34,7 @@ struct window_visitor
 };
 
 class RectItem;
+inline double currentZoomLevel = 1.;
 //! A QGraphicsView which allows zooming / dezooming through wheel events
 //! SEGMent Canvas. Receives scenes drops and handles arrow creation
 class ZoomView : public QGraphicsView
@@ -63,6 +64,7 @@ public:
     {
       scale(factor, factor);
     }
+    currentZoomLevel = transform().m11();
     setTransformationAnchor(anchor);
   }
 

@@ -31,7 +31,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QStyleOption>
-
+#include <SEGMent/Model/Layer/ProcessView.hpp>
 SizeGripItem::HandleItem::HandleItem(int positionFlags, SizeGripItem* parent)
     : QGraphicsItem(parent)
     , positionFlags_(positionFlags)
@@ -52,15 +52,18 @@ QRectF SizeGripItem::HandleItem::boundingRect() const
 
 void SizeGripItem::HandleItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
-  /*
+  double zoom = SEGMent::currentZoomLevel;
+  const auto sz = this->parentItem()->boundingRect().size() * zoom;
+  if(sz.width() < 50 || sz.height() < 50)
+      return;
+
   static const auto handlePixmap = [] {
     QPixmap p(8, 8);
     p.fill(Qt::lightGray);
     return p;
   }();
 
-    painter->drawPixmap(-4, -4, handlePixmap);
-    */
+  painter->drawPixmap(-4, -4, handlePixmap);
 }
 
 int SizeGripItem::HandleItem::positionFlags() const
