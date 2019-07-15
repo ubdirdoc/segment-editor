@@ -25,8 +25,7 @@
 #include <QColor>
 #include <QString>
 
-namespace color_widgets
-{
+namespace color_widgets {
 
 /**
  * \brief Convert a string into a color

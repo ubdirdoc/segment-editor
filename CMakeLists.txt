@@ -115,5 +115,7 @@ score_write_file(
 set(SCORE_PLUGINS_LIST CACHE INTERNAL "List of plugins") # todo libraries, components ?
 set(SCORE_GLOBAL_COMPONENTS_LIST CACHE INTERNAL "List of components") # todo libraries, components ?
 
+set(CMAKE_AUTOMOC OFF)
+set(CMAKE_AUTOGEN OFF)
 add_subdirectory(base)
 

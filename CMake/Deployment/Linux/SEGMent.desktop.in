@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SEGMent
+Comment=SEGMent
+Exec=segment-editor
+Icon=segment-editor
+Terminal=false
+Categories=Games;

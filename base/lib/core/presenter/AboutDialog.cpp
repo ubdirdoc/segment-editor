@@ -157,9 +157,6 @@ AboutDialog::AboutDialog(QWidget* parent)
       = License{"https://github.com/pvanek/qlipper/blob/master/qmenuview",
                 "CeCILL license. \nXINX\nCopyright Ulrich Van Den Hekke, "
                 "(2007-2011)\nxinx@shadoware.org"};
-  map["QProgressIndicator"]
-      = License{"https://github.com/jcelerier/QProgressIndicator",
-                qprogressindicator_LICENSE}; // TODO based on ...
   map["Qt-Color-Widgets"]
       = License{"https://github.com/jcelerier/Qt-Color-Widgets.git",
                 qtcolorwidgets_LICENSE};

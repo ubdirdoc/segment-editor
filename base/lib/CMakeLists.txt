@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(score_lib_base LANGUAGES CXX)
 score_common_setup()
-set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOUIC OFF)
+set(CMAKE_AUTOMOC OFF)
 # Packages
 find_package(Qt5 5.7 REQUIRED COMPONENTS Core Widgets Svg )
 
@@ -202,7 +203,6 @@ set(HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/score/widgets/TextLabel.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/score/widgets/WidgetWrapper.hpp"
 
-     "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/QProgressIndicator/QProgressIndicator.h"
 
      "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/Qt-Color-Widgets/QtColorWidgets/color_palette_model.hpp"
      "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/Qt-Color-Widgets/QtColorWidgets/color_palette_widget.hpp"
@@ -342,9 +342,6 @@ set(SRCS
 "${CMAKE_CURRENT_SOURCE_DIR}/core/undo/UndoApplicationPlugin.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/core/view/Window.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/core/view/QRecentFilesMenu.cpp"
-
-"${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/QProgressIndicator/QProgressIndicator.cpp"
-
 # "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/Qt-Color-Widgets/src/color_list_widget.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/Qt-Color-Widgets/src/gradient_slider.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/Qt-Color-Widgets/src/color_line_edit.cpp"
@@ -369,7 +366,6 @@ add_library(score_lib_base ${SRCS} ${HEADERS} ${QRCS})
 target_link_libraries(score_lib_base
     PUBLIC Qt5::Core Qt5::Widgets
     PRIVATE Qt5::Svg ${CMAKE_DL_LIBS})
-target_include_directories(score_lib_base PUBLIC 3rdparty/QProgressIndicator)
 target_include_directories(score_lib_base PUBLIC 3rdparty/Qt-Color-Widgets)
 target_include_directories(score_lib_base PUBLIC 3rdparty/Qt-Color-Widgets/src)
 target_include_directories(score_lib_base PUBLIC 3rdparty/Qt-Color-Widgets/QtColorWidgets)
@@ -413,6 +409,5 @@ if(NOT _score_license_written)
   AddLicenseFile(license_text whereami "${OSSIA_3RDPARTY_FOLDER}/whereami/LICENSE")
   AddLicenseFile(license_text websocketpp "${OSSIA_3RDPARTY_FOLDER}/websocketpp/COPYING")
 
-  AddLicenseFile(license_text qprogressindicator "${CMAKE_SOURCE_DIR}/base/lib/3rdparty/QProgressIndicator/LICENSE")
   AddLicenseFile(license_text qtcolorwidgets "${CMAKE_SOURCE_DIR}/base/lib/3rdparty/Qt-Color-Widgets/COPYING")
 endif()
