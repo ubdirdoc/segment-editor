@@ -6,6 +6,7 @@
 #include <SEGMent/Document.hpp>
 #include <SEGMent/Model/ProcessModel.hpp>
 #include <SEGMent/Panel/Minimap.hpp>
+W_OBJECT_IMPL(SEGMent::Minimap)
 namespace SEGMent
 {
 Minimap::Minimap(const score::GUIApplicationContext& ctx)
