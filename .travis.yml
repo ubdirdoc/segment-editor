@@ -8,33 +8,32 @@ os:
   - linux
   
 before_install:
-  - sudo apt-get install apt-transport-https ca-certificates gnupg software-properties-common wget
-  - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add -
-  - sudo add-apt-repository -y ppa:beineri/opt-qt-5.12.3-xenial
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  - sudo add-apt-repository -y ppa:mhier/libboost-latest
-  - sudo apt-add-repository -y 'deb https://apt.kitware.com/ubuntu/ xenial main'
-  - sudo apt-get update -qq
-  - sudo apt-get install kitware-archive-keyring
-  - sudo apt-key --keyring /etc/apt/trusted.gpg del C1F34CDD40CD72DA
-  - sudo pip install sphinx quark-sphinx-theme
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then 
+      tools/travis/before_install_linux.sh
+    else
+      tools/travis/before_install_macos.sh
+    fi
 
 install:
-  - sudo apt-get -y install qt512base qt512declarative qt512svg qt512multimedia qt512tools qt512translations libgl1-mesa-dev cmake g++-9 libboost1.70-dev
-  - source /opt/qt*/bin/qt*-env.sh
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then 
+      tools/travis/install_linux.sh
+    else
+      tools/travis/install_macos.sh
+    fi
 
 script:
-  - CC=gcc-9 CXX=g++-9 cmake -DSEGMENT_RELEASE=1 -DDEPLOYMENT_BUILD=1 -DCMAKE_INSTALL_PREFIX=appdir/usr -DCMAKE_SKIP_RPATH=ON
-  - cmake --build . --target all_unity -- -j$(nproc)
-  - cmake --build . --target docs
-  - cmake --build . --target install/strip/fast
-  - find appdir/
-  - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
-  - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
-  - export VERSION="$TRAVIS_TAG"
-  - ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/SEGMent.desktop -appimage
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then 
+      tools/travis/script_linux.sh
+    else
+      tools/travis/script_macos.sh
+    fi
 
 after_success:
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then 
+      tools/travis/script_linux.sh
+    else
+      tools/travis/script_macos.sh
+    fi
   # find appdir -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq # for debugging
   # curl --upload-file APPNAME*.AppImage https://transfer.sh/APPNAME-git.$(git rev-parse --short HEAD)-x86_64.AppImage
   # - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
