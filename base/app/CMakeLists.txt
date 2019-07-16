@@ -20,16 +20,14 @@ endif()
 
 if(MSVC)
   target_link_libraries(${APPNAME} PRIVATE)
-  target_sources(${APPNAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../lib/resources/score.rc")
+  target_sources(${APPNAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../lib/resources/segment.rc")
 endif()
 
 set_target_properties(${APPNAME}
   PROPERTIES
     OUTPUT_NAME segment-editor)
-    
-if(UNIX AND NOT APPLE)
-  # Linux package is called ossia-score
 
+if(UNIX AND NOT APPLE)
   target_link_libraries(${APPNAME} PUBLIC X11)
 endif()
 
@@ -41,7 +39,7 @@ if(APPLE)
     target_link_libraries(${APPNAME} PRIVATE ${CFLIB} ${FLIB})
 
     if(DEPLOYMENT_BUILD)
-      set(ICON_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../lib/resources/score.icns")
+      set(ICON_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../lib/resources/segment.icns")
       set_source_files_properties(${ICON_SRC} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
       target_sources(${APPNAME} PRIVATE ${ICON_SRC})

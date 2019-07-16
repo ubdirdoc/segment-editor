@@ -15,15 +15,6 @@ public:
 
 private:
   QSize m_windowSize;
-
-  QImage m_backgroundImage;
-  QFont m_catamaranFont;
-  QFont m_montserratFont;
-
-  QRectF m_mouseAreaOssiaScore;
-  QRectF m_mouseAreaLabri;
-  QRectF m_mouseAreaScrime;
-  QRectF m_mouseAreaBlueYeti;
 };
 
 } // namespace score

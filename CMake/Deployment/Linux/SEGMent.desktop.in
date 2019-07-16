@@ -3,6 +3,6 @@ Type=Application
 Name=SEGMent
 Comment=SEGMent
 Exec=segment-editor
-Icon=segment-editor
+Icon=segment-editor.png
 Terminal=false
 Categories=Game;

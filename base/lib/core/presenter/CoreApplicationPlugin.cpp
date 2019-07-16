@@ -18,19 +18,6 @@
 #include <QUrl>
 
 #include <score_git_info.hpp>
-
-SCORE_DECLARE_ACTION(
-    Documentation,
-    "&Documentation",
-    Common,
-    QKeySequence::UnknownKey)
-SCORE_DECLARE_ACTION(
-    Issues,
-    "&Report Issues",
-    Common,
-    QKeySequence::UnknownKey)
-SCORE_DECLARE_ACTION(Forum, "&Forum", Common, QKeySequence::UnknownKey)
-
 namespace score
 {
 
@@ -100,7 +87,7 @@ void CoreApplicationPlugin::openProjectSettings()
 
 void CoreApplicationPlugin::help()
 {
-  QDesktopServices::openUrl(QUrl("https://ossia.github.io/score"));
+  //QDesktopServices::openUrl(QUrl("https://ossia.github.io/score"));
 }
 
 void CoreApplicationPlugin::about()
@@ -241,6 +228,15 @@ GUIElements CoreApplicationPlugin::makeGUIElements()
           &CoreApplicationPlugin::restoreLayout);
       e.actions.add<Actions::RestoreLayout>(act);
       windows_menu->addAction(act);
+    }
+
+    ////// About //////
+    {
+      auto about_act = new QAction(m_presenter.view());
+      connect(
+          about_act, &QAction::triggered, this, &CoreApplicationPlugin::about);
+      e.actions.add<Actions::About>(about_act);
+      about->addAction(about_act);
     }
   }
 

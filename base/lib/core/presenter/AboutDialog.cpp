@@ -21,33 +21,11 @@ namespace score
 {
 AboutDialog::AboutDialog(QWidget* parent)
     : QDialog(parent)
-    , m_windowSize(492, 437)
-    , m_backgroundImage(score::get_image(":/about/about_background.png"))
-    , m_catamaranFont("Catamaran", 13, QFont::Weight::Normal)
-    , m_montserratFont("Montserrat", 10, QFont::Weight::Normal)
-    , m_mouseAreaOssiaScore(102, 13, 295, 84)
-    , m_mouseAreaLabri(16, 218, 116, 55)
-    , m_mouseAreaScrime(21, 275, 114, 40)
-    , m_mouseAreaBlueYeti(33, 321, 85, 84)
+    , m_windowSize(400, 437)
 {
   setWindowFlag(Qt::FramelessWindowHint);
   resize(m_windowSize.width(), m_windowSize.height());
   setMouseTracking(true);
-
-  if (auto scr = qApp->screens(); !scr.empty())
-  {
-    auto dpi = scr.first()->devicePixelRatio();
-    if (dpi >= 2.)
-    {
-      m_catamaranFont.setPointSize(13);
-      m_montserratFont.setPointSize(10);
-    }
-    else
-    {
-      m_catamaranFont.setPointSize(11);
-      m_montserratFont.setPointSize(9);
-    }
-  }
 
   // map
   struct License
@@ -179,38 +157,8 @@ AboutDialog::AboutDialog(QWidget* parent)
 
   // software list
   auto softwareList = new QListWidget{this};
-  softwareList->move(145, 230);
+  softwareList->move(5, 230);
   softwareList->resize(120, 183);
-  softwareList->setStyleSheet(R"_(
-                              QListView::item:!selected:hover{
-                              background-color:#415491;
-                              color: #ffffff;
-                              }
-                              QListView::item:selected:active, QListView::item:selected:!active{
-                              background-color:#73C1C6;
-                              color: #1A2024;
-                              }
-                              QListView {
-                              background-color: rgb(18,23,26);
-                              margin:0px;
-                              }
-
-                              QScrollBar::right-arrow:horizontal, QScrollBar::left-arrow:horizontal
-                              {
-                              border: none;
-                              background: none;
-                              color: none;
-                              }
-                              QScrollBar::add-line:vertical {
-                              border: none;
-                              background: none;
-                              }
-                              QScrollBar::sub-line:vertical {
-                              border: none;
-                              background: none;
-                              }
-                              )_");
-  softwareList->setFont(m_catamaranFont);
   softwareList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   softwareList->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -225,11 +173,8 @@ AboutDialog::AboutDialog(QWidget* parent)
 
   // license
   auto license = new QPlainTextEdit{this};
-  license->move(280, 230);
-  license->resize(185, 183);
-  QFont smallCata = m_catamaranFont;
-  smallCata.setPointSize(m_catamaranFont.pointSize() - 2);
-  license->setFont(smallCata);
+  license->move(140, 230);
+  license->resize(255, 183);
   license->setReadOnly(true);
   connect(
       softwareList,
@@ -243,58 +188,24 @@ AboutDialog::AboutDialog(QWidget* parent)
 
 void AboutDialog::mousePressEvent(QMouseEvent* event)
 {
-  QPointF pos = event->localPos();
-  if (m_mouseAreaOssiaScore.contains(pos))
-  {
-    QDesktopServices::openUrl(QUrl("https://ossia.io/"));
-  }
-  else if (m_mouseAreaLabri.contains(pos))
-  {
-    QDesktopServices::openUrl(QUrl("https://www.labri.fr/"));
-  }
-  else if (m_mouseAreaScrime.contains(pos))
-  {
-    QDesktopServices::openUrl(QUrl("https://scrime.u-bordeaux.fr/"));
-  }
-  else if (m_mouseAreaBlueYeti.contains(pos))
-  {
-    QDesktopServices::openUrl(QUrl("http://www.blueyeti.fr/"));
-  }
   this->close();
 }
 
 void AboutDialog::mouseMoveEvent(QMouseEvent* event)
 {
-  QPointF pos = event->localPos();
-  if (m_mouseAreaOssiaScore.contains(pos) || m_mouseAreaLabri.contains(pos)
-      || m_mouseAreaScrime.contains(pos) || m_mouseAreaBlueYeti.contains(pos))
-  {
-    this->setCursor(Qt::PointingHandCursor);
-  }
-  else
-  {
-    this->setCursor(Qt::ArrowCursor);
-  }
 }
 void AboutDialog::paintEvent(QPaintEvent* event)
 {
-  QPen textPen(QColor("#0092cf"));
-  QPen titleText(QColor("#aaaaaa"));
-  QPen rectPen(QColor("#03c3dd"));
-  QBrush rectBrush(QColor(18, 23, 26));
+  QPen textPen(QColor("#00000"));
+  QPen titleText(QColor("#222222"));
 
   // draw background image
   QPainter painter(this);
-  painter.drawImage(QPoint(0, 0), m_backgroundImage);
 
   // write version and commit
   {
-    auto version_text = QStringLiteral("Version: %1.%2.%3-%4 “%5”\n")
-                            .arg(SCORE_VERSION_MAJOR)
-                            .arg(SCORE_VERSION_MINOR)
-                            .arg(SCORE_VERSION_PATCH)
-                            .arg(SCORE_VERSION_EXTRA)
-                            .arg(SCORE_CODENAME);
+    auto version_text = QStringLiteral(
+          "SEGMent - Version: %1.%2\n").arg(SCORE_VERSION_MAJOR).arg(SCORE_VERSION_MINOR);
 
     QString commit{GIT_COMMIT};
 
@@ -302,35 +213,40 @@ void AboutDialog::paintEvent(QPaintEvent* event)
     {
       version_text += tr("Commit: %1\n").arg(commit);
     }
+    painter.setFont(QFont("Sans", 12, QFont::Bold));
     painter.setPen(textPen);
-    painter.setFont(m_catamaranFont);
     painter.drawText(
-        QRectF(0, 100, m_windowSize.width(), 60),
+        QRectF(0, 20, m_windowSize.width(), 60),
         Qt::AlignHCenter,
         version_text);
   }
 
   // write copyright
   {
-    auto copyright_text = QString(
-        "Copyright © Ossia " + QString::number(QDate::currentDate().year()));
+    auto credits_text = QStringLiteral(
+          "D'après une idée originale de Raphaël Marczak.\n\n"
+          "Développement : Jean-Michaël Celerier, Raphaël Marczak, Vincent Casamayou.\n"
+          "Contributions : Gyorgy Kurtag, Frédéric Bouyssi, et de nombreux stagiaires.\n"
+          "L'éditeur SEGMent est basé sur le logiciel ossia score (https://ossia.io).\n\n"
+          "Développement financé par : \n "
+          "Le pôle documentaire de l'Université de Bordeaux\n"
+          "Le SCRIME (https://scrime.labri.fr)\n"
+          "L'IdEx\n"
+          );
 
-    painter.setFont(m_montserratFont);
+    painter.setFont(QFont("Sans", 10));
     painter.drawText(
-        QRectF(0, 160, m_windowSize.width(), 30),
+        QRectF(0, 60, m_windowSize.width(), 200),
         Qt::AlignHCenter,
-        copyright_text);
+        credits_text);
   }
 
   // write title above listview
   painter.setPen(titleText);
-  QFont mb = m_montserratFont;
-  mb.setBold(true);
-  painter.setFont(mb);
-  painter.drawText(QRectF(145, 210, 120, 15), Qt::AlignHCenter, "Project");
+  painter.drawText(QRectF(5, 210, 120, 15), Qt::AlignHCenter, "Projet");
 
   // write title above license
-  painter.drawText(QRectF(280, 210, 185, 15), Qt::AlignHCenter, "License");
+  painter.drawText(QRectF(140, 210, 185, 15), Qt::AlignHCenter, "License");
 }
 
 } // namespace score

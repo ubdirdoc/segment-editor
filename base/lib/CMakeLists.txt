@@ -7,7 +7,7 @@ set(CMAKE_AUTOMOC OFF)
 find_package(Qt5 5.7 REQUIRED COMPONENTS Core Widgets Svg )
 
 # Files & main target
-qt5_add_resources(QRCS "${CMAKE_CURRENT_SOURCE_DIR}/resources/score.qrc")
+qt5_add_resources(QRCS "${CMAKE_CURRENT_SOURCE_DIR}/resources/segment.qrc")
 
 set(HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/core/application/ApplicationInterface.hpp"
