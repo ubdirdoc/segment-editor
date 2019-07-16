@@ -18,6 +18,7 @@
 #include <SEGMent/Model/Sound.hpp>
 #include <SEGMent/Model/TextArea.hpp>
 #include <SEGMent/Model/Transition.hpp>
+#include <unordered_map>
 
 namespace SEGMent
 {
