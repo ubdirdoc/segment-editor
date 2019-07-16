@@ -5,4 +5,4 @@ Comment=SEGMent
 Exec=segment-editor
 Icon=segment-editor
 Terminal=false
-Categories=Games;
+Categories=Game;
