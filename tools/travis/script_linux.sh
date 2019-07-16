@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eux
 source /opt/qt*/bin/qt*-env.sh
 
 CC=gcc-9 CXX=g++-9 cmake -DSEGMENT_RELEASE=1 -DDEPLOYMENT_BUILD=1 -DCMAKE_INSTALL_PREFIX=appdir/usr -DCMAKE_SKIP_RPATH=ON

@@ -16,6 +16,7 @@ build_script:
   - cd build
   - cmake -T host=x64 -A x64 -DSEGMENT_RELEASE=1 -DCMAKE_PREFIX_PATH="%QTDIR%/lib/cmake/Qt5" -DBOOST_ROOT="%BOOST_ROOT%" ..
   - cmake --build . --config Release --target Package
+  - rename SEGMent-*.zip SEGMent-%APPVEYOR_REPO_TAG_NAME%-win64.zip
 
 artifacts:
   - name: Installer

@@ -17,6 +17,7 @@
 #include <QGraphicsPixmapItem>
 #include <QStyleOption>
 #include <QImageWriter>
+#include <score/tools/std/StringHash.hpp>
 #undef small
 
 namespace SEGMent
@@ -24,12 +25,6 @@ namespace SEGMent
 class ImageCache;
 struct CacheInstance
 {
-private:
-    friend class ImageCache;
-    mutable QPixmap inspector_pixmap;
-    mutable QPixmap small_pixmap;
-    mutable QPixmap large_pixmap;
-    mutable QPixmap full_pixmap;
 public:
   qint64 lastChangeTimestamp{};
   QString inspector;
@@ -122,20 +117,27 @@ public:
   {
     return s >> i.lastChangeTimestamp >> i.inspector >> i.small >> i.large >> i.full  >> i.full_size;
   }
+
+private:
+    friend class ImageCache;
+    mutable QPixmap inspector_pixmap;
+    mutable QPixmap small_pixmap;
+    mutable QPixmap large_pixmap;
+    mutable QPixmap full_pixmap;
 };
 }
 
-inline QDataStream& operator<<(QDataStream& s, const QHash<QString, SEGMent::CacheInstance>& object)
+inline QDataStream& operator<<(QDataStream& s, const std::unordered_map<QString, SEGMent::CacheInstance>& object)
 {
   s << (int) object.size();
-  for(auto it = object.keyValueBegin(); it != object.keyValueEnd(); ++it)
+  for(auto it = object.begin(); it != object.end(); ++it)
   {
     s << (*it).first << (*it).second;
   }
   return s;
 }
 
-inline QDataStream& operator>>(QDataStream& s, QHash<QString, SEGMent::CacheInstance>& object)
+inline QDataStream& operator>>(QDataStream& s, std::unordered_map<QString, SEGMent::CacheInstance>& object)
 {
   int sz = 0;
   s >> sz;
@@ -150,12 +152,13 @@ inline QDataStream& operator>>(QDataStream& s, QHash<QString, SEGMent::CacheInst
 }
 
 Q_DECLARE_METATYPE(SEGMent::CacheInstance)
+Q_DECLARE_METATYPE_TEMPLATE_2ARG(std::unordered_map)
 
 namespace SEGMent
 {
 class ImageCache
 {
-  using impl = QHash<QString, CacheInstance>;
+  using impl = std::unordered_map<QString, CacheInstance>;
 public:
   static ImageCache& instance()
   {
@@ -166,10 +169,10 @@ public:
   {
     if(auto it = m_cache.find(path.absoluteFilePath());
        it != m_cache.end() &&
-       path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp &&
-       QFileInfo(it->inspector).exists())
+       path.lastModified().toSecsSinceEpoch() == it->second.lastChangeTimestamp &&
+       QFileInfo(it->second.inspector).exists())
     {
-        return it->inspectorPixmap();
+        return it->second.inspectorPixmap();
     }
     else
     {
@@ -181,10 +184,10 @@ public:
   {
     if(auto it = m_cache.find(path.absoluteFilePath());
        it != m_cache.end() &&
-       path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp &&
-       QFileInfo(it->small).exists())
+       path.lastModified().toSecsSinceEpoch() == it->second.lastChangeTimestamp &&
+       QFileInfo(it->second.small).exists())
     {
-        return it->smallPixmap();
+        return it->second.smallPixmap();
     }
     else
     {
@@ -196,10 +199,10 @@ public:
   {
     if(auto it = m_cache.find(path.absoluteFilePath());
        it != m_cache.end() &&
-       path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp &&
-       QFileInfo(it->large).exists())
+       path.lastModified().toSecsSinceEpoch() == it->second.lastChangeTimestamp &&
+       QFileInfo(it->second.large).exists())
     {
-      return it->largePixmap();
+      return it->second.largePixmap();
     }
     else
     {
@@ -211,10 +214,10 @@ public:
   {
     if(auto it = m_cache.find(path.absoluteFilePath());
        it != m_cache.end() &&
-       path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp &&
-       QFileInfo(it->full).exists())
+       path.lastModified().toSecsSinceEpoch() == it->second.lastChangeTimestamp &&
+       QFileInfo(it->second.full).exists())
     {
-        return it->fullPixmap();
+        return it->second.fullPixmap();
     }
     else
     {
@@ -226,14 +229,14 @@ public:
   {
     if(auto it = m_cache.find(path.absoluteFilePath());
        it != m_cache.end() &&
-       path.lastModified().toSecsSinceEpoch() == it->lastChangeTimestamp &&
-       QFileInfo(it->full).exists() &&
-       QFileInfo(it->large).exists() &&
-       QFileInfo(it->small).exists() &&
-       QFileInfo(it->inspector).exists()
+       path.lastModified().toSecsSinceEpoch() == it->second.lastChangeTimestamp &&
+       QFileInfo(it->second.full).exists() &&
+       QFileInfo(it->second.large).exists() &&
+       QFileInfo(it->second.small).exists() &&
+       QFileInfo(it->second.inspector).exists()
      )
     {
-      return *it;
+      return it->second;
     }
     else
     {

@@ -2,16 +2,9 @@
 #include <score/model/Entity.hpp>
 #include <score/selection/Selectable.hpp>
 #include <score/tools/std/HashMap.hpp>
+#include <score/tools/std/StringHash.hpp>
 #include <score/serialization/VariantSerialization.hpp>
 
-namespace std
-{
-template <>
-struct hash<QString>
-{
-  std::size_t operator()(const QString& p) const noexcept { return qHash(p); }
-};
-} // namespace std
 namespace SEGMent
 {
 //! Transitions can be :
