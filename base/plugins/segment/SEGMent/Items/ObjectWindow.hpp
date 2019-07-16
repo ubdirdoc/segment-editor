@@ -1,23 +1,30 @@
 #pragma once
 #include <SEGMent/Items/Window.hpp>
-
+#include <SEGMent/ImageCache.hpp>
 namespace SEGMent
 {
 
 //! A window which has a background image.
+template<typename ImageType>
 class WindowWithBackground : public Window
 {
 public:
   template <typename... Args>
   WindowWithBackground(Args&&... args) : Window{args...}
   {
-      m_backgroundImgDisplay.setVisible(false);
     m_backgroundImgDisplay.setParentItem(this);
-    m_backgroundImgDisplay.setTransformationMode(Qt::SmoothTransformation);
   }
 
-  void setBackgroundImage(QPixmap img);
-  void sizeChanged();
+  void sizeChanged()
+  {
+    m_backgroundImgDisplay.setScale(
+        boundingRect().width() / (m_backgroundImgRealWidth));
+
+    m_anchorsSetter.updateAnchorsPos();
+
+    if (m_sizeGripItem)
+      m_sizeGripItem->reset();
+  }
 
   void setImageOpacity(qreal opacity)
   {
@@ -25,17 +32,17 @@ public:
   }
 
 protected:
-  QGraphicsPixmapItem m_backgroundImgDisplay;
+  ImageType m_backgroundImgDisplay;
   qreal m_backgroundImgRealWidth{100.0};
   qreal m_backgroundImgRealHeight{100.0};
 };
 
 //! A window which can be resized manually.
-template <typename T>
-class ResizableWindow : public WindowWithBackground
+template <typename T, typename ImageType>
+class ResizableWindow : public WindowWithBackground<ImageType>
 {
 public:
-  using WindowWithBackground::WindowWithBackground;
+  using WindowWithBackground<ImageType>::WindowWithBackground;
 
   void updateRect() override
   {
@@ -45,7 +52,7 @@ public:
 };
 
 //! Visual item for ImageModel
-class ImageWindow : public ResizableWindow<ImageWindow>
+class ImageWindow : public ResizableWindow<ImageWindow, LODPixmapItem>
 {
 public:
   ImageWindow(
@@ -76,7 +83,7 @@ private:
 };
 
 //! Visual item for GifModel
-class GifWindow : public ResizableWindow<GifWindow>
+class GifWindow : public ResizableWindow<GifWindow, QGraphicsPixmapItem>
 {
 public:
   GifWindow(

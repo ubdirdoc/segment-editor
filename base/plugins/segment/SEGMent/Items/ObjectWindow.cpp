@@ -17,31 +17,12 @@
 
 namespace SEGMent
 {
-void WindowWithBackground::sizeChanged()
-{
-  m_backgroundImgDisplay.setScale(
-      boundingRect().width() / (m_backgroundImgRealWidth));
-
-  m_anchorsSetter.updateAnchorsPos();
-
-  if (m_sizeGripItem)
-    m_sizeGripItem->reset();
-}
-
-void WindowWithBackground::setBackgroundImage(QPixmap img)
-{
-  m_backgroundImgRealWidth = img.width();
-  m_backgroundImgDisplay.setPixmap(img);
-
-  on_sizeChanged();
-}
-
 ImageWindow::ImageWindow(
     const ImageModel& p,
     const score::DocumentContext& ctx,
     ZoomView& view,
     QGraphicsItem* parent)
-    : ResizableWindow<ImageWindow>{expected_pos(
+    : ResizableWindow<ImageWindow, LODPixmapItem>{expected_pos(
                                        p.pos(),
                                        parent->boundingRect()),
                                    expected_size(
@@ -76,7 +57,11 @@ ImageWindow::ImageWindow(
   ::bind(p, ImageModel::p_z{}, this, [=](auto z) { setZValue(z); });
   ::bind(p, ImageModel::p_puzzle{}, this, [=](auto z) { setPuzzle(z); });
   ::bind(p, ImageModel::p_image{}, this, [=, &ctx](const Image& img) {
-    setBackgroundImage(ImageCache::instance().large(toLocalFile(img.path, ctx)));
+    auto& cache = ImageCache::instance().cache(toLocalFile(img.path, ctx));
+    m_backgroundImgDisplay.setPixmap(cache);
+    m_backgroundImgRealWidth = cache.full_size.width();
+
+    on_sizeChanged();
   });
 
   setImageOpacity(0.9);
@@ -141,7 +126,7 @@ GifWindow::GifWindow(
     const score::DocumentContext& ctx,
     ZoomView& view,
     QGraphicsItem* parent)
-    : ResizableWindow<GifWindow>(
+    : ResizableWindow<GifWindow, QGraphicsPixmapItem>(
         expected_pos(p.pos(), parent->boundingRect()),
         expected_size(p.size(), parent->boundingRect()),
         true,
@@ -174,7 +159,13 @@ GifWindow::GifWindow(
   ::bind(p, GifModel::p_z{}, this, [=](auto z) { setZValue(z); });
   auto updateimage = [=, &p](const auto&) {
     p.gif.jumpToFrame(p.defaultFrame());
-    setBackgroundImage(p.gif.currentPixmap());
+
+    const auto& pix = p.gif.currentPixmap();
+
+    m_backgroundImgDisplay.setPixmap(pix);
+    m_backgroundImgRealWidth = pix.width();
+
+    on_sizeChanged();
   };
 
   ::bind(p, GifModel::p_image{}, this, updateimage);
