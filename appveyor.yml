@@ -28,7 +28,7 @@ deploy:
   provider: GitHub
   artifact: /.*\.exe/
   auth_token:
-    secure: j0nBV9xVItdG3j6d0gHoyvrzi7TOhAy9/QIeyCbFeP8PTqq7DPr1oYwL5WIkPaXe
+    secure: L6H/oYlUaRA+IAUwVeggtyG4T/mhzhx/yqnPwehUGXclLsvXRDiwaEIjXY9gmIvb
   draft: false
   prerelease: false
   on:

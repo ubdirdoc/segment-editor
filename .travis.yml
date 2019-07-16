@@ -40,3 +40,20 @@ branches:
     - # Do not build tags that we create when we upload to GitHub Releases
     - /^(?i:continuous)/
 
+deploy:
+  - provider: releases
+    api_key:
+      secure: hsX49Zf0LiCzcaxaXtIrgeng53doBku3DFXqvA/jvTbwW5fghU20spjgZmbCRXvVgMq8++kfBHHrzMt6XRFCNgSfHWhfLXP/6qbYfsY1J7ugAyndW/pQBO/ieN6uJMzU2sBW/e3GtEU+VrIex3PiSr/9eBVtVenk6ebNlERBg1m16GkMLsdKgAO9f9e83csyCfTNGjP6viEMMmoDSZSWzvFeAdDKeS+DcbMOhys+EMWRaExy7xLlHmbPgm3RvPMQy3rC7HpwGc2XxoL/QSwS9jlTYlEaFm7iHswqLbVLgTIYtrP58DFLmG9JiMKd/cUrD1XAt1UAyBMYr5t+zHoOnC3ngE72KYa2FdGYEDfYSMCOg0tD/KYm7D1R1x0HPLvjUB/UfEO1QXG/MPYDtJR4bzLuuhnVhN3gY0xkvelbY7swty4hWoIOm5XEJx6vymPQyEFwW8wgk5rz9IjUAvAPordoFC/1OE+hE2zYhpLO7VtdIJ62ApzFiYNVn0iBvHELygNDlt2kpmlDH9yljG9oz1WoD6AuP72V1t4mN+qqyInpGTactGpNMQ44uhy9yREoSpbl6aXHVxg226m5ZxJpkRloH01pqzXXa6+01oceVTS1dTc/o2NKTEFXVVcUDoM0i5AlgzfA32dDR+pTH+VK5zlvzl4j6OMqjsJphjOvmnw=
+    file: SEGMent-editor-$TRAVIS_TAG-macOS.zip"
+    skip_cleanup: true
+    on:
+      tags: true
+      condition: $TRAVIS_OS_NAME = osx
+  - provider: releases
+    api_key:
+      secure: hsX49Zf0LiCzcaxaXtIrgeng53doBku3DFXqvA/jvTbwW5fghU20spjgZmbCRXvVgMq8++kfBHHrzMt6XRFCNgSfHWhfLXP/6qbYfsY1J7ugAyndW/pQBO/ieN6uJMzU2sBW/e3GtEU+VrIex3PiSr/9eBVtVenk6ebNlERBg1m16GkMLsdKgAO9f9e83csyCfTNGjP6viEMMmoDSZSWzvFeAdDKeS+DcbMOhys+EMWRaExy7xLlHmbPgm3RvPMQy3rC7HpwGc2XxoL/QSwS9jlTYlEaFm7iHswqLbVLgTIYtrP58DFLmG9JiMKd/cUrD1XAt1UAyBMYr5t+zHoOnC3ngE72KYa2FdGYEDfYSMCOg0tD/KYm7D1R1x0HPLvjUB/UfEO1QXG/MPYDtJR4bzLuuhnVhN3gY0xkvelbY7swty4hWoIOm5XEJx6vymPQyEFwW8wgk5rz9IjUAvAPordoFC/1OE+hE2zYhpLO7VtdIJ62ApzFiYNVn0iBvHELygNDlt2kpmlDH9yljG9oz1WoD6AuP72V1t4mN+qqyInpGTactGpNMQ44uhy9yREoSpbl6aXHVxg226m5ZxJpkRloH01pqzXXa6+01oceVTS1dTc/o2NKTEFXVVcUDoM0i5AlgzfA32dDR+pTH+VK5zlvzl4j6OMqjsJphjOvmnw=
+    file: SEGMent-editor-$TRAVIS_TAG-amd64.AppImage
+    skip_cleanup: true
+    on:
+      tags: true
+      condition: $TRAVIS_OS_NAME = linux
