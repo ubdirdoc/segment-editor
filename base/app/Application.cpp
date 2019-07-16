@@ -57,7 +57,7 @@
 W_OBJECT_IMPL(Application)
 
 #if defined(SCORE_STATIC_PLUGINS)
-int qInitResources_segment();
+int qInitResources_resources();
 #endif
 
 namespace score
@@ -67,7 +67,7 @@ class DocumentModel;
 static void setQApplicationSettings(QApplication& m_app)
 {
 #if defined(SCORE_STATIC_PLUGINS)
-  qInitResources_segment();
+  qInitResources_resources();
 #endif
 }
 

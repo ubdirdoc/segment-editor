@@ -5,7 +5,7 @@ configure_file (
   "${PROJECT_BINARY_DIR}/SEGMent.desktop"
   )
 
-install(FILES "${PROJECT_SOURCE_DIR}/base/lib/resources/segment.png" DESTINATION ./segment-editor.png)
+install(FILES "${CMAKE_SOURCE_DIR}/base/lib/resources/segment.png" DESTINATION .)
 install(FILES "${PROJECT_BINARY_DIR}/SEGMent.desktop" DESTINATION share/applications)
 
 endif()
