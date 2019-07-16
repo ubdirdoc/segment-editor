@@ -56,7 +56,7 @@ install(FILES
 install(
   FILES
     "${SCORE_ROOT_SOURCE_DIR}/CMake/Deployment/Windows/qt.conf"
-    "${SCORE_ROOT_SOURCE_DIR}/base/lib/resources/score.ico"
+    "${SCORE_ROOT_SOURCE_DIR}/base/lib/resources/segment.ico"
   DESTINATION
     ${SCORE_BIN_INSTALL_DIR})
 
@@ -91,13 +91,13 @@ install(FILES "${QT_PLUGINS_DIR}/sqldrivers/qsqlite${DEBUG_CHAR}.dll" DESTINATIO
 
 # NSIS metadata
 set(CPACK_GENERATOR "ZIP")
-set(CPACK_PACKAGE_EXECUTABLES "segment-editor.exe;score ")
+set(CPACK_PACKAGE_EXECUTABLES "segment-editor.exe;segment ")
 
-set(CPACK_COMPONENTS_ALL score)
+set(CPACK_COMPONENTS_ALL segment)
 
 set(CPACK_MONOLITHIC_INSTALL TRUE)
 set(CPACK_NSIS_PACKAGE_NAME "SEGMent Editor")
-set(CPACK_PACKAGE_ICON "${SCORE_ROOT_SOURCE_DIR}\\\\base\\\\lib\\\\resources\\\\score.ico")
+set(CPACK_PACKAGE_ICON "${SCORE_ROOT_SOURCE_DIR}\\\\base\\\\lib\\\\resources\\\\segment.ico")
 set(CPACK_NSIS_MUI_ICON "${CPACK_PACKAGE_ICON}")
 set(CPACK_NSIS_MUI_UNIICON "${CPACK_PACKAGE_ICON}")
 
@@ -117,14 +117,14 @@ set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
 \\\${registerExtension} '\\\$INSTDIR\\\\segment-editor.exe' '.segment' 'SEGMent Game'
 
 SetOutPath '\\\$INSTDIR'
-CreateShortcut '\\\$DESKTOP\\\\segment.lnk' '\\\$INSTDIR\\\\segment-editor.exe' '' '\\\$INSTDIR\\\\score.ico'
+CreateShortcut '\\\$DESKTOP\\\\segment.lnk' '\\\$INSTDIR\\\\segment-editor.exe' '' '\\\$INSTDIR\\\\segment.ico'
 SetRegView 64
 WriteRegStr HKEY_LOCAL_MACHINE 'SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\segment-editor.exe' '' '$INSTDIR\\\\segment-editor.exe'
 
 AccessControl::GrantOnFile '\\\$INSTDIR' '(S-1-5-32-545)' 'FullAccess'
 ")
 set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-Delete '$DESKTOP\\\\score.lnk'
+Delete '$DESKTOP\\\\segment.lnk'
 DeleteRegKey HKLM 'Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\segment-editor.exe'
 \\\${unregisterExtension} '.segment' 'SEGMent Game'
 ")
