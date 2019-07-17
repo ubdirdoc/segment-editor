@@ -1,6 +1,7 @@
-#!/bin/bash -eux
+#!/bin/bash
 source /opt/qt*/bin/qt*-env.sh
 
+set -eux
 CC=gcc-9 CXX=g++-9 cmake -DSEGMENT_RELEASE=1 -DDEPLOYMENT_BUILD=1 -DCMAKE_INSTALL_PREFIX=appdir/usr -DCMAKE_SKIP_RPATH=ON
 
 cmake --build . --target all_unity -- -j$(nproc)
