@@ -21,7 +21,7 @@ namespace score
 {
 AboutDialog::AboutDialog(QWidget* parent)
     : QDialog(parent)
-    , m_windowSize(400, 437)
+    , m_windowSize(500, 537)
 {
   setWindowFlag(Qt::FramelessWindowHint);
   resize(m_windowSize.width(), m_windowSize.height());
@@ -157,8 +157,8 @@ AboutDialog::AboutDialog(QWidget* parent)
 
   // software list
   auto softwareList = new QListWidget{this};
-  softwareList->move(5, 230);
-  softwareList->resize(120, 183);
+  softwareList->move(5, 260);
+  softwareList->resize(120, 253);
   softwareList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   softwareList->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -173,8 +173,8 @@ AboutDialog::AboutDialog(QWidget* parent)
 
   // license
   auto license = new QPlainTextEdit{this};
-  license->move(140, 230);
-  license->resize(255, 183);
+  license->move(140, 260);
+  license->resize(355, 253);
   license->setReadOnly(true);
   connect(
       softwareList,
@@ -207,24 +207,39 @@ void AboutDialog::paintEvent(QPaintEvent* event)
     auto version_text = QStringLiteral(
           "SEGMent - Version: %1.%2\n").arg(SCORE_VERSION_MAJOR).arg(SCORE_VERSION_MINOR);
 
-    QString commit{GIT_COMMIT};
 
-    if (!commit.isEmpty())
-    {
-      version_text += tr("Commit: %1\n").arg(commit);
-    }
+#if defined(_WIN32)
+    painter.setFont(QFont("Sans", 10, QFont::Bold));
+#else
     painter.setFont(QFont("Sans", 12, QFont::Bold));
+#endif
     painter.setPen(textPen);
     painter.drawText(
         QRectF(0, 20, m_windowSize.width(), 60),
         Qt::AlignHCenter,
         version_text);
+
+    QString commit{GIT_COMMIT};
+
+    if (!commit.isEmpty())
+    {
+#if defined(_WIN32)
+    painter.setFont(QFont("Sans", 9));
+#else
+    painter.setFont(QFont("Sans", 11));
+#endif
+        painter.setPen(textPen);
+        painter.drawText(
+            QRectF(0, 40, m_windowSize.width(), 60),
+            Qt::AlignHCenter,
+            tr("Commit: %1").arg(commit));
+    }
   }
 
   // write copyright
   {
-    auto credits_text = QStringLiteral(
-          "D'après une idée originale de Raphaël Marczak.\n\n"
+    auto credits_text = QString::fromUtf8(
+          "\nD'après une idée originale de Raphaël Marczak.\n\n"
           "Développement : Jean-Michaël Celerier, Raphaël Marczak, Vincent Casamayou.\n"
           "Contributions : Gyorgy Kurtag, Frédéric Bouyssi, et de nombreux stagiaires.\n"
           "L'éditeur SEGMent est basé sur le logiciel ossia score (https://ossia.io).\n\n"
@@ -234,7 +249,11 @@ void AboutDialog::paintEvent(QPaintEvent* event)
           "L'IdEx\n"
           );
 
+#if defined(_WIN32)
+    painter.setFont(QFont("Sans", 8));
+#else
     painter.setFont(QFont("Sans", 10));
+#endif
     painter.drawText(
         QRectF(0, 60, m_windowSize.width(), 200),
         Qt::AlignHCenter,
@@ -243,10 +262,10 @@ void AboutDialog::paintEvent(QPaintEvent* event)
 
   // write title above listview
   painter.setPen(titleText);
-  painter.drawText(QRectF(5, 210, 120, 15), Qt::AlignHCenter, "Projet");
+  painter.drawText(QRectF(5, 240, 120, 15), Qt::AlignHCenter, "Projet");
 
   // write title above license
-  painter.drawText(QRectF(140, 210, 185, 15), Qt::AlignHCenter, "License");
+  painter.drawText(QRectF(140, 240, 185, 15), Qt::AlignHCenter, "License");
 }
 
 } // namespace score

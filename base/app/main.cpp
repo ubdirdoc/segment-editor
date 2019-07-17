@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "Application.hpp"
-
+#include "SEGMent/ImageCache.hpp"
 #include <ossia/detail/thread.hpp>
 
 #include <QApplication>
@@ -33,11 +33,15 @@ int main(int argc, char** argv)
   setup_app_flags();
 
   QPixmapCache::setCacheLimit(819200);
+  int res;
+  {
   Application app(argc, argv);
-  ;
-  app.init();
-  int res = app.exec();
+  SEGMent::ImageCache cache;
+  SEGMent::ImageCache::self = &cache;
 
+  app.init();
+  res = app.exec();
+  }
   return res;
 }
 

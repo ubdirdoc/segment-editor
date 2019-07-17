@@ -35,11 +35,14 @@ iscore_addon_SEGMent::iscore_addon_SEGMent()
   // Image cache
   qRegisterMetaType<SEGMent::CacheInstance>();
   qRegisterMetaTypeStreamOperators<SEGMent::CacheInstance>();
-  qRegisterMetaType<QHash<QString, SEGMent::CacheInstance>>();
-  qRegisterMetaTypeStreamOperators<QHash<QString, SEGMent::CacheInstance>>();
+  qRegisterMetaType<std::unordered_map<QString, SEGMent::CacheInstance>>();
+  qRegisterMetaTypeStreamOperators<std::unordered_map<QString, SEGMent::CacheInstance>>();
 }
 
-iscore_addon_SEGMent::~iscore_addon_SEGMent() {}
+iscore_addon_SEGMent::~iscore_addon_SEGMent()
+{
+
+}
 
 std::vector<std::unique_ptr<score::InterfaceBase>>
 iscore_addon_SEGMent::factories(

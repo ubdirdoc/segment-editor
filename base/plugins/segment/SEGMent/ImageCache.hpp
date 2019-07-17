@@ -160,10 +160,22 @@ class ImageCache
 {
   using impl = std::unordered_map<QString, CacheInstance>;
 public:
+  static inline ImageCache* self{};
+  ImageCache()
+  {
+    QSettings s;
+    m_cache = s.value("editor/imagecache").value<impl>();
+  }
+
+  ~ImageCache()
+  {
+    QSettings s;
+    s.setValue("editor/imagecache", QVariant::fromValue(m_cache));
+  }
+
   static ImageCache& instance()
   {
-    static ImageCache c;
-    return c;
+    return *self;
   }
   const QPixmap& inspector(const QFileInfo& path)
   {
@@ -297,18 +309,6 @@ private:
   }
 
   impl m_cache;
-  ImageCache()
-  {
-    QSettings s;
-    m_cache = s.value("editor/imagecache").value<impl>();
-  }
-
-  ~ImageCache()
-  {
-    QSettings s;
-    s.setValue("editor/imagecache", QVariant::fromValue(m_cache));
-  }
-
   ImageCache(const ImageCache&) = default;
   ImageCache(ImageCache&&) = default;
   ImageCache& operator=(const ImageCache&) = default;
