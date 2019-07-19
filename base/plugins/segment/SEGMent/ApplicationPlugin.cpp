@@ -299,6 +299,7 @@ void ApplicationPlugin::on_recenter(score::Document& doc)
     const double h = 1.1 * (y1 - y0);
 
     v.view().fitInView(x0, y0, w, h, Qt::KeepAspectRatio);
+    v.view().updateZoom();
   }
 
 }

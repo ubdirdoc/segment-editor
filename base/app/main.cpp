@@ -34,13 +34,19 @@ int main(int argc, char** argv)
 
   QPixmapCache::setCacheLimit(819200);
   int res;
-  {
   Application app(argc, argv);
-  SEGMent::ImageCache cache;
-  SEGMent::ImageCache::self = &cache;
+  score::setQApplicationMetadata();
 
-  app.init();
-  res = app.exec();
+  qRegisterMetaType<SEGMent::CacheInstance>();
+  qRegisterMetaTypeStreamOperators<SEGMent::CacheInstance>();
+  qRegisterMetaType<std::unordered_map<QString,SEGMent::CacheInstance>>();
+  qRegisterMetaTypeStreamOperators<std::unordered_map<QString,SEGMent::CacheInstance>>();
+  {
+    SEGMent::ImageCache cache;
+    SEGMent::ImageCache::self = &cache;
+
+    app.init();
+    res = app.exec();
   }
   return res;
 }

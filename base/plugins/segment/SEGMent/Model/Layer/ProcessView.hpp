@@ -64,8 +64,20 @@ public:
     {
       scale(factor, factor);
     }
-    currentZoomLevel = transform().m11();
+    updateZoom();
     setTransformationAnchor(anchor);
+  }
+
+  void updateZoom()
+  {
+    currentZoomLevel = transform().m11();
+    if(currentZoomLevel > 0.7)
+      Style::instance().sceneBorderPen.setWidthF(3);
+    else if(currentZoomLevel > 0.4)
+      Style::instance().sceneBorderPen.setWidthF(2);
+    else
+      Style::instance().sceneBorderPen.setWidthF(1);
+
   }
 
   void setStartAnchorForNewArrow(Anchor& startAnchor);

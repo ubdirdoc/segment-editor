@@ -31,12 +31,6 @@ iscore_addon_SEGMent::iscore_addon_SEGMent()
   {
     qApp->installTranslator(tra);
   }
-
-  // Image cache
-  qRegisterMetaType<SEGMent::CacheInstance>();
-  qRegisterMetaTypeStreamOperators<SEGMent::CacheInstance>();
-  qRegisterMetaType<std::unordered_map<QString, SEGMent::CacheInstance>>();
-  qRegisterMetaTypeStreamOperators<std::unordered_map<QString, SEGMent::CacheInstance>>();
 }
 
 iscore_addon_SEGMent::~iscore_addon_SEGMent()

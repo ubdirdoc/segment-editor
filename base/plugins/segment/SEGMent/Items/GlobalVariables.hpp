@@ -132,8 +132,10 @@ struct Style
         Qt::RoundJoin);
     textAreaBrush = rgb(26, 98, 111, 150);
 
-    sceneBorderPen = QPen(rgb(211, 139, 71), 3);
+    sceneBorderPen = QPen(rgb(211, 139, 71), 1);
+    sceneBorderPen.setCosmetic(true);
     selectedSceneBorderPen = QPen(rgb(9, 108, 31), 3);
+    sceneBorderPen.setCosmetic(true);
 
     sceneLabelStyle
         = "* { "
@@ -148,9 +150,9 @@ struct Style
     anchorBrush = rgb(211, 139, 71);
   }
 
-  static const Style& instance()
+  static Style& instance()
   {
-    static const Style s;
+    static Style s;
     return s;
   }
 

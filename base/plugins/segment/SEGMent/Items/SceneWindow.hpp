@@ -10,6 +10,52 @@ class BackClickWindow;
 class TextWindow;
 class ClickAreaModel;
 
+//!
+class HLineItem : public QGraphicsItem, public QObject
+{
+public:
+  using QGraphicsItem::QGraphicsItem;
+  void setLength(qreal l)
+  {
+    prepareGeometryChange();
+    m_length = l;
+    update();
+  }
+  QRectF boundingRect() const override
+  {
+    return QRectF{0., 0., m_length, 2.};
+  }
+  void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override
+  {
+    static const QPen& pen = Style::instance().sceneBorderPen;
+    painter->setPen(pen);
+    painter->drawLine(QLineF(1., 1., m_length, 1.));
+  }
+  qreal m_length{};
+};
+class VLineItem : public QGraphicsItem, public QObject
+{
+public:
+  using QGraphicsItem::QGraphicsItem;
+  void setHeight(qreal h)
+  {
+    prepareGeometryChange();
+    m_height = h;
+    update();
+  }
+  QRectF boundingRect() const override
+  {
+    return QRectF{0., 0., 2., m_height};
+  }
+  void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override
+  {
+    static const QPen& pen = Style::instance().sceneBorderPen;
+    painter->setPen(pen);
+    painter->drawLine(QLineF(1., 1., 1., m_height));
+  }
+  qreal m_height{};
+};
+
 //! Visual item corresponding to SceneModel
 class SceneWindow : public Window
 {
@@ -66,6 +112,12 @@ private:
   RectItem m_sceneArea;
 
   LODPixmapItem m_backgroundImgDisplay;
+
+  HLineItem m_topLine{this};
+  HLineItem m_bottomLine{this};
+  VLineItem m_leftLine{this};
+  VLineItem m_rightLine{this};
+
   qreal m_backgroundImgRealWidth{100.0};
 
   ossia::ptr_map<const ImageModel*, ImageWindow*> m_objects;

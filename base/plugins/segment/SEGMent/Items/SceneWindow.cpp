@@ -3,6 +3,7 @@
 
 #include <QBuffer>
 #include <QFileInfo>
+#include <QFormLayout>
 #include <QGraphicsScene>
 #include <QGraphicsSceneDragDropEvent>
 #include <QGraphicsView>
@@ -22,6 +23,7 @@
 #include <SEGMent/Items/SceneWindow.hpp>
 #include <SEGMent/Model/Scene.hpp>
 #include <SEGMent/ImageCache.hpp>
+#include <score/widgets/SignalUtils.hpp>
 
 namespace SEGMent
 {
@@ -137,8 +139,6 @@ SceneWindow::SceneWindow(
   m_sceneArea.moveBy(borderWidth, titleBarHeight + borderWidth);
 
   m_sizeGripItem = new SizeGripItem(new SceneResizer{*this}, this, true);
-
-  setPen(Style::instance().sceneBorderPen);
 
   this->setAcceptDrops(true);
   this->setFlag(ItemSendsGeometryChanges);
@@ -392,6 +392,16 @@ void SceneWindow::sizeChanged()
 
   QObject::connect(
       this, &RectItem::on_sizeChanged, this, &SceneWindow::sizeChanged);
+
+  const auto w = this->rect().width();
+  const auto h = this->rect().height();
+
+  m_topLine.setLength(w );
+  m_bottomLine.setLength(w );
+  m_bottomLine.setPos(0, h );
+  m_leftLine.setHeight(h );
+  m_rightLine.setHeight(h );
+  m_rightLine.setPos(w , 0);
 }
 
 void SceneWindow::setBackgroundImage(CacheInstance& img)
@@ -415,14 +425,17 @@ void SceneWindow::setBackgroundImage(CacheInstance& img)
       m_backgroundImgDisplay.pos().y(),
       m_backgroundImgDisplay.boundingRect().width() * fitRatio,
       m_backgroundImgDisplay.boundingRect().height() * fitRatio);
+
+  const qreal w = m_sceneArea.rect().width() + 2 * borderWidth;
+  const qreal h = m_titleBar.rect().height() + m_sceneArea.rect().height() + 2 * borderWidth;
   this->setRect(
       this->rect().x(),
       this->rect().y(),
-      m_sceneArea.rect().width() + 2 * borderWidth,
-      m_titleBar.rect().height() + m_sceneArea.rect().height()
-          + 2 * borderWidth);
+      w,
+      h);
 
   m_anchorsSetter.updateAnchorsPos();
+
   if (m_sizeGripItem)
     m_sizeGripItem->reset();
 }

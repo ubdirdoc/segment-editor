@@ -127,7 +127,6 @@ void Application::init()
 #if defined(SCORE_STATIC_PLUGINS)
   score_init_static_plugins();
 #endif
-  score::setQApplicationMetadata();
 
   this->setObjectName("Application");
   this->setParent(m_app);

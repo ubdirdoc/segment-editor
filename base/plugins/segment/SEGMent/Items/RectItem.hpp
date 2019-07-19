@@ -57,7 +57,7 @@ protected:
 
   // QGraphicsItem interface
 public:
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 };
 
 constexpr inline QPointF expected_pos(const QPointF& pos, const QRectF& prect)
