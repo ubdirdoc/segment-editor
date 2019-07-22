@@ -19,7 +19,6 @@ struct Image
   Image& operator=(Image&&) = default;
 
   QString path;
-  mutable QPixmap cache;
 
   operator QString&() { return path; }
   operator const QString&() const { return path; }

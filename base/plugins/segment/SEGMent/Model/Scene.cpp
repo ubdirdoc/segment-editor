@@ -3,6 +3,7 @@
 #include <QUrl>
 
 #include <SEGMent/Model/Model.hpp>
+#include <SEGMent/ImageCache.hpp>
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(SEGMent::SceneModel)
 namespace SEGMent
@@ -181,8 +182,10 @@ void JSONObjectReader::read(const SEGMent::SceneModel& v)
 
   obj["Ambience"] = toJsonObject(v.m_ambience);
   obj["Image"] = v.m_image.path;
-  obj["ImageSize"]
-      = QJsonArray{v.m_image.cache.width(), v.m_image.cache.height()};
+
+  auto parent_doc = score::IDocument::documentFromObject(v);
+  auto& cache = SEGMent::ImageCache::instance().cache(SEGMent::toLocalFile(v.m_image.path, parent_doc->context()));
+  obj["ImageSize"] = QJsonArray{cache.full_size.width(), cache.full_size.height()};
   obj["Rect"] = toJsonValue(v.m_rect);
   obj["SceneType"] = (int)v.m_sceneType;
   obj["StartText"] = v.m_startText;
