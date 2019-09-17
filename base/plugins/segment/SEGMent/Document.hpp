@@ -36,6 +36,7 @@ public:
   ~DocumentModel() override;
 
   void serialize(const VisitorVariant& vis) const override;
+  void savedDocumentAs(const QString& oldpath, const QString& newpath) override;
 
 private:
   const score::DocumentContext& m_context;

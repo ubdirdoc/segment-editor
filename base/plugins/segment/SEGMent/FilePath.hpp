@@ -105,4 +105,44 @@ inline QString addUniqueSuffix(const QString& fileName)
     }
   }
 }
+
+// Taken from https://forum.qt.io/topic/59245/is-there-any-api-to-recursively-copy-a-directory-and-all-it-s-sub-dirs-and-files/4
+// Small change : won't overwrite destination file if it already exists
+inline bool copyRecursively(QString sourceFolder, QString destFolder)
+{
+  bool success = false;
+  QDir sourceDir(sourceFolder);
+
+  if(!sourceDir.exists())
+    return false;
+
+  QDir destDir(destFolder);
+  if(!destDir.exists())
+    destDir.mkdir(destFolder);
+
+  QStringList files = sourceDir.entryList(QDir::Files);
+  for(int i = 0; i< files.count(); i++) {
+    QString srcName = sourceFolder + QDir::separator() + files[i];
+    QString destName = destFolder + QDir::separator() + files[i];
+    if(!QFileInfo{destName}.exists())
+    {
+      success = QFile::copy(srcName, destName);
+      if(!success)
+        return false;
+    }
+  }
+
+  files.clear();
+  files = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+  for(int i = 0; i< files.count(); i++)
+  {
+    QString srcName = sourceFolder + QDir::separator() + files[i];
+    QString destName = destFolder + QDir::separator() + files[i];
+    success = copyRecursively(srcName, destName);
+    if(!success)
+      return false;
+  }
+
+  return true;
+}
 } // namespace SEGMent

@@ -24,6 +24,17 @@ DocumentModel::DocumentModel(
     , m_context{ctx}
     , m_base{new SEGMent::ProcessModel{Id<SEGMent::ProcessModel>{0}, this}}
 {
+  auto locs = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+  QDir locs_dir{locs.front()};
+  auto doc_folder = QString{"%1-%2"}.arg(QDateTime::currentMSecsSinceEpoch()).arg(ctx.document.metadata().fileName());
+  locs_dir.mkdir(doc_folder);
+  locs_dir.cd(doc_folder);
+  locs_dir.mkdir(SCENE_IMAGES_DIRECTORY);
+  locs_dir.mkdir(OBJECT_IMAGES_DIRECTORY);
+  locs_dir.mkdir(SOUNDS_DIRECTORY);
+  locs_dir.mkdir(TEMPLATES_DIRECTORY);
+
+  ctx.document.metadata().setFileName(locs_dir.absolutePath() + QDir::separator() + "temp.segment");
 }
 
 SEGMent::ProcessModel& DocumentModel::process() const
@@ -36,6 +47,24 @@ DocumentModel::~DocumentModel() {}
 void DocumentModel::serialize(const VisitorVariant& vis) const
 {
   serialize_dyn(vis, *this);
+}
+
+void DocumentModel::savedDocumentAs(const QString& origPath, const QString& newPath)
+{
+  auto origDir = QFileInfo{origPath}.absoluteDir();
+  auto newDir = QFileInfo{newPath}.absoluteDir();
+
+  copyRecursively(origDir.absolutePath() + QDir::separator() + SCENE_IMAGES_DIRECTORY,
+                  newDir.absolutePath()  + QDir::separator() + SCENE_IMAGES_DIRECTORY);
+
+  copyRecursively(origDir.absolutePath() + QDir::separator() + OBJECT_IMAGES_DIRECTORY,
+                  newDir.absolutePath()  + QDir::separator() + OBJECT_IMAGES_DIRECTORY);
+
+  copyRecursively(origDir.absolutePath() + QDir::separator() + SOUNDS_DIRECTORY,
+                  newDir.absolutePath()  + QDir::separator() + SOUNDS_DIRECTORY);
+
+  copyRecursively(origDir.absolutePath() + QDir::separator() + TEMPLATES_DIRECTORY,
+                  newDir.absolutePath()  + QDir::separator() + TEMPLATES_DIRECTORY);
 }
 
 DocumentView::DocumentView(const score::DocumentContext& ctx, QObject* parent)

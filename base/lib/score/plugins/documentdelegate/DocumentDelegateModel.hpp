@@ -15,5 +15,6 @@ public:
   virtual ~DocumentDelegateModel();
 
   virtual void serialize(const VisitorVariant&) const = 0;
+  virtual void savedDocumentAs(const QString& origPath, const QString& newPath) = 0;
 };
 } // namespace score

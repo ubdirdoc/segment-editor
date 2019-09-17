@@ -4,6 +4,7 @@
 
 #include <score/application/ApplicationComponents.hpp>
 #include <score/model/Identifier.hpp>
+#include <score/plugins/documentdelegate/DocumentDelegateModel.hpp>
 #include <score/plugins/application/GUIApplicationPlugin.hpp>
 #include <score/plugins/documentdelegate/DocumentDelegateFactory.hpp>
 #include <score/plugins/documentdelegate/plugin/DocumentPlugin.hpp>
@@ -34,6 +35,7 @@
 #include <QMessageBox>
 #include <QSaveFile>
 #include <QSettings>
+#include <QStandardPaths>
 #include <QStringList>
 #include <QVariant>
 
@@ -272,7 +274,8 @@ bool DocumentManager::saveDocument(Document& doc)
 {
   auto savename = doc.metadata().fileName();
 
-  if (savename.indexOf(tr("Untitled")) == 0)
+  auto temp_path = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation).front();
+  if (savename.indexOf(tr("Untitled")) == 0 || savename.indexOf(temp_path) == 0)
   {
     saveDocumentAs(doc);
   }
@@ -331,6 +334,8 @@ bool DocumentManager::saveDocumentAs(Document& doc)
       f.write(json_doc.toJson());
 
       f.commit();
+
+      doc.model().modelDelegate().savedDocumentAs(doc.metadata().fileName(), savename);
 
       m_recentFiles->addRecentFile(savename);
       saveRecentFilesState();
