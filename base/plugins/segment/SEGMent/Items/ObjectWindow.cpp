@@ -158,7 +158,8 @@ GifWindow::GifWindow(
   });
   ::bind(p, GifModel::p_z{}, this, [=](auto z) { setZValue(z); });
   auto updateimage = [=, &p](const auto&) {
-    p.gif.jumpToFrame(p.defaultFrame());
+    if(QFileInfo{p.gif.fileName()}.exists()) // QTBUG-79029
+      p.gif.jumpToFrame(p.defaultFrame());
 
     const auto& pix = p.gif.currentPixmap();
 

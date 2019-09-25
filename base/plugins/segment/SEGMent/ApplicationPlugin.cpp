@@ -38,10 +38,12 @@
 #include <SEGMent/Items/SceneWindow.hpp>
 #include <SEGMent/Model/Layer/ProcessView.hpp>
 #include <SEGMent/Model/Scene.hpp>
+#include <boost/bimap/bimap.hpp>
 #include <cmath>
 #include <score_git_info.hpp>
 #include <wobjectimpl.h>
 
+#include <unordered_set>
 #include <typeindex>
 
 namespace SEGMent
@@ -369,29 +371,79 @@ score::GUIApplicationPlugin::GUIElements ApplicationPlugin::makeGUIElements()
 
 struct CopyObjectVisitor
 {
-  QMimeData* operator()(const SceneModel& obj) const
+  QJsonArray scenes;
+  QJsonArray transitions;
+
+  QJsonArray objects;
+
+  void operator()(const SceneModel& obj)
   {
     auto json = score::marshall<JSONObject>(obj);
+    scenes.push_back(json);
 
-    auto d = new QMimeData;
-    d->setData("segment/scene", QJsonDocument{json}.toBinaryData());
-    return d;
+    //auto d = new QMimeData;
+    //d->setData("segment/scene", QJsonDocument{json}.toBinaryData());
+    //return d;
   }
 
-  QMimeData* operator()(const TransitionModel& obj) const { return nullptr; }
+  void operator()(const TransitionModel& obj) { }
 
   template <typename T>
-  QMimeData* operator()(const T& obj) const
+  void operator()(const T& obj)
   {
     auto json = score::marshall<JSONObject>(obj);
     json["ObjectKind"] = Metadata<ObjectKey_k, T>::get();
+    objects.push_back(json);
 
-    auto d = new QMimeData;
-    d->setData("segment/object", QJsonDocument{json}.toBinaryData());
-    return d;
+    //auto d = new QMimeData;
+    //d->setData("segment/object", QJsonDocument{json}.toBinaryData());
+    //return d;
   }
 };
 
+
+struct SharedTransitionVisitor
+{
+  std::unordered_set<Path<SceneModel>> scenes;
+  bool operator()(const SceneToScene& t) const noexcept
+  {
+    return scenes.find(t.from) != scenes.end()
+        && scenes.find(t.to) != scenes.end();
+  }
+  template<typename T>
+  bool operator()(const T& t) const noexcept
+  {
+    return scenes.find(t.from.template splitLast<SceneModel>().first) != scenes.end()
+        && scenes.find(t.to) != scenes.end();
+  }
+};
+
+std::vector<TransitionModel*> sharedTransitions(const Selection& sel, const SEGMent::ProcessModel& process)
+{
+  std::vector<TransitionModel*> res;
+
+  SharedTransitionVisitor vis;
+  std::unordered_set<Path<SceneModel>>& scenes = vis.scenes;
+  for(auto obj : sel)
+  {
+    dispatch(obj.data(), [&] (auto& t) {
+      using obj_t = std::remove_const_t<std::remove_reference_t<decltype(t)>>;
+      if constexpr(std::is_same_v<obj_t, SceneModel>) {
+        scenes.insert(t);
+      }
+    });
+  }
+
+  for(auto& trans : process.transitions)
+  {
+    if(eggs::variants::apply(vis, trans.transition()))
+    {
+      res.push_back(&trans);
+    }
+  }
+
+  return res;
+}
 void ApplicationPlugin::on_copy()
 {
   score::Document* doc = currentDocument();
@@ -399,14 +451,42 @@ void ApplicationPlugin::on_copy()
     return;
 
   const auto& sel = doc->context().selectionStack.currentSelection();
+  CopyObjectVisitor vis;
   for (auto e : sel)
   {
-    if (auto d = dispatch(e.data(), CopyObjectVisitor{}))
+    dispatch(e.data(), vis);
+  }
+
+  if (vis.scenes.empty())
+  {
+    if(!vis.objects.empty())
     {
+      auto d = new QMimeData;
+
+      d->setData("segment/objects", QJsonDocument{vis.objects}.toBinaryData());
       QApplication::clipboard()->setMimeData(d, QClipboard::Clipboard);
     }
   }
+  else
+  {
+    auto& process = static_cast<SEGMent::DocumentModel&>(doc->model().modelDelegate()).process();
+    auto d = new QMimeData;
+
+    QJsonObject obj;
+    auto transitions = sharedTransitions(sel, process);
+    QJsonArray arr;
+    for(auto t : transitions)
+    {
+      arr.push_back(score::marshall<JSONObject>(*t));
+    }
+    obj["Transitions"] = arr;
+    obj["Scenes"] = vis.scenes;
+
+    d->setData("segment/scenes", QJsonDocument{obj}.toBinaryData());
+    QApplication::clipboard()->setMimeData(d, QClipboard::Clipboard);
+  }
 }
+
 
 void ApplicationPlugin::on_paste()
 {
@@ -424,28 +504,95 @@ void ApplicationPlugin::on_paste()
   if (!m)
     return;
 
-  if (m->hasFormat("segment/scene"))
+  if (m->hasFormat("segment/scenes"))
   {
-    auto json = QJsonDocument::fromBinaryData(m->data("segment/scene"));
+    auto json = QJsonDocument::fromBinaryData(m->data("segment/scenes"));
     auto& model = score::IDocument::get<SEGMent::DocumentModel>(*doc);
     auto& proc = model.process();
 
     auto obj = json.object();
-    auto rect = fromJsonValue<QRectF>(obj["Rect"]);
 
-    obj["Rect"] = toJsonValue(
-          QRectF{scene_pos.x(), scene_pos.y(), rect.width(), rect.height()});
+    std::vector<Id<SceneModel>> ids;
+    for(auto& scene : proc.scenes) ids.push_back(scene.id());
 
-    CommandDispatcher<> c{doc->context().commandStack};
-    c.submitCommand(new PasteScene{proc, obj});
+    std::unordered_map<QString, Id<SceneModel>> id_map;
+
+    // Find the center of all the scenes
+    QPointF topLeft(INT_MAX, INT_MAX);
+    QPointF bottomRight(-INT_MAX, -INT_MAX);
+    for(const auto& scene_ref : obj["Scenes"].toArray())
+    {
+      auto scene = scene_ref.toObject();
+      auto path = scene["Path"].toString();
+
+      // Also generate new ids for the scenes
+      auto new_id = getStrongId(ids);
+      id_map[path] = new_id;
+      ids.push_back(new_id);
+
+      auto rect = fromJsonValue<QRectF>(scene["Rect"]);
+      if(rect.x() < topLeft.x()) topLeft.setX(rect.x());
+      if(rect.y() < topLeft.y()) topLeft.setY(rect.y());
+      if(rect.x() + rect.width() > bottomRight.x()) bottomRight.setX(rect.x() + rect.width());
+      if(rect.y() + rect.height() > bottomRight.y()) bottomRight.setY(rect.y() + rect.height());
+    }
+    QPointF orig_center = QRectF(topLeft, bottomRight).center();
+
+    // Create all the commands
+    RedoMacroCommandDispatcher<PasteScenes> disp{doc->context().commandStack};
+    for(auto scene_ref : obj["Scenes"].toArray())
+    {
+      auto scene = scene_ref.toObject();
+      auto rect = fromJsonValue<QRectF>(scene["Rect"]);
+      auto path = scene["Path"].toString();
+
+      scene["Rect"] = toJsonValue(
+            QRectF{rect.x() - orig_center.x() + scene_pos.x(),
+                   rect.y() - orig_center.y() + scene_pos.y(),
+                   rect.width(), rect.height()});
+      disp.submitCommand(new PasteScene{proc, scene, id_map.at(path)});
+    }
+
+    // This is the complicated part : we have to adjust the paths stored in the
+    // transitions, so that they point to the pasted objects instead of the original ones
+    for(auto transition_ref : obj["Transitions"].toArray())
+    {
+      auto transition = transition_ref.toObject();
+      auto trans_sub = transition["Transition"].toObject();
+      auto which_trans = trans_sub["Which"].toString();
+      auto trans_object = trans_sub[which_trans].toObject();
+      auto to = trans_object["To"].toString();
+      auto to_newPath = pathToString(Path{proc.scenes.at(id_map[to])});
+      trans_object["To"] = to_newPath;
+
+      if(which_trans == "SceneToScene")
+      {
+        auto from = trans_object["From"].toString();
+        auto from_newPath = pathToString(Path{proc.scenes.at(id_map[from])});
+        trans_object["From"] = from_newPath;
+      }
+      else
+      {
+        auto from = trans_object["From"].toString();
+        auto object_from = from.mid(from.lastIndexOf('/'));
+        auto scene_from = from.mid(0, from.lastIndexOf('/'));
+        auto from_newPath = pathToString(Path{proc.scenes.at(id_map[scene_from])}) + object_from;
+        trans_object["From"] = from_newPath;
+      }
+
+      trans_sub[which_trans] = trans_object;
+      transition["Transition"] = trans_sub;
+
+      disp.submitCommand(new PasteTransition{proc, transition});
+    }
+
+    disp.commit();
   }
-  else if (m->hasFormat("segment/object"))
+  else if (m->hasFormat("segment/objects"))
   {
     auto item_under_mouse = view.graphicsView().itemAt(widget_pos);
     if (!item_under_mouse)
       return;
-
-    auto json = QJsonDocument::fromBinaryData(m->data("segment/object"));
 
     while (item_under_mouse->type() != SEGMent::SceneWindow::static_type())
     {
@@ -454,40 +601,42 @@ void ApplicationPlugin::on_paste()
         return;
     }
 
-    CommandDispatcher<> disp{doc->context().commandStack};
     auto& scene = static_cast<SceneWindow*>(item_under_mouse)->model();
+
     auto item_pos = item_under_mouse->mapFromScene(scene_pos);
     QPointF relative_item_pos = {
       item_pos.x() / item_under_mouse->boundingRect().width(),
       item_pos.y() / item_under_mouse->boundingRect().height(),
     };
-
-    auto obj = json.object();
-    obj["Pos"] = toJsonValue(relative_item_pos);
-    if (obj["ObjectKind"] == Metadata<ObjectKey_k, ImageModel>::get())
+    RedoMacroCommandDispatcher<PasteObjects> disp{doc->context().commandStack};
+    auto arr = QJsonDocument::fromBinaryData(m->data("segment/objects")).array();
+    for(const auto json : arr)
     {
-      disp.submitCommand(new PasteObject<ImageModel>(scene, obj));
+      auto obj = json.toObject();
+      obj["Pos"] = toJsonValue(relative_item_pos);
+      if (obj["ObjectKind"] == Metadata<ObjectKey_k, ImageModel>::get())
+      {
+        disp.submitCommand(new PasteObject<ImageModel>(scene, obj));
+      }
+      else if (obj["ObjectKind"] == Metadata<ObjectKey_k, GifModel>::get())
+      {
+        disp.submitCommand(new PasteObject<GifModel>(scene, obj));
+      }
+      else if (obj["ObjectKind"] == Metadata<ObjectKey_k, ClickAreaModel>::get())
+      {
+        disp.submitCommand(new PasteObject<ClickAreaModel>(scene, obj));
+      }
+      else if (obj["ObjectKind"]
+               == Metadata<ObjectKey_k, BackClickAreaModel>::get())
+      {
+        disp.submitCommand(new PasteObject<BackClickAreaModel>(scene, obj));
+      }
+      else if (obj["ObjectKind"] == Metadata<ObjectKey_k, TextAreaModel>::get())
+      {
+        disp.submitCommand(new PasteObject<TextAreaModel>(scene, obj));
+      }
     }
-    else if (obj["ObjectKind"] == Metadata<ObjectKey_k, GifModel>::get())
-    {
-      disp.submitCommand(new PasteObject<GifModel>(scene, obj));
-    }
-    else if (
-             obj["ObjectKind"] == Metadata<ObjectKey_k, ClickAreaModel>::get())
-    {
-      disp.submitCommand(new PasteObject<ClickAreaModel>(scene, obj));
-    }
-    else if (
-             obj["ObjectKind"]
-             == Metadata<ObjectKey_k, BackClickAreaModel>::get())
-    {
-      disp.submitCommand(new PasteObject<BackClickAreaModel>(scene, obj));
-    }
-    else if (
-             obj["ObjectKind"] == Metadata<ObjectKey_k, TextAreaModel>::get())
-    {
-      disp.submitCommand(new PasteObject<TextAreaModel>(scene, obj));
-    }
+    disp.commit();
   }
 }
 

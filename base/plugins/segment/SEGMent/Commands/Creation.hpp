@@ -25,9 +25,9 @@ class PasteScene final : public score::Command
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), PasteScene, "Paste a scene")
 public:
-  PasteScene(const ProcessModel& process, QJsonObject obj)
+  PasteScene(const ProcessModel& process, QJsonObject obj, Id<SceneModel> newId)
       : m_path{process}
-      , m_newId{getStrongId(process.scenes)}
+      , m_newId{newId}
       , m_json{std::move(obj)}
   {
   }
@@ -42,7 +42,7 @@ public:
   {
     auto& process = m_path.find(ctx);
     auto scene = new SEGMent::SceneModel{JSONObjectWriter{m_json}, &process};
-    scene->setId(getStrongId(process.scenes));
+    scene->setId(m_newId);
     process.scenes.add(scene);
   }
 
@@ -60,6 +60,58 @@ private:
   Path<ProcessModel> m_path;
   Id<SceneModel> m_newId{};
   QJsonObject m_json{};
+};
+
+class PasteTransition final : public score::Command
+{
+  SCORE_COMMAND_DECL(CommandFactoryName(), PasteTransition, "Paste a transition")
+  public:
+    PasteTransition(const ProcessModel& process, QJsonObject obj)
+    : m_path{process}
+    , m_newId{getStrongId(process.transitions)}
+    , m_json{std::move(obj)}
+  {
+  }
+
+  void undo(const score::DocumentContext& ctx) const override
+  {
+    auto& process = m_path.find(ctx);
+    process.transitions.remove(m_newId);
+  }
+
+  void redo(const score::DocumentContext& ctx) const override
+  {
+    auto& process = m_path.find(ctx);
+    auto transition = new SEGMent::TransitionModel{JSONObjectWriter{m_json}, &process};
+    transition->setId(m_newId);
+
+    process.transitions.add(transition);
+  }
+
+protected:
+  void serializeImpl(DataStreamInput& s) const override
+  {
+    s << m_path << m_newId << m_json;
+  }
+  void deserializeImpl(DataStreamOutput& s) override
+  {
+    s >> m_path >> m_newId >> m_json;
+  }
+
+private:
+  Path<ProcessModel> m_path;
+  Id<TransitionModel> m_newId{};
+  QJsonObject m_json{};
+};
+
+class PasteScenes final : public score::AggregateCommand
+{
+  SCORE_COMMAND_DECL(CommandFactoryName(), PasteScenes, "Paste scenes")
+};
+
+class PasteObjects final : public score::AggregateCommand
+{
+  SCORE_COMMAND_DECL(CommandFactoryName(), PasteObjects, "Paste objects")
 };
 
 template <typename T>

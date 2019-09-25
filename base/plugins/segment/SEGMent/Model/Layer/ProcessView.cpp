@@ -320,7 +320,7 @@ void ZoomView::dropEvent(QDropEvent* event)
 
         CommandDispatcher<> disp{context.commandStack};
 
-        disp.submitCommand(new PasteScene{m_process, json});
+        disp.submitCommand(new PasteScene{m_process, json, getStrongId(m_process.scenes)});
       }
     }
   }
