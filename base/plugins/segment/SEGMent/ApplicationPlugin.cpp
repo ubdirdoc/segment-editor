@@ -369,6 +369,62 @@ score::GUIApplicationPlugin::GUIElements ApplicationPlugin::makeGUIElements()
   return e;
 }
 
+struct ResourceVisitor
+{
+  QJsonArray resources;
+  void operator()(const SceneModel& scene)
+  {
+    resources.push_back(scene.image().path);
+    if(!scene.ambience().path().isEmpty())
+      resources.push_back(scene.ambience().path());
+
+    for(auto& o : scene.objects)
+      (*this)(o);
+    for(auto& o : scene.gifs)
+      (*this)(o);
+    for(auto& o : scene.textAreas)
+      (*this)(o);
+    for(auto& o : scene.clickAreas)
+      (*this)(o);
+    for(auto& o : scene.backClickAreas)
+      (*this)(o);
+  }
+
+  void operator()(const TransitionModel& obj)
+  {
+
+  }
+
+  void operator()(const GifModel& obj)
+  {
+    resources.push_back(obj.image().path);
+    if(!obj.sound().path().isEmpty())
+      resources.push_back(obj.sound().path());
+  }
+  void operator()(const ImageModel& obj)
+  {
+    resources.push_back(obj.image().path);
+    if(!obj.sound().path().isEmpty())
+      resources.push_back(obj.sound().path());
+  }
+  void operator()(const TextAreaModel& obj)
+  {
+    if(!obj.sound().path().isEmpty())
+      resources.push_back(obj.sound().path());
+  }
+  void operator()(const ClickAreaModel& obj)
+  {
+    if(!obj.sound().path().isEmpty())
+      resources.push_back(obj.sound().path());
+  }
+  void operator()(const BackClickAreaModel& obj)
+  {
+    if(!obj.sound().path().isEmpty())
+      resources.push_back(obj.sound().path());
+  }
+
+};
+
 struct CopyObjectVisitor
 {
   QJsonArray scenes;
@@ -376,28 +432,28 @@ struct CopyObjectVisitor
 
   QJsonArray objects;
 
+  ResourceVisitor resources;
+
   void operator()(const SceneModel& obj)
   {
     auto json = score::marshall<JSONObject>(obj);
     scenes.push_back(json);
-
-    //auto d = new QMimeData;
-    //d->setData("segment/scene", QJsonDocument{json}.toBinaryData());
-    //return d;
+    resources(obj);
   }
 
-  void operator()(const TransitionModel& obj) { }
+  void operator()(const TransitionModel& obj)
+  {
 
-  template <typename T>
+  }
+
+  template<typename T>
   void operator()(const T& obj)
   {
     auto json = score::marshall<JSONObject>(obj);
     json["ObjectKind"] = Metadata<ObjectKey_k, T>::get();
     objects.push_back(json);
 
-    //auto d = new QMimeData;
-    //d->setData("segment/object", QJsonDocument{json}.toBinaryData());
-    //return d;
+    resources(obj);
   }
 };
 
@@ -457,13 +513,18 @@ void ApplicationPlugin::on_copy()
     dispatch(e.data(), vis);
   }
 
+  QJsonObject obj;
+  obj["DocumentPath"] = doc->metadata().fileName();
+
   if (vis.scenes.empty())
   {
     if(!vis.objects.empty())
     {
       auto d = new QMimeData;
+      obj["Objects"] = vis.objects;
+      obj["Resources"] = vis.resources.resources;
 
-      d->setData("segment/objects", QJsonDocument{vis.objects}.toBinaryData());
+      d->setData("segment/objects", QJsonDocument{obj}.toBinaryData());
       QApplication::clipboard()->setMimeData(d, QClipboard::Clipboard);
     }
   }
@@ -472,21 +533,32 @@ void ApplicationPlugin::on_copy()
     auto& process = static_cast<SEGMent::DocumentModel&>(doc->model().modelDelegate()).process();
     auto d = new QMimeData;
 
-    QJsonObject obj;
     auto transitions = sharedTransitions(sel, process);
     QJsonArray arr;
     for(auto t : transitions)
     {
       arr.push_back(score::marshall<JSONObject>(*t));
+      if(const auto& sound = t->sound().path(); !sound.isEmpty())
+        vis.resources.resources.push_back(t->sound().path());
     }
     obj["Transitions"] = arr;
     obj["Scenes"] = vis.scenes;
+    obj["Resources"] = vis.resources.resources;
 
     d->setData("segment/scenes", QJsonDocument{obj}.toBinaryData());
     QApplication::clipboard()->setMimeData(d, QClipboard::Clipboard);
   }
 }
 
+void copyResources(QString origDir, QString thisDir, QJsonArray resources)
+{
+  for(auto res : resources)
+  {
+    const auto& file = res.toString();
+    QFile f(origDir + QDir::separator() + file);
+    f.copy(thisDir + QDir::separator() + file);
+  }
+}
 
 void ApplicationPlugin::on_paste()
 {
@@ -511,6 +583,10 @@ void ApplicationPlugin::on_paste()
     auto& proc = model.process();
 
     auto obj = json.object();
+
+    const auto& docPath = obj["DocumentPath"].toString();
+    const auto& docResources = obj["Resources"].toArray();
+    copyResources(QFileInfo{docPath}.absolutePath(), QFileInfo{doc->metadata().fileName()}.absolutePath(), docResources);
 
     std::vector<Id<SceneModel>> ids;
     for(auto& scene : proc.scenes) ids.push_back(scene.id());

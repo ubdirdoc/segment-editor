@@ -227,8 +227,12 @@ void Library::on_modelChanged(
 
 void Library::on_documentPathChanged(const QString& path)
 {
+  m_scenes->clear();
+  m_objects->clear();
+  m_sounds->clear();
+  m_templates->clear();
+
   QFileInfo file(path);
-  if (file.exists())
   {
     auto folder = file.absolutePath();
     auto res_path = folder + "/Ressources";
@@ -246,13 +250,6 @@ void Library::on_documentPathChanged(const QString& path)
       m_sounds->reloadList(folder);
       m_templates->reloadList(folder);
     }
-  }
-  else
-  {
-    m_scenes->clear();
-    m_objects->clear();
-    m_sounds->clear();
-    m_templates->clear();
   }
 }
 

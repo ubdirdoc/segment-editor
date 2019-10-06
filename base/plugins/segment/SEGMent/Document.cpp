@@ -1,10 +1,12 @@
-#include <score/tools/IdentifierGeneration.hpp>
+﻿#include <score/tools/IdentifierGeneration.hpp>
 
 #include <core/document/Document.hpp>
 #include <core/document/DocumentModel.hpp>
 
+#include <QJsonDocument>
 #include <QMessageBox>
 #include <QOpenGLWidget>
+#include <QSaveFile>
 #include <QScrollBar>
 #include <QWheelEvent>
 
@@ -34,7 +36,14 @@ DocumentModel::DocumentModel(
   locs_dir.mkdir(SOUNDS_DIRECTORY);
   locs_dir.mkdir(TEMPLATES_DIRECTORY);
 
-  ctx.document.metadata().setFileName(locs_dir.absolutePath() + QDir::separator() + "temp.segment");
+  auto savename = locs_dir.absolutePath() + QDir::separator() + "temp.segment";
+  ctx.document.metadata().setFileName(savename);
+  QTimer::singleShot(0, [=] {
+    QSaveFile f{savename};
+    f.open(QIODevice::WriteOnly);
+    f.write(QJsonDocument{m_context.document.saveAsJson()}.toJson());
+    f.commit();
+  });
 }
 
 SEGMent::ProcessModel& DocumentModel::process() const
