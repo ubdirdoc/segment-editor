@@ -1,6 +1,9 @@
 segment-editor
 =======
 
+[![Build Status](https://travis-ci.org/scrime-u-bordeaux/segment-editor.svg?branch=master)](https://travis-ci.org/scrime-u-bordeaux/segment-editor)
+[![Build status](https://ci.appveyor.com/api/projects/status/mmapumjj2ari9kst?svg=true)](https://ci.appveyor.com/project/JeanMichalCelerier/segment-editor)
+
 An editor for games made with the SEGMent engine.
 
 
