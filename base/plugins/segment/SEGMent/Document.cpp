@@ -29,7 +29,7 @@ DocumentModel::DocumentModel(
   auto locs = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
   QDir locs_dir{locs.front()};
   auto doc_folder = QString{"%1-%2"}.arg(QDateTime::currentMSecsSinceEpoch()).arg(ctx.document.metadata().fileName());
-  locs_dir.mkdir(doc_folder);
+  locs_dir.mkpath(doc_folder);
   locs_dir.cd(doc_folder);
   locs_dir.mkdir(SCENE_IMAGES_DIRECTORY);
   locs_dir.mkdir(OBJECT_IMAGES_DIRECTORY);
