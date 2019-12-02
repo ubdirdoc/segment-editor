@@ -12,6 +12,7 @@
 #include <core/document/DocumentView.hpp>
 #include <score/plugins/documentdelegate/DocumentDelegateView.hpp>
 
+#include <QFileDialog>
 #include <QApplication>
 #include <QClipboard>
 #include <QDialog>
@@ -25,10 +26,13 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QSaveFile>
 #include <QSplitter>
 #include <QTabWidget>
 #include <QTextBrowser>
 #include <QTranslator>
+#include <QDesktopWidget>
+#include <QDesktopServices>
 
 #include <SEGMent/Commands/Creation.hpp>
 #include <SEGMent/Commands/Deletion.hpp>
@@ -322,24 +326,31 @@ void ApplicationPlugin::on_recenter(score::Document& doc)
 
 void ApplicationPlugin::on_testGame()
 {
-  // TODO save the document first
   score::Document* doc = currentDocument();
   if (!doc)
     return;
 
-  auto path = doc->metadata().fileName();
+  // Save into a temp file
+  auto segment_file = doc->metadata().fileName();
+  QFileInfo fi{segment_file};
+  auto path = fi.absolutePath() + "/__gametest__" + fi.fileName();
   qDebug() << path;
 
-  auto executable = qApp->applicationDirPath();
-  qDebug() << executable + "/engine/Linux/segment.x86_64";
+  QSaveFile f{path};
+  f.open(QIODevice::WriteOnly);
+  f.write(QJsonDocument{doc->saveAsJson()}.toJson());
+  f.commit();
 
-  auto p = new QProcess;
+  auto segment_path = qApp->applicationDirPath();
+  qDebug() << "Dir path:  " << segment_path;
+
+  auto process = new QProcess;
 #if defined(__linux__)
-  p->setProgram(executable + "/engine/Linux/segment.x86_64");
+  process->setProgram(segment_path + "/engine/Linux/segment.x86_64");
 #elif defined(_WIN32)
-  p->setProgram(executable + "/engine/Linux/segment.exe");
+  p->setProgram(segment_path + "/engine/Windows/segment.exe");
 #elif defined(__APPLE__)
-  p->setProgram(executable + "/engine/Linux/segment.app");
+  p->setProgram(segment_path + "/engine/macOS/segment.app");
 #else
   qDebug(" Unknown OS ! ");
   return;
@@ -348,18 +359,66 @@ void ApplicationPlugin::on_testGame()
   QString game_folder = "file://" + QFileInfo{path}.absolutePath() + "/";
   QString game_file = "file://" + QFileInfo{path}.absoluteFilePath();
 
+  // The environment is used to pass the file url to the segment game engine
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
   env.insert("SEGMENT_GAME_FOLDER", game_folder);
   env.insert("SEGMENT_GAME_FILE", game_file);
-  p->setProcessEnvironment(env);
-  p->start();
-  p->waitForFinished();
+
+  process->setProcessEnvironment(env);
+  process->start();
+  process->waitForFinished();
+
+  // Delete the temp file
+  QFile::remove(path);
 }
 
 void ApplicationPlugin::on_exportGame()
 {
+  score::Document* doc = currentDocument();
+  if (!doc)
+    return;
 
+  QDir dir = QFileDialog::getExistingDirectory(this->context.mainWindow, tr("Select where to save the game"));
+  if(!dir.exists())
+    return;
+
+  // First copy the executables
+  auto segment_path = qApp->applicationDirPath();
+  copyRecursively(segment_path + "/engine/Linux", dir.path() + "/Linux");
+  copyRecursively(segment_path + "/engine/Windows", dir.path() + "/Windows");
+  copyRecursively(segment_path + "/engine/macOS", dir.path() + "/macOS");
+
+  // Then copy the games
+  const auto target_paths = {dir.path() + "/Linux/game/",
+                      dir.path() + "/Windows/game/",
+                      dir.path() + "/macOS/game/"};
+
+
+  auto segment_file = doc->metadata().fileName();
+  {
+    QSaveFile f{segment_file};
+    f.open(QIODevice::WriteOnly);
+    f.write(QJsonDocument{doc->saveAsJson()}.toJson());
+    f.commit();
+  }
+
+  const QFileInfo fi{segment_file};
+  auto folder_path = fi.absolutePath();
+  QFile f{segment_file};
+  for(auto target_game : target_paths)
+  {
+    QDir{}.mkpath(target_game);
+    qDebug() << folder_path + "/Objects" << target_game + "/Objects";
+    copyRecursively(folder_path + "/Objects", target_game + "/Objects");
+    copyRecursively(folder_path + "/Scenes", target_game + "/Scenes");
+    copyRecursively(folder_path + "/Sounds", target_game + "/Sounds");
+    copyRecursively(folder_path + "/Templates", target_game + "/Templates");
+
+    f.copy(target_game + "/Game.segment");
+  }
+
+  QDesktopServices::openUrl(dir.path());
 }
 
 score::GUIApplicationPlugin::GUIElements ApplicationPlugin::makeGUIElements()
