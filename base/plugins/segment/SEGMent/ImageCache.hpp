@@ -17,6 +17,8 @@
 #include <QGraphicsPixmapItem>
 #include <QStyleOption>
 #include <QImageWriter>
+#include <unordered_map>
+
 #include <score/tools/std/StringHash.hpp>
 #undef small
 
