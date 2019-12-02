@@ -32,6 +32,8 @@ private:
 
   void on_recenter(score::Document& doc);
 
+  void on_testGame();
+  void on_exportGame();
 
   QAction* m_copy_act{};
   QAction* m_paste_act{};
@@ -46,6 +48,9 @@ private:
   QAction* m_zoomplus{};
   QAction* m_zoomminus{};
   QAction* m_recenter{};
+
+  QAction* m_testGame{};
+  QAction* m_exportGame{};
 
   /*
   QAction* m_moveAction{};

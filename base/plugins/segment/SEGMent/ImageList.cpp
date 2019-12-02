@@ -20,6 +20,7 @@ namespace SEGMent
 ImageList::ImageList(QString resPath, QString folder, QString id)
     : m_path{resPath}, m_folder{folder}, m_id{id}
 {
+  setAcceptDrops(true);
   connect(
       &m_watch,
       &QFileSystemWatcher::directoryChanged,
@@ -32,7 +33,18 @@ void ImageList::startDrag(Qt::DropActions supportedActions)
   QListWidget::startDrag(supportedActions);
 }
 
-void ImageList::dragEnterEvent(QDragEnterEvent* event) {}
+void ImageList::dragEnterEvent(QDragEnterEvent* event)
+{
+  event->accept();
+}
+void ImageList::dragMoveEvent(QDragMoveEvent* event)
+{
+  event->accept();
+}
+void ImageList::dragLeaveEvent(QDragLeaveEvent* event)
+{
+  event->accept();
+}
 
 void ImageList::reloadList(QString path)
 {
@@ -46,7 +58,15 @@ void ImageList::reloadList(QString path)
 
 void ImageList::dropEvent(QDropEvent* event)
 {
-  // Override to prevent list objects to be moved !
+  for(const QUrl& file : event->mimeData()->urls())
+  {
+    auto path = file.toLocalFile();
+    QImage img{path};
+    if(!img.isNull())
+    {
+      QFile::copy(path, this->m_path + "/" + m_folder + QFileInfo{path}.fileName());
+    }
+  }
 }
 
 void ImageList::mouseMoveEvent(QMouseEvent* event)
@@ -133,6 +153,7 @@ SoundList::SoundList(QString path, QString folder, QString id)
     : m_path{path}, m_folder{folder}, m_id{id}
 {
   this->setDragEnabled(true);
+  this->setAcceptDrops(true);
   this->setModel(&m_model);
   this->setColumnWidth(0, 200);
   connect(this, &SoundList::doubleClicked, this, [=](const auto& idx) {
@@ -149,6 +170,31 @@ void SoundList::reloadList(QString path)
   setModel(&m_model);
   m_model.ressourcesPath = m_path;
   this->setRootIndex(m_model.setRootPath(m_path + "/" + m_folder));
+}
+
+void SoundList::dragEnterEvent(QDragEnterEvent* event)
+{
+  event->accept();
+}
+void SoundList::dragMoveEvent(QDragMoveEvent* event)
+{
+  event->accept();
+}
+void SoundList::dragLeaveEvent(QDragLeaveEvent* event)
+{
+  event->accept();
+}
+void SoundList::dropEvent(QDropEvent* event)
+{
+  for(const QUrl& file : event->mimeData()->urls())
+  {
+    auto path = file.toLocalFile();
+    QFileInfo p{path};
+    if(p.completeSuffix() == "wav")
+    {
+      QFile::copy(path, this->m_path + "/" + m_folder + p.fileName());
+    }
+  }
 }
 
 void SoundList::clear()

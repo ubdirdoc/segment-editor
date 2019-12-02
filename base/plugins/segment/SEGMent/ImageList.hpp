@@ -18,6 +18,8 @@ private:
   void startDrag(Qt::DropActions supportedActions) override;
   void dropEvent(QDropEvent* event) override;
   void dragEnterEvent(QDragEnterEvent* event) override;
+  void dragMoveEvent(QDragMoveEvent* event) override;
+  void dragLeaveEvent(QDragLeaveEvent* event) override;
 
   void mouseMoveEvent(QMouseEvent* event) override;
 
@@ -48,6 +50,12 @@ public:
   explicit SoundList(QString path, QString folder, QString id);
   void reloadList(QString path = QString{});
   void clear();
+
+private:
+  void dragEnterEvent(QDragEnterEvent* event) override;
+  void dragMoveEvent(QDragMoveEvent* event) override;
+  void dragLeaveEvent(QDragLeaveEvent* event) override;
+  void dropEvent(QDropEvent* event);
 
   QString m_path;
   QString m_folder;

@@ -38,6 +38,9 @@
 #include <SEGMent/Items/SceneWindow.hpp>
 #include <SEGMent/Model/Layer/ProcessView.hpp>
 #include <SEGMent/Model/Scene.hpp>
+
+#include <QProcess>
+
 #include <boost/bimap/bimap.hpp>
 #include <cmath>
 #include <score_git_info.hpp>
@@ -159,6 +162,7 @@ ApplicationPlugin::ApplicationPlugin(const score::GUIApplicationContext& present
   m_help_act = new QAction(tr("Help"), this);
   m_delete_act = new QAction(tr("Delete"), this);
   m_stop_sound = new QAction(tr("Stop sound"), this);
+
   /*
           m_moveAction = new QAction{tr("Move"), this};
           m_resizeAction = new QAction{tr("Resize"), this};
@@ -192,6 +196,12 @@ ApplicationPlugin::ApplicationPlugin(const score::GUIApplicationContext& present
   m_zoomplus->setShortcutContext(Qt::ApplicationShortcut);
   m_zoomminus->setShortcutContext(Qt::ApplicationShortcut);
   m_recenter->setShortcutContext(Qt::ApplicationShortcut);
+
+  m_testGame = new QAction(tr("Test game"), this);
+  m_exportGame = new QAction(tr("Export game"), this);
+
+  m_testGame->setShortcut(QKeySequence("CTRL+Enter"));
+  m_testGame->setShortcutContext(Qt::ApplicationShortcut);
   /*
     m_tools = new QActionGroup{this};
     m_tools->addAction(m_moveAction);
@@ -251,6 +261,10 @@ ApplicationPlugin::ApplicationPlugin(const score::GUIApplicationContext& present
     on_recenter(*doc);
   });
 
+
+  connect(m_testGame, &QAction::triggered, this, &ApplicationPlugin::on_testGame);
+  connect(m_exportGame, &QAction::triggered, this, &ApplicationPlugin::on_exportGame);
+
   m_help = new QDialog;
   auto lay = new QHBoxLayout{m_help};
 
@@ -306,6 +320,48 @@ void ApplicationPlugin::on_recenter(score::Document& doc)
 
 }
 
+void ApplicationPlugin::on_testGame()
+{
+  // TODO save the document first
+  score::Document* doc = currentDocument();
+  if (!doc)
+    return;
+
+  auto path = doc->metadata().fileName();
+  qDebug() << path;
+
+  auto executable = qApp->applicationDirPath();
+  qDebug() << executable + "/engine/Linux/segment.x86_64";
+
+  auto p = new QProcess;
+#if defined(__linux__)
+  p->setProgram(executable + "/engine/Linux/segment.x86_64");
+#elif defined(_WIN32)
+  p->setProgram(executable + "/engine/Linux/segment.exe");
+#elif defined(__APPLE__)
+  p->setProgram(executable + "/engine/Linux/segment.app");
+#else
+  qDebug(" Unknown OS ! ");
+  return;
+#endif
+
+  QString game_folder = "file://" + QFileInfo{path}.absolutePath() + "/";
+  QString game_file = "file://" + QFileInfo{path}.absoluteFilePath();
+
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+  env.insert("SEGMENT_GAME_FOLDER", game_folder);
+  env.insert("SEGMENT_GAME_FILE", game_file);
+  p->setProcessEnvironment(env);
+  p->start();
+  p->waitForFinished();
+}
+
+void ApplicationPlugin::on_exportGame()
+{
+
+}
+
 score::GUIApplicationPlugin::GUIElements ApplicationPlugin::makeGUIElements()
 {
   auto view = score::GUIAppContext().mainWindow;
@@ -315,6 +371,7 @@ score::GUIApplicationPlugin::GUIElements ApplicationPlugin::makeGUIElements()
   view->addAction(m_zoomplus);
   view->addAction(m_zoomminus);
   view->addAction(m_recenter);
+  view->addAction(m_testGame);
 
   /*
           view->addAction(m_moveAction);
@@ -343,6 +400,9 @@ score::GUIApplicationPlugin::GUIElements ApplicationPlugin::makeGUIElements()
     bar->addAction(m_zoomminus);
     bar->addAction(m_recenter);
 
+    bar->addSeparator();
+    bar->addAction(m_testGame);
+    bar->addAction(m_exportGame);
     bar->addSeparator();
 
     bar->addAction(m_help_act);
