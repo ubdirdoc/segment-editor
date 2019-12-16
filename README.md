@@ -1,5 +1,28 @@
-segment-editor
+SEGMent Editor
 =======
+
+# V2.0 - 16/12/2019
+University of Bordeaux - SCRIME
+
+### Authors :
+* Jean Michaël Celerier
+* Raphaël Marczak
+
+### Contributors :
+* Frédéric Bouyssi
+* Katie Brzustowski-Vaïsse
+* Myriam Desainte Catherine
+* Alex Fournier
+* Gyorgy Kurtag Jr
+* Mission d'Appui à la Pédagogie et à l'Innovation de l'Université de Bordeaux
+
+### Funding :
+* SCRIME
+* IdEx Bordeaux
+* Projet régional " Bibliothèques et médiation numérique au service de la réussite étudiante " (Conseil Régional Aquitaine MiPNES)
+
+
+
 
 [![Build Status](https://travis-ci.org/scrime-u-bordeaux/segment-editor.svg?branch=master)](https://travis-ci.org/scrime-u-bordeaux/segment-editor)
 [![Build status](https://ci.appveyor.com/api/projects/status/mmapumjj2ari9kst?svg=true)](https://ci.appveyor.com/project/JeanMichalCelerier/segment-editor)
