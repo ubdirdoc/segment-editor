@@ -72,7 +72,7 @@ public:
  */
 #define SCORE_INTERFACE(Type, Uuid)                                \
 public:                                                            \
-  static Q_DECL_RELAXED_CONSTEXPR score::InterfaceKey              \
+  static MSVC_CONSTEXPR_UUID score::InterfaceKey              \
   static_interfaceKey() noexcept                                   \
   {                                                                \
     return_uuid(Uuid);                                             \
@@ -97,7 +97,7 @@ private:
  */
 #define SCORE_CONCRETE(Uuid)                                                \
 public:                                                                     \
-  static Q_DECL_RELAXED_CONSTEXPR ConcreteKey static_concreteKey() noexcept \
+  static MSVC_CONSTEXPR_UUID ConcreteKey static_concreteKey() noexcept \
   {                                                                         \
     return_uuid(Uuid);                                                      \
   }                                                                         \

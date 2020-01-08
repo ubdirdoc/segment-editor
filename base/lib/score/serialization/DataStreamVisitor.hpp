@@ -409,6 +409,7 @@ template <
     typename T,
     std::enable_if_t<
         !std::is_arithmetic<T>::value
+        && !std::is_enum<T>::value
         && !std::is_same<T, QStringList>::value>* = nullptr>
 QDataStream& operator<<(QDataStream& stream, const T& obj)
 {
@@ -421,6 +422,7 @@ template <
     typename T,
     std::enable_if_t<
         !std::is_arithmetic<T>::value
+        && !std::is_enum<T>::value
         && !std::is_same<T, QStringList>::value>* = nullptr>
 QDataStream& operator>>(QDataStream& stream, T& obj)
 {

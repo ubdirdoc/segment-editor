@@ -1,5 +1,6 @@
 #pragma once
 #include <score/command/Command.hpp>
+#include <score/command/AggregateCommand.hpp>
 #include <score/command/PropertyCommand.hpp>
 #include <score/document/DocumentContext.hpp>
 #include <score/model/path/PathSerialization.hpp>

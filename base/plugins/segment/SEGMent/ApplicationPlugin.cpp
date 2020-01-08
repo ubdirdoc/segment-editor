@@ -141,12 +141,12 @@ public:
         m_help_engine.contentWidget(),
         &QHelpContentWidget::linkActivated,
         &m_help_browser,
-        &HelpBrowser::setSource);
+        [&] (const auto& url) { m_help_browser.setSource(url); });
     connect(
         m_help_engine.indexWidget(),
         &QHelpIndexWidget::linkActivated,
         &m_help_browser,
-        &HelpBrowser::setSource);
+        [&](const auto& url) { m_help_browser.setSource(url); });
 
     insertWidget(0, content);
     insertWidget(1, &m_help_browser);
@@ -348,9 +348,9 @@ void ApplicationPlugin::on_testGame()
 #if defined(__linux__)
   process->setProgram(segment_path + "/engine/Linux/segment.x86_64");
 #elif defined(_WIN32)
-  p->setProgram(segment_path + "/engine/Windows/segment.exe");
+  process->setProgram(segment_path + "/engine/Windows/segment.exe");
 #elif defined(__APPLE__)
-  p->setProgram(segment_path + "/engine/macOS/segment.app");
+  process->setProgram(segment_path + "/engine/macOS/segment.app");
 #else
   qDebug(" Unknown OS ! ");
   return;

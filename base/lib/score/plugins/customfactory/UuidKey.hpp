@@ -5,6 +5,14 @@
 
 #include <array>
 
+#if !defined(MSVC_CONSTEXPR_UUID)
+  #if defined(_MSC_VER)
+    #define MSVC_CONSTEXPR_UUID
+  #else
+    #define MSVC_CONSTEXPR_UUID constexpr
+  #endif
+#endif
+
 class JSONObject;
 namespace score
 {
@@ -243,7 +251,7 @@ struct string_generator
           }
           else
           {
-            throw std::runtime_error{"Invalid uuid"};
+            //throw std::runtime_error{"Invalid uuid"};
           }
         }
       }
@@ -320,7 +328,8 @@ using uuid_t = uuids::uuid;
 #define return_uuid(text)                                                     \
   do                                                                          \
   {                                                                           \
-    constexpr const auto t = score::uuids::string_generator::compute((text)); \
+    MSVC_CONSTEXPR_UUID const auto t                       \
+        = score::uuids::string_generator::compute((text)); \
     return t;                                                                 \
   } while (0)
 
