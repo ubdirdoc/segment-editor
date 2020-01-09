@@ -356,8 +356,17 @@ void ApplicationPlugin::on_testGame()
   return;
 #endif
 
+
+#if defined(_WIN32)
+  QString game_folder = QFileInfo{path}.absolutePath() + "/";
+  QString game_file = QFileInfo{path}.absoluteFilePath();
+
+  game_folder.replace("/", "\\");
+  game_file.replace("/", "\\");
+#else
   QString game_folder = "file://" + QFileInfo{path}.absolutePath() + "/";
   QString game_file = "file://" + QFileInfo{path}.absoluteFilePath();
+#endif
 
   // The environment is used to pass the file url to the segment game engine
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
