@@ -45,6 +45,11 @@ public:
     auto scene = new SEGMent::SceneModel{JSONObjectWriter{m_json}, &process};
     scene->setId(m_newId);
     process.scenes.add(scene);
+
+    if(process.scenes.size() == 1)
+    {
+        scene->setSceneType(SceneModel::Initial);
+    }
   }
 
 protected:
