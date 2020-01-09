@@ -324,6 +324,18 @@ void ApplicationPlugin::on_recenter(score::Document& doc)
 
 }
 
+QString applicationPath()
+{
+    auto segment_path = qApp->applicationDirPath();
+#if defined(__APPLE__)
+    QDir d{segment_path};
+    d.cdUp();
+    d.cdUp();
+    d.cdUp();
+    segment_path = d.path();
+#endif
+    return segment_path;
+}
 void ApplicationPlugin::on_testGame()
 {
   score::Document* doc = currentDocument();
@@ -341,7 +353,7 @@ void ApplicationPlugin::on_testGame()
   f.write(QJsonDocument{doc->saveAsJson()}.toJson());
   f.commit();
 
-  auto segment_path = qApp->applicationDirPath();
+  auto segment_path = applicationPath();
   qDebug() << "Dir path:  " << segment_path;
 
   auto process = new QProcess;
@@ -393,7 +405,7 @@ void ApplicationPlugin::on_exportGame()
     return;
 
   // First copy the executables
-  auto segment_path = qApp->applicationDirPath();
+  auto segment_path = applicationPath();
   copyRecursively(segment_path + "/engine/Linux", dir.path() + "/Linux");
   copyRecursively(segment_path + "/engine/Windows", dir.path() + "/Windows");
   copyRecursively(segment_path + "/engine/macOS", dir.path() + "/macOS");
