@@ -330,8 +330,6 @@ QString applicationPath()
 #if defined(__APPLE__)
     QDir d{segment_path};
     d.cdUp();
-    d.cdUp();
-    d.cdUp();
     segment_path = d.path();
 #endif
     return segment_path;
@@ -394,6 +392,63 @@ void ApplicationPlugin::on_testGame()
   QFile::remove(path);
 }
 
+struct ExportVisitor
+{
+  std::function<void(const QString&)> copyFile;
+  void operator()(const SceneModel& scene)
+  {
+    copyFile(scene.image().path);
+    if(!scene.ambience().path().isEmpty())
+      copyFile(scene.ambience().path());
+
+    for(auto& o : scene.objects)
+      (*this)(o);
+    for(auto& o : scene.gifs)
+      (*this)(o);
+    for(auto& o : scene.textAreas)
+      (*this)(o);
+    for(auto& o : scene.clickAreas)
+      (*this)(o);
+    for(auto& o : scene.backClickAreas)
+      (*this)(o);
+  }
+
+  void operator()(const TransitionModel& obj)
+  {
+    if(!obj.sound().path().isEmpty())
+      copyFile(obj.sound().path());
+  }
+
+  void operator()(const GifModel& obj)
+  {
+    copyFile(obj.image().path);
+    if(!obj.sound().path().isEmpty())
+      copyFile(obj.sound().path());
+  }
+  void operator()(const ImageModel& obj)
+  {
+    copyFile(obj.image().path);
+    if(!obj.sound().path().isEmpty())
+      copyFile(obj.sound().path());
+  }
+  void operator()(const TextAreaModel& obj)
+  {
+    if(!obj.sound().path().isEmpty())
+      copyFile(obj.sound().path());
+  }
+  void operator()(const ClickAreaModel& obj)
+  {
+    if(!obj.sound().path().isEmpty())
+      copyFile(obj.sound().path());
+  }
+  void operator()(const BackClickAreaModel& obj)
+  {
+    if(!obj.sound().path().isEmpty())
+      copyFile(obj.sound().path());
+  }
+
+};
+
 void ApplicationPlugin::on_exportGame()
 {
   score::Document* doc = currentDocument();
@@ -411,9 +466,9 @@ void ApplicationPlugin::on_exportGame()
   copyRecursively(segment_path + "/engine/macOS", dir.path() + "/macOS");
 
   // Then copy the games
-  const auto target_paths = {dir.path() + "/Linux/game/",
-                      dir.path() + "/Windows/game/",
-                      dir.path() + "/macOS/game/"};
+  const auto target_paths = {dir.path() + "/Linux/game",
+                      dir.path() + "/Windows/game",
+                      dir.path() + "/macOS/game"};
 
 
   auto segment_file = doc->metadata().fileName();
@@ -424,18 +479,46 @@ void ApplicationPlugin::on_exportGame()
     f.commit();
   }
 
+  auto& m = static_cast<const SEGMent::DocumentModel&>(doc->model().modelDelegate());
+
   const QFileInfo fi{segment_file};
   auto folder_path = fi.absolutePath();
   QFile f{segment_file};
+
   for(auto target_game : target_paths)
   {
-    QDir{}.mkpath(target_game);
-    qDebug() << folder_path + "/Objects" << target_game + "/Objects";
-    copyRecursively(folder_path + "/Objects", target_game + "/Objects");
-    copyRecursively(folder_path + "/Scenes", target_game + "/Scenes");
-    copyRecursively(folder_path + "/Sounds", target_game + "/Sounds");
-    copyRecursively(folder_path + "/Templates", target_game + "/Templates");
+      QDir{}.mkpath(target_game + "/Objects");
+      QDir{}.mkpath(target_game + "/Scenes");
+      QDir{}.mkpath(target_game + "/Sounds");
+      QDir{}.mkpath(target_game + "/Templates");
+  }
 
+  ExportVisitor vis{[&] (const QString& path) {
+          QFileInfo fi{path};
+
+          if(fi.isAbsolute())
+          {
+              for(auto target_game : target_paths)
+              {
+                  QFile::copy(path, target_game + "/" + path);
+              }
+          }
+          else
+          {
+              for(auto target_game : target_paths)
+              {
+                  QFile::copy(folder_path + "/" + path, target_game + "/" + path);
+              }
+          }
+      }
+  };
+  for(auto& scene : m.process().scenes)
+      vis(scene);
+  for(auto& trans : m.process().transitions)
+      vis(trans);
+
+  for(auto target_game : target_paths)
+  {
     f.copy(target_game + "/Game.segment");
   }
 
@@ -1009,4 +1092,5 @@ void ApplicationPlugin::on_moveBackwards()
 }
 
 }
+
 

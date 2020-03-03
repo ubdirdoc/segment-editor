@@ -409,7 +409,9 @@ template <
     typename T,
     std::enable_if_t<
         !std::is_arithmetic<T>::value
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         && !std::is_enum<T>::value
+#endif
         && !std::is_same<T, QStringList>::value>* = nullptr>
 QDataStream& operator<<(QDataStream& stream, const T& obj)
 {
@@ -422,7 +424,9 @@ template <
     typename T,
     std::enable_if_t<
         !std::is_arithmetic<T>::value
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         && !std::is_enum<T>::value
+#endif
         && !std::is_same<T, QStringList>::value>* = nullptr>
 QDataStream& operator>>(QDataStream& stream, T& obj)
 {
