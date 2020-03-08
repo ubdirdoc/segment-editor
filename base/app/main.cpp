@@ -12,8 +12,8 @@
 
 static void setup_locale()
 {
-  QLocale::setDefault(QLocale::C);
-  setlocale(LC_ALL, "C");
+  // QLocale::setDefault(QLocale::C);
+  // setlocale(LC_ALL, "C");
 }
 
 static void setup_app_flags()

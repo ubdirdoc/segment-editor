@@ -491,6 +491,10 @@ void ApplicationPlugin::on_exportGame()
       QDir{}.mkpath(target_game + "/Scenes");
       QDir{}.mkpath(target_game + "/Sounds");
       QDir{}.mkpath(target_game + "/Templates");
+
+      copyRecursively(folder_path + "/Diary", target_game + "/Diary");
+      copyRecursively(folder_path + "/UI", target_game + "/UI");
+      copyRecursively(folder_path + "/Videos", target_game + "/Videos");
   }
 
   ExportVisitor vis{[&] (const QString& path) {

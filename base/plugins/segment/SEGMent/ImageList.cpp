@@ -10,7 +10,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QShortcut>
-
+#include <QMessageBox>
 #include <SEGMent/ImageList.hpp>
 #include <SEGMent/Items/GlobalVariables.hpp>
 #include <SEGMent/Model/Sound.hpp>
