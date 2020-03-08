@@ -289,6 +289,9 @@ void ZoomView::dragLeaveEvent(QDragLeaveEvent *event)
 
 void ZoomView::dropEvent(QDropEvent* event)
 {
+  if (!items(event->pos()).empty()) {
+      return QGraphicsView::dropEvent(event);
+  }
   const QPointF localPos = mapToScene(event->pos());
   const QMimeData* currentMimeData = event->mimeData();
 
@@ -325,7 +328,6 @@ void ZoomView::dropEvent(QDropEvent* event)
     }
   }
 
-  QGraphicsView::dropEvent(event);
 }
 
 } // namespace SEGMent
