@@ -157,6 +157,15 @@ public:
 
 private:
   QString m_cue{};
+
+public:
+  const QString& journal() const MSVC_NOEXCEPT;
+  void setJournal(const QString& v) MSVC_NOEXCEPT;
+  void journalChanged(const QString& v) W_SIGNAL(journalChanged, v);
+  PROPERTY(QString, journal READ journal WRITE setJournal NOTIFY journalChanged)
+
+private:
+  QString m_journal{};
 };
 
 template <typename T>
