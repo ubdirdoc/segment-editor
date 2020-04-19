@@ -287,6 +287,8 @@ PROPERTY_COMMAND_T(
     "Enable or disable the sonar")
 PROPERTY_COMMAND_T(SEGMent, SetSceneImage, SceneModel::p_image, "Set image")
 PROPERTY_COMMAND_T(SEGMent, SetSceneRect, SceneModel::p_rect, "Set rect")
+PROPERTY_COMMAND_T(SEGMent, SetSceneCue, SceneModel::p_cue, "Set cue")
+PROPERTY_COMMAND_T(SEGMent, SetSceneJournal, SceneModel::p_journal, "Set journal")
 
 PROPERTY_COMMAND_T(
     SEGMent,
@@ -308,6 +310,21 @@ PROPERTY_COMMAND_T(
     SetTransitionUnique,
     TransitionModel::p_unique,
     "Set unique")
+PROPERTY_COMMAND_T(
+    SEGMent,
+    SetTransitionEventToAdd,
+    TransitionModel::p_eventToAdd,
+    "Set event to add")
+PROPERTY_COMMAND_T(
+    SEGMent,
+    SetTransitionEventToRemove,
+    TransitionModel::p_eventToRemove,
+    "Set event to remove")
+PROPERTY_COMMAND_T(
+    SEGMent,
+    SetTransitionEventRequired,
+    TransitionModel::p_eventRequired,
+    "Set event required")
 
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectImage)
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectPos)
@@ -347,8 +364,13 @@ SCORE_COMMAND_DECL_T(SEGMent::SetSceneRepeatText)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneSonar)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneImage)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneRect)
+SCORE_COMMAND_DECL_T(SEGMent::SetSceneCue)
+SCORE_COMMAND_DECL_T(SEGMent::SetSceneJournal)
 
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionSound)
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionFade)
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionColor)
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionUnique)
+SCORE_COMMAND_DECL_T(SEGMent::SetTransitionEventToAdd)
+SCORE_COMMAND_DECL_T(SEGMent::SetTransitionEventToRemove)
+SCORE_COMMAND_DECL_T(SEGMent::SetTransitionEventRequired)
