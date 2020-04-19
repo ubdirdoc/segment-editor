@@ -118,6 +118,19 @@ void SceneModel::setSonar(bool v) MSVC_NOEXCEPT
   }
 }
 
+const QString& SceneModel::cue() const MSVC_NOEXCEPT
+{
+  return m_cue;
+}
+
+void SceneModel::setCue(const QString& v) MSVC_NOEXCEPT
+{
+  if (m_cue != v)
+  {
+    m_cue = v;
+    cueChanged(v);
+  }
+}
 } // namespace SEGMent
 
 template <>
@@ -144,7 +157,7 @@ void DataStreamReader::read(const SEGMent::SceneModel& v)
         }
       });
   m_stream << v.m_ambience << v.m_image << v.m_rect << v.m_sceneType
-           << v.m_startText << v.m_repeatText << v.m_sonar;
+           << v.m_startText << v.m_repeatText << v.m_sonar << v.m_cue;
 
   insertDelimiter();
 }
@@ -166,7 +179,7 @@ void DataStreamWriter::write(SEGMent::SceneModel& v)
         }
       });
   m_stream >> v.m_ambience >> v.m_image >> v.m_rect >> v.m_sceneType
-      >> v.m_startText >> v.m_repeatText >> v.m_sonar;
+      >> v.m_startText >> v.m_repeatText >> v.m_sonar >> v.m_cue;
 
   checkDelimiter();
 }
@@ -191,6 +204,7 @@ void JSONObjectReader::read(const SEGMent::SceneModel& v)
   obj["StartText"] = v.m_startText;
   obj["RepeatText"] = v.m_repeatText;
   obj["Sonar"] = v.m_sonar;
+  obj["Cue"] = v.m_cue;
 }
 
 template <>
@@ -249,4 +263,5 @@ void JSONObjectWriter::write(SEGMent::SceneModel& v)
   v.m_startText = obj["StartText"].toString();
   v.m_repeatText = obj["RepeatText"].toBool();
   v.m_sonar = obj["Sonar"].toBool();
+  v.m_cue = obj["Cue"].toBool();
 }

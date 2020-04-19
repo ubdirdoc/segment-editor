@@ -148,6 +148,15 @@ public:
 
 private:
   bool m_sonar{};
+
+public:
+  const QString& cue() const MSVC_NOEXCEPT;
+  void setCue(const QString& v) MSVC_NOEXCEPT;
+  void cueChanged(const QString& v) W_SIGNAL(cueChanged, v);
+  PROPERTY(QString, cue READ cue WRITE setCue NOTIFY cueChanged)
+
+private:
+  QString m_cue{};
 };
 
 template <typename T>
