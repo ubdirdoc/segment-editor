@@ -239,7 +239,7 @@ GUIElements CoreApplicationPlugin::makeGUIElements()
       about->addAction(about_act);
     }
     {
-        auto about_qt_act = new QAction(tr("About Qt"), m_presenter.view());
+        auto about_qt_act = new QAction(QObject::tr("About Qt"), m_presenter.view());
         connect(about_qt_act, &QAction::triggered, this, [this] { QMessageBox::aboutQt(m_presenter.view()); });
         about->addAction(about_qt_act);
     }

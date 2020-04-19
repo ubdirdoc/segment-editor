@@ -52,12 +52,12 @@ bool CommandStack::canRedo() const
 
 QString CommandStack::undoText() const
 {
-  return canUndo() ? m_undoable.top()->description() : tr("Nothing to undo");
+  return canUndo() ? m_undoable.top()->description() : QObject::tr("Nothing to undo");
 }
 
 QString CommandStack::redoText() const
 {
-  return canRedo() ? m_redoable.top()->description() : tr("Nothing to redo");
+  return canRedo() ? m_redoable.top()->description() : QObject::tr("Nothing to redo");
 }
 
 int CommandStack::size() const

@@ -35,6 +35,24 @@
     <message><source>Help</source><translation>Aide</translation></message>
     <message><source>Password (******)</source><translation>Mot de passe (*****)</translation></message>
     <message><source>Inspector</source><translation>Inspecteur</translation></message>
+    <message><source>Event To Add</source><translation>Évènement à ajouter</translation></message>
+    <message><source>Event To Remove</source><translation>Évènement à enlever</translation></message>
+    <message><source>Event Required</source><translation>Évènement requis</translation></message>
+    <message><source>Cue</source><translation>Indice</translation></message>
+    <message><source>Journal</source><translation>Journal</translation></message>
+    <message><source>Export game</source><translation>Exporter le jeu</translation></message>
+    <message><source>Test game</source><translation>Lancer le jeu</translation></message>
+    <message><source>Recenter</source><translation>Recentrer</translation></message>
+    <message><source>Undo</source><translation>Annuler</translation></message>
+    <message><source>Redo</source><translation>Refaire</translation></message>
+    <message><source>Undo (Ctrl+Z)</source><translation>Annuler (Ctrl+Z)</translation></message>
+    <message><source>Redo (Ctrl+Shift+Z)</source><translation>Refaire (Ctrl+Shift+Z)</translation></message>
+    <message><source>Name</source><translation>Nom</translation></message>
+    <message><source>Size</source><translation>Taille</translation></message>
+    <message><source>Recent files</source><translation>Documents récents</translation></message>
+    <message><source>About</source><translation>À propos</translation></message>
+    <message><source>&amp;About</source><translation>À propos</translation></message>
+    <message><source>About Qt</source><translation>À propos de Qt</translation></message>
     <message><source>Expected
 answers
 (1 per line)</source><translation>Réponses

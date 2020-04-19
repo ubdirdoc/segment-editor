@@ -120,7 +120,7 @@ void DocumentManager::init(const score::GUIApplicationContext& ctx)
           closeDocument(ctx, **it);
         });
 
-    m_recentFiles = new QRecentFilesMenu{tr("Recent files"), nullptr};
+    m_recentFiles = new QRecentFilesMenu{QObject::tr("Recent files"), nullptr};
 
 #if !defined(__EMSCRIPTEN__)
     QSettings settings("SEGMent", "SEGMent");

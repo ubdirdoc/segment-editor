@@ -77,7 +77,7 @@ StringKey<Menu> Menus::Settings()
 
 StringKey<Menu> Menus::About()
 {
-  return StringKey<Menu>{"About"};
+  return StringKey<Menu>{QObject::tr("About")};
 }
 
 void MenuManager::insert(Menu val)
