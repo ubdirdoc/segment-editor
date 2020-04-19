@@ -89,12 +89,56 @@ void TransitionModel::setUnique(bool v) MSVC_NOEXCEPT
   }
 }
 
+const QString& TransitionModel::eventToAdd() const MSVC_NOEXCEPT
+{
+  return m_eventToAdd;
+}
+
+void TransitionModel::setEventToAdd(const QString& v) MSVC_NOEXCEPT
+{
+  if (m_eventToAdd != v)
+  {
+    m_eventToAdd = v;
+    eventToAddChanged(v);
+  }
+}
+const QString& TransitionModel::eventToRemove() const MSVC_NOEXCEPT
+{
+  return m_eventToRemove;
+}
+
+void TransitionModel::setEventToRemove(const QString& v) MSVC_NOEXCEPT
+{
+  if (m_eventToRemove != v)
+  {
+    m_eventToRemove = v;
+    eventToRemoveChanged(v);
+  }
+}
+
+const QString& TransitionModel::eventRequired() const MSVC_NOEXCEPT
+{
+  return m_eventRequired;
+}
+
+void TransitionModel::setEventRequired(const QString& v) MSVC_NOEXCEPT
+{
+  if (m_eventRequired != v)
+  {
+    m_eventRequired = v;
+    eventRequiredChanged(v);
+  }
+}
 } // namespace SEGMent
 
 template <>
 void DataStreamReader::read(const SEGMent::TransitionModel& v)
 {
-  m_stream << v.m_transition << v.m_fade << v.m_color << v.m_sound << v.m_unique;
+  m_stream << v.m_transition << v.m_fade << v.m_color << v.m_sound << v.m_unique
+           << v.m_eventToAdd
+           << v.m_eventToRemove
+           << v.m_eventRequired
+  ;
 
   insertDelimiter();
 }
@@ -102,7 +146,11 @@ void DataStreamReader::read(const SEGMent::TransitionModel& v)
 template <>
 void DataStreamWriter::write(SEGMent::TransitionModel& v)
 {
-  m_stream >> v.m_transition >> v.m_fade >> v.m_color >> v.m_sound >> v.m_unique;
+  m_stream >> v.m_transition >> v.m_fade >> v.m_color >> v.m_sound >> v.m_unique
+           >> v.m_eventToAdd
+           >> v.m_eventToRemove
+           >> v.m_eventRequired
+          ;
 
   checkDelimiter();
 }
@@ -115,6 +163,21 @@ void JSONObjectReader::read(const SEGMent::TransitionModel& v)
   obj["Color"] = toJsonValue(v.m_color);
   obj["Sound"] = toJsonObject(v.m_sound);
   obj["Unique"] = v.m_unique;
+
+  auto processEventString = [] (const QString& str) {
+      QJsonArray array;
+
+      for(auto& elt : str.split(";")) {
+          if(auto str = elt.trimmed(); !str.isEmpty())
+              array.push_back(str);
+      }
+
+      return array;
+  };
+
+  obj["EventsToAdd"]    = processEventString(v.m_eventToAdd);
+  obj["EventsToRemove"] = processEventString(v.m_eventToRemove);
+  obj["EventsRequired"] = processEventString(v.m_eventRequired);
 }
 
 template <>
@@ -126,4 +189,22 @@ void JSONObjectWriter::write(SEGMent::TransitionModel& v)
   v.m_sound = fromJsonObject<SEGMent::Sound>(obj["Sound"]);
   v.m_color = fromJsonValue<QColor>(obj["Color"]);
   v.m_unique = obj["Unique"].toBool();
+
+  auto processEventString = [] (const QJsonArray& array) {
+      QString s;
+      for(const auto& elt : array) {
+          if(!elt.toString().isEmpty()) {
+              s += elt.toString();
+              s += " ; ";
+          }
+      }
+      if(!s.isEmpty())
+          s.resize(s.size() - 3);
+
+      return s;
+  };
+
+  v.m_eventToAdd    = processEventString(obj["EventsToAdd"].toArray());
+  v.m_eventToRemove = processEventString(obj["EventsToRemove"].toArray());
+  v.m_eventRequired = processEventString(obj["EventsRequired"].toArray());
 }

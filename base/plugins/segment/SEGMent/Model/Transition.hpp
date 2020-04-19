@@ -140,6 +140,30 @@ public:
   PROPERTY(bool, unique READ unique WRITE setUnique NOTIFY uniqueChanged)
 private:
   bool m_unique{};
+
+public:
+  const QString& eventToAdd() const MSVC_NOEXCEPT;
+  void setEventToAdd(const QString& v) MSVC_NOEXCEPT;
+  void eventToAddChanged(const QString& v) W_SIGNAL(eventToAddChanged, v);
+  PROPERTY(QString, eventToAdd READ eventToAdd WRITE setEventToAdd NOTIFY eventToAddChanged)
+private:
+  QString m_eventToAdd{};
+
+public:
+  const QString& eventToRemove() const MSVC_NOEXCEPT;
+  void setEventToRemove(const QString& v) MSVC_NOEXCEPT;
+  void eventToRemoveChanged(const QString& v) W_SIGNAL(eventToRemoveChanged, v);
+  PROPERTY(QString, eventToRemove READ eventToRemove WRITE setEventToRemove NOTIFY eventToRemoveChanged)
+private:
+  QString m_eventToRemove{};
+
+public:
+  const QString& eventRequired() const MSVC_NOEXCEPT;
+  void setEventRequired(const QString& v) MSVC_NOEXCEPT;
+  void eventRequiredChanged(const QString& v) W_SIGNAL(eventRequiredChanged, v);
+  PROPERTY(QString, eventRequired READ eventRequired WRITE setEventRequired NOTIFY eventRequiredChanged)
+private:
+  QString m_eventRequired{};
 };
 
 } // namespace SEGMent
