@@ -16,6 +16,8 @@ public:
     auto lay = new Inspector::Layout{this};
     setup_inspector(SceneModel::p_startText{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_repeatText{}, sc, doc, *lay, this);
+    setup_inspector(SceneModel::p_cue{}, sc, doc, *lay, this);
+    setup_inspector(SceneModel::p_journal{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_sonar{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_ambience{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_image{}, sc, doc, *lay, this);
@@ -83,6 +85,9 @@ public:
     // setup_inspector(TransitionModel::p_color{}, sc, doc, *lay, this);
     setup_inspector(TransitionModel::p_transition{}, sc, doc, *lay, this);
     setup_inspector(TransitionModel::p_unique{}, sc, doc, *lay, this);
+    setup_inspector(TransitionModel::p_eventToAdd{}, sc, doc, *lay, this);
+    setup_inspector(TransitionModel::p_eventToRemove{}, sc, doc, *lay, this);
+    setup_inspector(TransitionModel::p_eventRequired{}, sc, doc, *lay, this);
   }
 };
 
