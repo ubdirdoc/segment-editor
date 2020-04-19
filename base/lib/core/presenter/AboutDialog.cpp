@@ -127,8 +127,8 @@ AboutDialog::AboutDialog(QWidget* parent)
                             "General Public License version 2 (or later)"};
   map["websocketpp"] = License{"https://github.com/jcelerier/websocketpp",
                                websocketpp_LICENSE};
-  map["whereami"]
-      = License{"https://github.com/gpakosz/whereami", whereami_LICENSE};
+  //map["whereami"]
+  //    = License{"https://github.com/gpakosz/whereami", whereami_LICENSE};
 
   // In score
   map["QMenuView"]

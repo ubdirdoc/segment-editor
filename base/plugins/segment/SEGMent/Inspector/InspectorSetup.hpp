@@ -113,13 +113,13 @@ struct WidgetFactory
 
   void setup()
   {
-    if (auto widg = make((object.*(T::get()))()); widg != nullptr)
+    if (auto widg = make((object.*T::get)()); widg != nullptr)
       layout.addRow(prettyText(T::name), (QWidget*)widg);
   }
 
   void setup(QString txt)
   {
-    if (auto widg = make((object.*(T::get()))()); widg != nullptr)
+    if (auto widg = make((object.*T::get)()); widg != nullptr)
       layout.addRow(txt, (QWidget*)widg);
   }
 
@@ -139,7 +139,7 @@ struct WidgetFactory
         &QCheckBox::stateChanged,
         parent,
         [& object = this->object, &ctx = this->ctx](int state) {
-          bool cur = (object.*(T::get()))();
+          bool cur = (object.*T::get)();
           if ((state == Qt::Checked && !cur)
               || (state == Qt::Unchecked && cur))
           {
@@ -149,7 +149,7 @@ struct WidgetFactory
           }
         });
 
-    QObject::connect(&object, T::notify(), parent, [cb](bool cs) {
+    QObject::connect(&object, T::notify, parent, [cb](bool cs) {
       if (cs != cb->checkState())
         cb->setCheckState(cs ? Qt::Checked : Qt::Unchecked);
     });
@@ -167,7 +167,7 @@ struct WidgetFactory
         &QLineEdit::editingFinished,
         parent,
         [l, &object = this->object, &ctx = this->ctx]() {
-          const auto& cur = (object.*(T::get()))();
+          const auto& cur = (object.*T::get)();
           if (l->text() != cur)
           {
             CommandDispatcher<> disp{ctx.commandStack};
@@ -175,7 +175,7 @@ struct WidgetFactory
           }
         });
 
-    QObject::connect(&object, T::notify(), parent, [l](const QString& txt) {
+    QObject::connect(&object, T::notify, parent, [l](const QString& txt) {
       if (txt != l->text())
         l->setText(txt);
     });
@@ -193,7 +193,7 @@ struct WidgetFactory
         &QPlainTextEdit::textChanged,
         parent,
         [l, &object = this->object, &ctx = this->ctx]() {
-          const auto& cur = (object.*(T::get()))();
+          const auto& cur = (object.*T::get)();
           if (auto txt = l->toPlainText(); txt != cur)
           {
             CommandDispatcher<> disp{ctx.commandStack};
@@ -201,7 +201,7 @@ struct WidgetFactory
           }
         });
 
-    QObject::connect(&object, T::notify(), parent, [l](const QString& txt) {
+    QObject::connect(&object, T::notify, parent, [l](const QString& txt) {
       if (txt != l->toPlainText())
         l->setPlainText(txt);
     });
@@ -219,7 +219,7 @@ struct WidgetFactory
         &color_widgets::ColorWheel::colorChanged,
         parent,
         [l, &object = this->object, &ctx = this->ctx](QColor c) {
-          const auto& cur = (object.*(T::get()))();
+          const auto& cur = (object.*T::get)();
           if (l->color() != cur)
           {
             CommandDispatcher<> disp{ctx.commandStack};
@@ -227,7 +227,7 @@ struct WidgetFactory
           }
         });
 
-    QObject::connect(&object, T::notify(), parent, [l](QColor c) {
+    QObject::connect(&object, T::notify, parent, [l](QColor c) {
       if (c != l->color())
         l->setColor(c);
     });
@@ -279,7 +279,7 @@ struct WidgetFactory
             if (!l->hasFocus())
             {
               CommandDispatcher<> disp{ctx.commandStack};
-              Sound s = (object.*(T::get()))();
+              Sound s = (object.*T::get)();
               if (s.path() != txt)
               {
                 s.setPath(txt);
@@ -293,7 +293,7 @@ struct WidgetFactory
           parent,
           [l, &object = this->object, &ctx = this->ctx]() {
             CommandDispatcher<> disp{ctx.commandStack};
-            Sound s = (object.*(T::get()))();
+            Sound s = (object.*T::get)();
             if (s.path() != l->text())
             {
               s.setPath(l->text());
@@ -322,7 +322,7 @@ struct WidgetFactory
             &QPushButton::pressed,
             parent,
             [& object = this->object, &ctx = this->ctx] {
-              SoundPlayer::instance().play((object.*(T::get()))(), ctx);
+              SoundPlayer::instance().play((object.*T::get)(), ctx);
             });
         play->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         sub->addWidget(play);
@@ -348,7 +348,7 @@ struct WidgetFactory
           parent,
           [& ctx = this->ctx, &object = this->object](int st) {
             CommandDispatcher<> disp{ctx.commandStack};
-            Sound s = (object.*(T::get()))();
+            Sound s = (object.*T::get)();
             if (s.repeat() != bool(st))
             {
               s.setRepeat(bool(st));
@@ -744,7 +744,7 @@ struct WidgetFactory
     set_sw_index(cur.riddle.which());
 
     QObject::connect(
-        &object, T::notify(), parent, [=](const transition_t& new_t) {
+        &object, T::notify, parent, [=](const transition_t& new_t) {
           set_sw_index(new_t.target<SceneToScene>()->riddle.which());
         });
     }
@@ -782,14 +782,14 @@ struct WidgetFactory
         parent,
         [cb, &object = this->object, &ctx = this->ctx](int idx) {
           auto data = cb->itemData(idx).value<Type>();
-          if (data != (object.*(T::get()))())
+          if (data != (object.*T::get)())
           {
             CommandDispatcher<> disp{ctx.commandStack};
             disp.submitCommand(new cmd{object, data});
           }
         });
 
-    QObject::connect(&object, T::notify(), parent, [cb](auto val) {
+    QObject::connect(&object, T::notify, parent, [cb](auto val) {
       auto idx = static_cast<int>(val);
       if (idx >= 0 && idx < cb->count() && idx != cb->currentIndex())
       {
