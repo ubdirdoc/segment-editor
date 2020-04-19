@@ -13,7 +13,8 @@ public:
       QWidget* parent)
       : QWidget{parent}
   {
-    auto lay = new Inspector::Layout{this};
+    auto l = new QVBoxLayout{this};
+    auto lay = new Inspector::Layout{};
     setup_inspector(SceneModel::p_startText{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_repeatText{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_cue{}, sc, doc, *lay, this);
@@ -22,6 +23,8 @@ public:
     setup_inspector(SceneModel::p_ambience{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_image{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_sceneType{}, sc, doc, *lay, this);
+    l->addLayout(lay);
+    l->addStretch(1);
   }
 };
 
@@ -35,10 +38,13 @@ public:
       QWidget* parent)
       : QWidget{parent}
   {
-    auto lay = new Inspector::Layout{this};
+    auto l = new QVBoxLayout{this};
+    auto lay = new Inspector::Layout{};
     setup_inspector(ImageModel::p_sound{}, sc, doc, *lay, this);
     setup_inspector(ImageModel::p_image{}, sc, doc, *lay, this);
     setup_inspector(ImageModel::p_puzzle{}, sc, doc, *lay, this);
+    l->addLayout(lay);
+    l->addStretch(1);
   }
 };
 
@@ -79,7 +85,8 @@ public:
       QWidget* parent)
       : QWidget{parent}
   {
-    auto lay = new Inspector::Layout{this};
+    auto l = new QVBoxLayout{this};
+    auto lay = new Inspector::Layout{};
     setup_inspector(TransitionModel::p_sound{}, sc, doc, *lay, this);
     setup_inspector(TransitionModel::p_fade{}, sc, doc, *lay, this);
     // setup_inspector(TransitionModel::p_color{}, sc, doc, *lay, this);
@@ -88,6 +95,8 @@ public:
     setup_inspector(TransitionModel::p_eventToAdd{}, sc, doc, *lay, this);
     setup_inspector(TransitionModel::p_eventToRemove{}, sc, doc, *lay, this);
     setup_inspector(TransitionModel::p_eventRequired{}, sc, doc, *lay, this);
+    l->addLayout(lay);
+    l->addStretch(1);
   }
 };
 
@@ -101,8 +110,11 @@ public:
       QWidget* parent)
       : QWidget{parent}
   {
-    auto lay = new Inspector::Layout{this};
+    auto l = new QVBoxLayout{this};
+    auto lay = new Inspector::Layout{};
     setup_inspector(ClickAreaModel::p_sound{}, sc, doc, *lay, this);
+    l->addLayout(lay);
+    l->addStretch(1);
   }
 };
 
@@ -116,8 +128,11 @@ public:
       QWidget* parent)
       : QWidget{parent}
   {
-    auto lay = new Inspector::Layout{this};
+    auto l = new QVBoxLayout{this};
+    auto lay = new Inspector::Layout{};
     setup_inspector(BackClickAreaModel::p_sound{}, sc, doc, *lay, this);
+    l->addLayout(lay);
+    l->addStretch(1);
   }
 };
 
@@ -131,10 +146,13 @@ public:
       QWidget* parent)
       : QWidget{parent}
   {
-    auto lay = new Inspector::Layout{this};
+    auto l = new QVBoxLayout{this};
+    auto lay = new Inspector::Layout{};
     setup_inspector(TextAreaModel::p_text{}, sc, doc, *lay, this);
     setup_inspector(TextAreaModel::p_behaviour{}, sc, doc, *lay, this);
     setup_inspector(TextAreaModel::p_sound{}, sc, doc, *lay, this);
+    l->addLayout(lay);
+    l->addStretch(1);
   }
 };
 
