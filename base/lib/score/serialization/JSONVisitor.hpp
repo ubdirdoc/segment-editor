@@ -413,6 +413,19 @@ QJsonArray toJsonArray(const Container& array)
       array, std::is_pointer<return_type_of_iterator<Container>>());
 }
 
+inline
+QJsonArray toJsonArray(const QStringList& array)
+{
+  QJsonArray arr;
+
+  for (const auto& elt : array)
+  {
+    arr.append(elt);
+  }
+
+  return arr;
+}
+
 template <template <typename U> class T, typename V>
 QJsonArray toJsonArray(const T<Id<V>>& array)
 {

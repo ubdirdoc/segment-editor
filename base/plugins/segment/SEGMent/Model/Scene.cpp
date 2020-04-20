@@ -12,6 +12,7 @@ namespace SEGMent
 SceneModel::SceneModel(Id<SceneModel> id, QObject* parent)
     : base_type{std::move(id), "Scene", parent}
 {
+  while(m_cues.size() < 3) m_cues.push_back({});
 }
 
 const SceneModel::SceneType& SceneModel::sceneType() const MSVC_NOEXCEPT
@@ -118,23 +119,23 @@ void SceneModel::setSonar(bool v) MSVC_NOEXCEPT
   }
 }
 
-const QString& SceneModel::cue() const MSVC_NOEXCEPT
+const QStringList& SceneModel::cue() const MSVC_NOEXCEPT
 {
-  return m_cue;
+  return m_cues;
 }
 
-void SceneModel::setCue(const QString& v) MSVC_NOEXCEPT
+void SceneModel::setCue(const QStringList& v) MSVC_NOEXCEPT
 {
-  if (m_cue != v)
+  if (m_cues != v)
   {
-    m_cue = v;
+    m_cues = v;
     cueChanged(v);
   }
 }
 
 const QString& SceneModel::journal() const MSVC_NOEXCEPT
 {
-  return m_cue;
+  return m_journal;
 }
 
 void SceneModel::setJournal(const QString& v) MSVC_NOEXCEPT
@@ -171,7 +172,7 @@ void DataStreamReader::read(const SEGMent::SceneModel& v)
         }
       });
   m_stream << v.m_ambience << v.m_image << v.m_rect << v.m_sceneType
-           << v.m_startText << v.m_repeatText << v.m_sonar << v.m_cue << v.m_journal;
+           << v.m_startText << v.m_repeatText << v.m_sonar << v.m_cues << v.m_journal;
 
   insertDelimiter();
 }
@@ -193,7 +194,7 @@ void DataStreamWriter::write(SEGMent::SceneModel& v)
         }
       });
   m_stream >> v.m_ambience >> v.m_image >> v.m_rect >> v.m_sceneType
-      >> v.m_startText >> v.m_repeatText >> v.m_sonar >> v.m_cue >> v.m_journal;
+      >> v.m_startText >> v.m_repeatText >> v.m_sonar >> v.m_cues >> v.m_journal;
 
   checkDelimiter();
 }
@@ -218,7 +219,7 @@ void JSONObjectReader::read(const SEGMent::SceneModel& v)
   obj["StartText"] = v.m_startText;
   obj["RepeatText"] = v.m_repeatText;
   obj["Sonar"] = v.m_sonar;
-  obj["Cue"] = v.m_cue;
+  obj["Cue"] = toJsonArray(v.m_cues);
   obj["Journal"] = v.m_journal;
 }
 
@@ -278,6 +279,6 @@ void JSONObjectWriter::write(SEGMent::SceneModel& v)
   v.m_startText = obj["StartText"].toString();
   v.m_repeatText = obj["RepeatText"].toBool();
   v.m_sonar = obj["Sonar"].toBool();
-  v.m_cue = obj["Cue"].toBool();
-  v.m_journal = obj["Journal"].toBool();
+  fromJsonArray(obj["Cue"].toArray(), v.m_cues);
+  v.m_journal = obj["Journal"].toString();
 }

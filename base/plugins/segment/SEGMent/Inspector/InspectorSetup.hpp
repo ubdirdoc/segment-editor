@@ -207,6 +207,48 @@ struct WidgetFactory
     });
     return l;
   }
+
+
+  auto make(const QStringList& cur)
+  {
+    using cmd =
+        typename score::PropertyCommand_T<T>::template command<void>::type;
+    auto container = new QWidget;
+    auto lay = new QFormLayout{container};
+    std::vector<QLineEdit*> edits;
+    for(int i = 0; i < cur.size(); i++) {
+      auto edit = new QLineEdit;
+      edit->setText(cur[i]);
+      edits.push_back(edit);
+      lay->addRow(QString::number(i) + ":", edit);
+    }
+    for(QLineEdit* edit : edits) {
+      QObject::connect(
+          edit,
+          &QLineEdit::textChanged,
+          parent,
+          [edits, &object = this->object, &ctx = this->ctx] () {
+            const auto& cur = (object.*T::get)();
+            QStringList str;
+
+            for(auto edit : edits)
+                str.push_back(edit->text());
+
+            if (str != cur)
+            {
+              CommandDispatcher<> disp{ctx.commandStack};
+              disp.submitCommand(new cmd{object, str});
+            }
+          });
+    }
+    QObject::connect(&object, T::notify,
+                     parent, [edits] (const QStringList& txt) {
+      for(int i = 0; i < txt.size(); i++)
+          if (txt[i] != edits[i]->text())
+              edits[i]->setText(txt[i]);
+    });
+    return container;
+  }
 /*
   auto make(QColor cur)
   {

@@ -61,6 +61,7 @@ public:
       : base_type{std::forward<DeserializerVisitor>(vis), parent}
   {
     vis.writeTo(*this);
+    while(m_cues.size() < 3) m_cues.push_back({});
   }
 
   enum SceneType
@@ -150,13 +151,13 @@ private:
   bool m_sonar{};
 
 public:
-  const QString& cue() const MSVC_NOEXCEPT;
-  void setCue(const QString& v) MSVC_NOEXCEPT;
-  void cueChanged(const QString& v) W_SIGNAL(cueChanged, v);
-  PROPERTY(QString, cue READ cue WRITE setCue NOTIFY cueChanged)
+  const QStringList& cue() const MSVC_NOEXCEPT;
+  void setCue(const QStringList& v) MSVC_NOEXCEPT;
+  void cueChanged(const QStringList& v) W_SIGNAL(cueChanged, v);
+  PROPERTY(QStringList, cue READ cue WRITE setCue NOTIFY cueChanged)
 
 private:
-  QString m_cue{};
+  QStringList m_cues{};
 
 public:
   const QString& journal() const MSVC_NOEXCEPT;
