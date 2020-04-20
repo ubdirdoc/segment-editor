@@ -13,6 +13,7 @@ public:
     this->setSpacing(2);
     this->setMargin(2);
     this->setHorizontalSpacing(20);
+    this->setLabelAlignment(Qt::AlignLeft);
   }
 };
 } // namespace Inspector

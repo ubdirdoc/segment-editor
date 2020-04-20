@@ -15,14 +15,17 @@ public:
   {
     auto l = new QVBoxLayout{this};
     auto lay = new Inspector::Layout{};
+    setup_inspector(SceneModel::p_sceneType{}, sc, doc, *lay, this);
+    setup_inspector(SceneModel::p_image{}, sc, doc, *lay, this);
+
     setup_inspector(SceneModel::p_startText{}, sc, doc, *lay, this);
-    setup_inspector(SceneModel::p_repeatText{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_cue{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_journal{}, sc, doc, *lay, this);
-    setup_inspector(SceneModel::p_sonar{}, sc, doc, *lay, this);
+
     setup_inspector(SceneModel::p_ambience{}, sc, doc, *lay, this);
-    setup_inspector(SceneModel::p_image{}, sc, doc, *lay, this);
-    setup_inspector(SceneModel::p_sceneType{}, sc, doc, *lay, this);
+
+    setup_inspector(SceneModel::p_repeatText{}, sc, doc, *lay, this);
+    setup_inspector(SceneModel::p_sonar{}, sc, doc, *lay, this);
     l->addLayout(lay);
     l->addStretch(1);
   }

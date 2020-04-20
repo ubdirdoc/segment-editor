@@ -215,6 +215,8 @@ struct WidgetFactory
         typename score::PropertyCommand_T<T>::template command<void>::type;
     auto container = new QWidget;
     auto lay = new QFormLayout{container};
+    lay->setLabelAlignment(Qt::AlignLeft);
+
     std::vector<QLineEdit*> edits;
     for(int i = 0; i < cur.size(); i++) {
       auto edit = new QLineEdit;
@@ -282,7 +284,7 @@ struct WidgetFactory
     SoundLineEdit(QString txt = {}, QWidget* parent = nullptr)
         : QLineEdit{txt, parent}
     {
-      setMinimumWidth(175);
+      setMinimumWidth(160);
       setClearButtonEnabled(true);
     }
 
@@ -306,7 +308,8 @@ struct WidgetFactory
 
     auto w = new QWidget;
     w->setContentsMargins(0, 0, 0, 0);
-    auto lay = new score::MarginLess<QVBoxLayout>{w};
+    auto lay = new QVBoxLayout{w};
+    lay->setContentsMargins(0,11,11,11);
 
     // Sound path
     {

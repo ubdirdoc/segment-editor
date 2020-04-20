@@ -7,7 +7,8 @@
 
 
     <message><source>Repeat</source><translation>Répéter</translation></message>
-    <message><source>Repeat Text</source><translation>Répéter le texte</translation></message>
+    <message><source>Repeat Text</source><translation>Répéter
+le texte</translation></message>
     <message><source>Move to front</source><translation>Mettre devant</translation></message>
     <message><source>Move behind</source><translation>Mettre en arrière</translation></message>
     <message><source>Create arrows</source><translation>Créer flèches</translation></message>
@@ -15,10 +16,12 @@
     <message><source>Delete</source><translation>Supprimer</translation></message>
     <message><source>Sound</source><translation>Son</translation></message>
     <message><source>Image</source><translation>Image</translation></message>
-    <message><source>Start Text</source><translation>Texte de début</translation></message>
+    <message><source>Start Text</source><translation>Texte
+de début</translation></message>
     <message><source>Ambience</source><translation>Ambience</translation></message>
     <message><source>Color</source><translation>Couleur</translation></message>
-    <message><source>Scene Type</source><translation>Type de scène</translation></message>
+    <message><source>Scene Type</source><translation>Type
+de scène</translation></message>
     <message><source>Fade</source><translation>Fondu</translation></message>
     <message><source>Behaviour</source><translation>Comportement</translation></message>
     <message><source>&amp;New</source><translation>Nouveau</translation></message>
@@ -35,9 +38,12 @@
     <message><source>Help</source><translation>Aide</translation></message>
     <message><source>Password (******)</source><translation>Mot de passe (*****)</translation></message>
     <message><source>Inspector</source><translation>Inspecteur</translation></message>
-    <message><source>Event To Add</source><translation>Évènement à ajouter</translation></message>
-    <message><source>Event To Remove</source><translation>Évènement à enlever</translation></message>
-    <message><source>Event Required</source><translation>Évènement requis</translation></message>
+    <message><source>Event To Add</source><translation>Évènement
+à ajouter</translation></message>
+    <message><source>Event To Remove</source><translation>Évènement
+à enlever</translation></message>
+    <message><source>Event Required</source><translation>Évènement
+requis</translation></message>
     <message><source>Cue</source><translation>Indice</translation></message>
     <message><source>Journal</source><translation>Journal</translation></message>
     <message><source>Export game</source><translation>Exporter le jeu</translation></message>
