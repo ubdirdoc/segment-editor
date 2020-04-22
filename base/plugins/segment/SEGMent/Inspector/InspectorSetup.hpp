@@ -8,6 +8,7 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDirIterator>
 #include <QDropEvent>
 #include <QLabel>
 #include <QLineEdit>
@@ -845,6 +846,64 @@ struct WidgetFactory
     });
     return cb;
   }
+
+  auto make_combo(std::vector<QString> values, QString s)
+  {
+    using cmd =
+        typename score::PropertyCommand_T<T>::template command<void>::type;
+    auto cb = new QComboBox;
+    cb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    for (auto& v : values)
+    {
+      cb->addItem(v);
+    }
+
+    cb->setCurrentText(s);
+    QObject::connect(
+        cb,
+        SignalUtils::QComboBox_currentIndexChanged_int(),
+        parent,
+        [cb, &object = this->object, &ctx = this->ctx](int idx) {
+          auto data = cb->itemText(idx);
+          if (data != (object.*T::get)())
+          {
+            CommandDispatcher<> disp{ctx.commandStack};
+            disp.submitCommand(new cmd{object, data});
+          }
+        });
+
+    QObject::connect(&object, T::notify, parent, [cb](auto val) {
+        int idx = cb->findText(val);
+        if (idx >= 0 && idx < cb->count() && idx != cb->currentIndex())
+        {
+            cb->blockSignals(true);
+            cb->setCurrentIndex(idx);
+            cb->blockSignals(false);
+        }
+    });
+    return cb;
+  }
+
+  auto make(const SEGMent::JournalEntry& s)
+  {
+    std::vector<QString> entries;
+    auto ressourcesPath = QFileInfo{ctx.document.metadata().fileName()}.absolutePath() + "/Ressources/Diary";
+    if(!QDir{ressourcesPath}.exists())
+        ressourcesPath = QFileInfo{ctx.document.metadata().fileName()}.absolutePath() + "/Diary";
+
+    QDirIterator it{ressourcesPath, QDir::Files | QDir::NoDotAndDotDot};
+
+    entries.push_back("");
+    while (it.hasNext()) {
+        QFileInfo file{it.next()};
+        auto ext = file.suffix().toLower();
+        if(ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "gif")
+            entries.push_back(file.fileName());
+    }
+
+    return make_combo(entries, s);
+  }
+
 
   auto make(TransitionModel::FadeMode f)
   {

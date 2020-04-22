@@ -44,6 +44,38 @@ struct LongText
   }
 };
 
+
+struct JournalEntry
+{
+  QString txt;
+  operator const QString&() const noexcept { return txt; }
+  operator QString&() noexcept { return txt; }
+  friend bool operator==(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
+  {
+    return lhs.txt == rhs.txt;
+  }
+  friend bool operator!=(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
+  {
+    return lhs.txt != rhs.txt;
+  }
+  friend bool operator<(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
+  {
+    return lhs.txt < rhs.txt;
+  }
+  friend bool operator>(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
+  {
+    return lhs.txt > rhs.txt;
+  }
+  friend bool operator<=(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
+  {
+    return lhs.txt <= rhs.txt;
+  }
+  friend bool operator>=(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
+  {
+    return lhs.txt >= rhs.txt;
+  }
+  JournalEntry& operator=(const QString& other) noexcept { txt = other; return *this; }
+};
 //! A scene is the main object in a SEGMent canvas
 class SceneModel : public PathAsId<score::Entity<SceneModel>>
 {
@@ -160,10 +192,10 @@ private:
   QStringList m_cues{};
 
 public:
-  const QString& journal() const MSVC_NOEXCEPT;
-  void setJournal(const QString& v) MSVC_NOEXCEPT;
-  void journalChanged(const QString& v) W_SIGNAL(journalChanged, v);
-  PROPERTY(QString, journal READ journal WRITE setJournal NOTIFY journalChanged)
+  JournalEntry journal() const MSVC_NOEXCEPT;
+  void setJournal(const SEGMent::JournalEntry& v) MSVC_NOEXCEPT;
+  void journalChanged(const SEGMent::JournalEntry& v) W_SIGNAL(journalChanged, v);
+  PROPERTY(SEGMent::JournalEntry, journal READ journal WRITE setJournal NOTIFY journalChanged)
 
 private:
   QString m_journal{};
@@ -208,3 +240,5 @@ Q_DECLARE_METATYPE(SEGMent::SceneModel::SceneType)
 W_REGISTER_ARGTYPE(SEGMent::SceneModel::SceneType)
 Q_DECLARE_METATYPE(SEGMent::LongText)
 W_REGISTER_ARGTYPE(SEGMent::LongText)
+Q_DECLARE_METATYPE(SEGMent::JournalEntry)
+W_REGISTER_ARGTYPE(SEGMent::JournalEntry)

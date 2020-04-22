@@ -133,12 +133,12 @@ void SceneModel::setCue(const QStringList& v) MSVC_NOEXCEPT
   }
 }
 
-const QString& SceneModel::journal() const MSVC_NOEXCEPT
+JournalEntry SceneModel::journal() const MSVC_NOEXCEPT
 {
-  return m_journal;
+  return {m_journal};
 }
 
-void SceneModel::setJournal(const QString& v) MSVC_NOEXCEPT
+void SceneModel::setJournal(const JournalEntry& v) MSVC_NOEXCEPT
 {
   if (m_journal != v)
   {
@@ -155,6 +155,17 @@ void DataStreamReader::read(const SEGMent::LongText& v)
 }
 template <>
 void DataStreamWriter::write(SEGMent::LongText& v)
+{
+  m_stream >> v.txt;
+}
+
+template <>
+void DataStreamReader::read(const SEGMent::JournalEntry& v)
+{
+  m_stream << v.txt;
+}
+template <>
+void DataStreamWriter::write(SEGMent::JournalEntry& v)
 {
   m_stream >> v.txt;
 }
