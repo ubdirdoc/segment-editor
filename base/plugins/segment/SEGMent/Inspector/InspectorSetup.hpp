@@ -462,7 +462,8 @@ struct WidgetFactory
       cb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
       cb->addItems({QObject::tr("Passée"),
                     QObject::tr("Stop"),
-                    QObject::tr("Victorieuse")});
+                    QObject::tr("Victorieuse"),
+                    QObject::tr("Déclencheur")});
       cb->setCurrentIndex((int)cur[i]);
       QObject::connect(
           cb,

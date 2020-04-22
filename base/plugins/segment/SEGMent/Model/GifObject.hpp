@@ -28,7 +28,8 @@ public:
   {
     Ignored,
     Active,
-    Victorious
+    Victorious,
+    Trigger
   };
   using Frames = std::vector<Frame>;
   using base_type = Object<GifModel>;
