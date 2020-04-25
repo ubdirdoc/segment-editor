@@ -117,7 +117,7 @@ class CueInspectorWidget : public QWidget
 
         QSize sizeHint() const override
         {
-            return QSize{200, 200 + m_parent.m_widgets.size() * 100};
+            return QSize(200, 200 + m_parent.m_widgets.size() * 100);
         }
 
   };// m_container;
