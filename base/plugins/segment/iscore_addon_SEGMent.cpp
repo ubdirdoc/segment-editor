@@ -18,6 +18,8 @@
 #include <iscore_addon_SEGMent_commands_files.hpp>
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(SEGMent::EditingFinishedTextEdit)
+W_OBJECT_IMPL(SEGMent::CueWidget)
+
 iscore_addon_SEGMent::iscore_addon_SEGMent()
 {
   // Resources

@@ -35,6 +35,7 @@ set(HDRS
     SEGMent/Model/Riddle.hpp
     SEGMent/Model/Image.hpp
 
+    SEGMent/Inspector/CueInspector.hpp
     SEGMent/Inspector/InspectorSetup.hpp
     SEGMent/Inspector/Inspectors.hpp
 

@@ -20,8 +20,8 @@ PanelDelegate::PanelDelegate(const score::GUIApplicationContext& ctx)
   new score::MarginLess<QVBoxLayout>{m_widget};
   m_widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
   m_widget->setMinimumHeight(400);
-  m_widget->setMinimumWidth(300);
-  m_widget->setMaximumWidth(300);
+  m_widget->setMinimumWidth(400);
+  m_widget->setMaximumWidth(400);
 }
 
 QWidget* PanelDelegate::widget()

@@ -19,7 +19,6 @@ public:
     setup_inspector(SceneModel::p_image{}, sc, doc, *lay, this);
 
     setup_inspector(SceneModel::p_startText{}, sc, doc, *lay, this);
-    setup_inspector(SceneModel::p_cue{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_journal{}, sc, doc, *lay, this);
 
     setup_inspector(SceneModel::p_ambience{}, sc, doc, *lay, this);
@@ -27,7 +26,23 @@ public:
     setup_inspector(SceneModel::p_repeatText{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_sonar{}, sc, doc, *lay, this);
     l->addLayout(lay);
-    l->addStretch(1);
+    {
+
+        auto scroll = new QScrollArea;
+        scroll->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
+        scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        scroll->setWidgetResizable(true);
+        scroll->setWidget(new CueInspectorWidget{sc, doc, parent});
+
+        auto line = new QFrame;
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+        lay->addWidget(line);
+        lay->addRow(QObject::tr("Indices"), new QWidget);
+        l->addWidget(scroll);
+        l->setStretchFactor(scroll, 3);
+    }
   }
 };
 

@@ -12,7 +12,6 @@ namespace SEGMent
 SceneModel::SceneModel(Id<SceneModel> id, QObject* parent)
     : base_type{std::move(id), "Scene", parent}
 {
-  while(m_cues.size() < 3) m_cues.push_back({});
 }
 
 const SceneModel::SceneType& SceneModel::sceneType() const MSVC_NOEXCEPT
@@ -119,12 +118,12 @@ void SceneModel::setSonar(bool v) MSVC_NOEXCEPT
   }
 }
 
-const QStringList& SceneModel::cue() const MSVC_NOEXCEPT
+const Cues& SceneModel::cue() const MSVC_NOEXCEPT
 {
   return m_cues;
 }
 
-void SceneModel::setCue(const QStringList& v) MSVC_NOEXCEPT
+void SceneModel::setCue(const Cues& v) MSVC_NOEXCEPT
 {
   if (m_cues != v)
   {
@@ -168,6 +167,33 @@ template <>
 void DataStreamWriter::write(SEGMent::JournalEntry& v)
 {
   m_stream >> v.txt;
+}
+
+template <>
+void DataStreamReader::read(const SEGMent::Cue& v)
+{
+    m_stream << v.key << v.cues;
+}
+template <>
+void DataStreamWriter::write(SEGMent::Cue& v)
+{
+    m_stream >> v.key >> v.cues;
+}
+template <>
+void JSONObjectReader::read(const SEGMent::Cue& v)
+{
+    obj["Key"] = v.key;
+    QJsonArray values;
+    for(auto val : v.cues) values.push_back(val);
+
+    obj["Values"] = values;
+}
+template <>
+void JSONObjectWriter::write(SEGMent::Cue& v)
+{
+    v.key = obj["Key"].toString();
+    auto arr = obj["Values"].toArray();
+    for(auto val : arr) v.cues.push_back(val.toString());
 }
 
 template <>

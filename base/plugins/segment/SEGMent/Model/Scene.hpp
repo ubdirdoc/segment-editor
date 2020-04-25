@@ -10,6 +10,7 @@
 #include <SEGMent/Model/SimpleObject.hpp>
 #include <SEGMent/Model/Sound.hpp>
 #include <SEGMent/Model/TextArea.hpp>
+#include <SEGMent/Model/Cue.hpp>
 namespace SEGMent
 {
 
@@ -76,6 +77,7 @@ struct JournalEntry
   }
   JournalEntry& operator=(const QString& other) noexcept { txt = other; return *this; }
 };
+
 //! A scene is the main object in a SEGMent canvas
 class SceneModel : public PathAsId<score::Entity<SceneModel>>
 {
@@ -93,7 +95,6 @@ public:
       : base_type{std::forward<DeserializerVisitor>(vis), parent}
   {
     vis.writeTo(*this);
-    while(m_cues.size() < 3) m_cues.push_back({});
   }
 
   enum SceneType
@@ -183,13 +184,13 @@ private:
   bool m_sonar{};
 
 public:
-  const QStringList& cue() const MSVC_NOEXCEPT;
-  void setCue(const QStringList& v) MSVC_NOEXCEPT;
-  void cueChanged(const QStringList& v) W_SIGNAL(cueChanged, v);
-  PROPERTY(QStringList, cue READ cue WRITE setCue NOTIFY cueChanged)
+  const Cues& cue() const MSVC_NOEXCEPT;
+  void setCue(const Cues& v) MSVC_NOEXCEPT;
+  void cueChanged(const Cues& v) W_SIGNAL(cueChanged, v);
+  PROPERTY(Cues, cue READ cue WRITE setCue NOTIFY cueChanged)
 
 private:
-  QStringList m_cues{};
+  Cues m_cues{};
 
 public:
   JournalEntry journal() const MSVC_NOEXCEPT;
@@ -242,3 +243,7 @@ Q_DECLARE_METATYPE(SEGMent::LongText)
 W_REGISTER_ARGTYPE(SEGMent::LongText)
 Q_DECLARE_METATYPE(SEGMent::JournalEntry)
 W_REGISTER_ARGTYPE(SEGMent::JournalEntry)
+Q_DECLARE_METATYPE(SEGMent::Cues)
+W_REGISTER_ARGTYPE(SEGMent::Cues)
+Q_DECLARE_METATYPE(SEGMent::Cue)
+W_REGISTER_ARGTYPE(SEGMent::Cue)

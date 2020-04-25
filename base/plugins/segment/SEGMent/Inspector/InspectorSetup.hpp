@@ -1,4 +1,6 @@
 #pragma once
+#include "CueInspector.hpp"
+
 #include <Inspector/InspectorLayout.hpp>
 #include <Inspector/InspectorWidgetFactoryInterface.hpp>
 
@@ -162,7 +164,7 @@ struct WidgetFactory
     using cmd =
         typename score::PropertyCommand_T<T>::template command<void>::type;
     auto l = new QLineEdit{cur, parent};
-    l->setSizePolicy(QSizePolicy::Policy{}, QSizePolicy::MinimumExpanding);
+    l->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     QObject::connect(
         l,
         &QLineEdit::editingFinished,
@@ -188,7 +190,7 @@ struct WidgetFactory
     using cmd =
         typename score::PropertyCommand_T<T>::template command<void>::type;
     auto l = new QPlainTextEdit{cur, parent};
-    l->setSizePolicy(QSizePolicy::Policy{}, QSizePolicy::MinimumExpanding);
+    l->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     QObject::connect(
         l,
         &QPlainTextEdit::textChanged,
@@ -285,8 +287,9 @@ struct WidgetFactory
     SoundLineEdit(QString txt = {}, QWidget* parent = nullptr)
         : QLineEdit{txt, parent}
     {
-      setMinimumWidth(160);
+      //setMinimumWidth(160);
       setClearButtonEnabled(true);
+      setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     }
 
     void dropEvent(QDropEvent* e) override
@@ -315,7 +318,7 @@ struct WidgetFactory
     // Sound path
     {
       auto l = new SoundLineEdit{cur.path(), w};
-      l->setSizePolicy(QSizePolicy::Policy{}, QSizePolicy::MinimumExpanding);
+      l->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
       lay->addWidget(l);
 
       QObject::connect(
@@ -486,6 +489,22 @@ struct WidgetFactory
     widg->resizeRowsToContents();
 
     return widg;
+  }
+
+  auto make(const SEGMent::Cues& cues)
+  {
+      layout.addRow(QObject::tr("Indices"), (QWidget*)nullptr);
+      auto scroll = new QScrollArea;
+      //scroll->setMinimumHeight(200);
+      scroll->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
+      scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+      scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+      scroll->setWidgetResizable(true);
+      scroll->setWidget(new CueInspectorWidget{object, ctx, parent});
+      layout.addRow(scroll);
+      //layout.addRow(new CueInspectorWidget{object, ctx, parent});
+      //layout.addRow(new QLabel{});
+      return nullptr;
   }
 
   //// Transitions ////
