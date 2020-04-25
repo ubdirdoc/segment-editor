@@ -113,6 +113,8 @@ public:
     setup_inspector(TransitionModel::p_eventToAdd{}, sc, doc, *lay, this);
     setup_inspector(TransitionModel::p_eventToRemove{}, sc, doc, *lay, this);
     setup_inspector(TransitionModel::p_eventRequired{}, sc, doc, *lay, this);
+    setup_inspector(TransitionModel::p_video{}, sc, doc, *lay, this);
+    setup_inspector(TransitionModel::p_videoEachTime{}, sc, doc, *lay, this);
     l->addLayout(lay);
     l->addStretch(1);
   }

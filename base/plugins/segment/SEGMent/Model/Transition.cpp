@@ -129,6 +129,34 @@ void TransitionModel::setEventRequired(const QString& v) MSVC_NOEXCEPT
     eventRequiredChanged(v);
   }
 }
+
+const QString& TransitionModel::video() const MSVC_NOEXCEPT
+{
+  return m_video;
+}
+
+void TransitionModel::setVideo(const QString& v) MSVC_NOEXCEPT
+{
+  if (m_video != v)
+  {
+    m_video = v;
+    videoChanged(v);
+  }
+}
+bool TransitionModel::videoEachTime() const MSVC_NOEXCEPT
+{
+  return m_videoEachTime;
+}
+
+void TransitionModel::setVideoEachTime(bool v) MSVC_NOEXCEPT
+{
+  if (m_videoEachTime != v)
+  {
+    m_videoEachTime = v;
+    videoEachTimeChanged(v);
+  }
+}
+
 } // namespace SEGMent
 
 template <>
@@ -138,6 +166,8 @@ void DataStreamReader::read(const SEGMent::TransitionModel& v)
            << v.m_eventToAdd
            << v.m_eventToRemove
            << v.m_eventRequired
+           << v.m_video
+           << v.m_videoEachTime
   ;
 
   insertDelimiter();
@@ -150,6 +180,8 @@ void DataStreamWriter::write(SEGMent::TransitionModel& v)
            >> v.m_eventToAdd
            >> v.m_eventToRemove
            >> v.m_eventRequired
+           >> v.m_video
+           >> v.m_videoEachTime
           ;
 
   checkDelimiter();
@@ -178,6 +210,8 @@ void JSONObjectReader::read(const SEGMent::TransitionModel& v)
   obj["EventsToAdd"]    = processEventString(v.m_eventToAdd);
   obj["EventsToRemove"] = processEventString(v.m_eventToRemove);
   obj["EventsRequired"] = processEventString(v.m_eventRequired);
+  obj["Video"] = v.m_video;
+  obj["VideoEachTime"] = v.m_videoEachTime;
 }
 
 template <>
@@ -207,4 +241,6 @@ void JSONObjectWriter::write(SEGMent::TransitionModel& v)
   v.m_eventToAdd    = processEventString(obj["EventsToAdd"].toArray());
   v.m_eventToRemove = processEventString(obj["EventsToRemove"].toArray());
   v.m_eventRequired = processEventString(obj["EventsRequired"].toArray());
+  v.m_video = obj["Video"].toString();
+  v.m_videoEachTime = obj["VideoEachTime"].toBool();
 }

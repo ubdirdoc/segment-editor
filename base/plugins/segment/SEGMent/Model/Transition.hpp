@@ -164,6 +164,22 @@ public:
   PROPERTY(QString, eventRequired READ eventRequired WRITE setEventRequired NOTIFY eventRequiredChanged)
 private:
   QString m_eventRequired{};
+
+public:
+  const QString& video() const MSVC_NOEXCEPT;
+  void setVideo(const QString& v) MSVC_NOEXCEPT;
+  void videoChanged(const QString& v) W_SIGNAL(videoChanged, v);
+  PROPERTY(QString, video READ video WRITE setVideo NOTIFY videoChanged)
+private:
+  QString m_video{};
+
+public:
+  bool videoEachTime() const MSVC_NOEXCEPT;
+  void setVideoEachTime(bool v) MSVC_NOEXCEPT;
+  void videoEachTimeChanged(bool v) W_SIGNAL(videoEachTimeChanged, v);
+  PROPERTY(bool, videoEachTime READ videoEachTime WRITE setVideoEachTime NOTIFY videoEachTimeChanged)
+private:
+  bool m_videoEachTime{};
 };
 
 } // namespace SEGMent

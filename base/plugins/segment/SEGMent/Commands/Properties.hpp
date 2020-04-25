@@ -325,6 +325,16 @@ PROPERTY_COMMAND_T(
     SetTransitionEventRequired,
     TransitionModel::p_eventRequired,
     "Set event required")
+PROPERTY_COMMAND_T(
+    SEGMent,
+    SetTransitionVideo,
+    TransitionModel::p_video,
+    "Set video")
+PROPERTY_COMMAND_T(
+        SEGMent,
+        SetTransitionVideoEachTime,
+        TransitionModel::p_videoEachTime,
+        "Set video each time")
 
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectImage)
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectPos)
@@ -374,3 +384,5 @@ SCORE_COMMAND_DECL_T(SEGMent::SetTransitionUnique)
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionEventToAdd)
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionEventToRemove)
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionEventRequired)
+SCORE_COMMAND_DECL_T(SEGMent::SetTransitionVideo)
+SCORE_COMMAND_DECL_T(SEGMent::SetTransitionVideoEachTime)
