@@ -14,6 +14,34 @@
 namespace SEGMent
 {
 
+inline
+QJsonArray stringToStringListSemicolon (const QString& str) {
+    QJsonArray array;
+
+    for(auto& elt : str.split(";")) {
+        if(auto str = elt.trimmed(); !str.isEmpty())
+            array.push_back(str);
+    }
+
+    return array;
+};
+
+inline
+QString stringListToSemicolonString(const QJsonArray& array) {
+    QString s;
+    for(const auto& elt : array) {
+        if(!elt.toString().isEmpty()) {
+            s += elt.toString();
+            s += " ; ";
+        }
+    }
+    if(!s.isEmpty())
+        s.resize(s.size() - 3);
+
+    return s;
+};
+
+
 struct LongText
 {
   QString txt;
@@ -200,6 +228,26 @@ public:
 
 private:
   QString m_journal{};
+
+public:
+  bool journalBlink() const MSVC_NOEXCEPT;
+  void setJournalBlink(bool v) MSVC_NOEXCEPT;
+  void journalBlinkChanged(bool v) W_SIGNAL(journalBlinkChanged, v);
+  PROPERTY(
+      bool,
+      journalBlink READ journalBlink WRITE setJournalBlink NOTIFY journalBlinkChanged)
+
+private:
+  bool m_journalBlink{};
+
+public:
+  const QString& cuesToRemove() const MSVC_NOEXCEPT;
+  void setCuesToRemove(const QString& v) MSVC_NOEXCEPT;
+  void cuesToRemoveChanged(const QString& v) W_SIGNAL(cuesToRemoveChanged, v);
+  PROPERTY(QString, cuesToRemove READ cuesToRemove WRITE setCuesToRemove NOTIFY cuesToRemoveChanged)
+private:
+  QString m_cuesToRemove{};
+
 };
 
 template <typename T>

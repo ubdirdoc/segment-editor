@@ -196,20 +196,10 @@ void JSONObjectReader::read(const SEGMent::TransitionModel& v)
   obj["Sound"] = toJsonObject(v.m_sound);
   obj["Unique"] = v.m_unique;
 
-  auto processEventString = [] (const QString& str) {
-      QJsonArray array;
-
-      for(auto& elt : str.split(";")) {
-          if(auto str = elt.trimmed(); !str.isEmpty())
-              array.push_back(str);
-      }
-
-      return array;
-  };
-
-  obj["EventsToAdd"]    = processEventString(v.m_eventToAdd);
-  obj["EventsToRemove"] = processEventString(v.m_eventToRemove);
-  obj["EventsRequired"] = processEventString(v.m_eventRequired);
+  using namespace SEGMent;
+  obj["EventsToAdd"]    = stringToStringListSemicolon(v.m_eventToAdd);
+  obj["EventsToRemove"] = stringToStringListSemicolon(v.m_eventToRemove);
+  obj["EventsRequired"] = stringToStringListSemicolon(v.m_eventRequired);
   obj["Video"] = v.m_video;
   obj["VideoEachTime"] = v.m_videoEachTime;
 }
@@ -224,23 +214,11 @@ void JSONObjectWriter::write(SEGMent::TransitionModel& v)
   v.m_color = fromJsonValue<QColor>(obj["Color"]);
   v.m_unique = obj["Unique"].toBool();
 
-  auto processEventString = [] (const QJsonArray& array) {
-      QString s;
-      for(const auto& elt : array) {
-          if(!elt.toString().isEmpty()) {
-              s += elt.toString();
-              s += " ; ";
-          }
-      }
-      if(!s.isEmpty())
-          s.resize(s.size() - 3);
 
-      return s;
-  };
-
-  v.m_eventToAdd    = processEventString(obj["EventsToAdd"].toArray());
-  v.m_eventToRemove = processEventString(obj["EventsToRemove"].toArray());
-  v.m_eventRequired = processEventString(obj["EventsRequired"].toArray());
+  using namespace SEGMent;
+  v.m_eventToAdd    = stringListToSemicolonString(obj["EventsToAdd"].toArray());
+  v.m_eventToRemove = stringListToSemicolonString(obj["EventsToRemove"].toArray());
+  v.m_eventRequired = stringListToSemicolonString(obj["EventsRequired"].toArray());
   v.m_video = obj["Video"].toString();
   v.m_videoEachTime = obj["VideoEachTime"].toBool();
 }

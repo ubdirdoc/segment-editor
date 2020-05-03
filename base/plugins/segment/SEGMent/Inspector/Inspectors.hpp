@@ -20,11 +20,15 @@ public:
 
     setup_inspector(SceneModel::p_startText{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_journal{}, sc, doc, *lay, this);
+    setup_inspector(SceneModel::p_journalBlink{}, sc, doc, *lay, this);
 
     setup_inspector(SceneModel::p_ambience{}, sc, doc, *lay, this);
 
     setup_inspector(SceneModel::p_repeatText{}, sc, doc, *lay, this);
     setup_inspector(SceneModel::p_sonar{}, sc, doc, *lay, this);
+
+    setup_inspector(SceneModel::p_cuesToRemove{}, sc, doc, *lay, this);
+
     l->addLayout(lay);
     {
 

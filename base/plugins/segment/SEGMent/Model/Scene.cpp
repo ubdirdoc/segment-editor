@@ -145,6 +145,35 @@ void SceneModel::setJournal(const JournalEntry& v) MSVC_NOEXCEPT
     journalChanged(v);
   }
 }
+
+bool SceneModel::journalBlink() const MSVC_NOEXCEPT
+{
+  return m_journalBlink;
+}
+
+void SceneModel::setJournalBlink(bool v) MSVC_NOEXCEPT
+{
+  if (m_journalBlink != v)
+  {
+    m_journalBlink = v;
+    journalBlinkChanged(v);
+  }
+}
+
+const QString& SceneModel::cuesToRemove() const MSVC_NOEXCEPT
+{
+  return m_cuesToRemove;
+}
+
+void SceneModel::setCuesToRemove(const QString& v) MSVC_NOEXCEPT
+{
+  if (m_cuesToRemove != v)
+  {
+    m_cuesToRemove = v;
+    cuesToRemoveChanged(v);
+  }
+}
+
 } // namespace SEGMent
 
 template <>
@@ -209,7 +238,8 @@ void DataStreamReader::read(const SEGMent::SceneModel& v)
         }
       });
   m_stream << v.m_ambience << v.m_image << v.m_rect << v.m_sceneType
-           << v.m_startText << v.m_repeatText << v.m_sonar << v.m_cues << v.m_journal;
+           << v.m_startText << v.m_repeatText << v.m_sonar << v.m_cues << v.m_journal
+           << v.m_journalBlink << v.m_cuesToRemove;
 
   insertDelimiter();
 }
@@ -231,7 +261,8 @@ void DataStreamWriter::write(SEGMent::SceneModel& v)
         }
       });
   m_stream >> v.m_ambience >> v.m_image >> v.m_rect >> v.m_sceneType
-      >> v.m_startText >> v.m_repeatText >> v.m_sonar >> v.m_cues >> v.m_journal;
+      >> v.m_startText >> v.m_repeatText >> v.m_sonar >> v.m_cues >> v.m_journal
+      >> v.m_journalBlink >> v.m_cuesToRemove;
 
   checkDelimiter();
 }
@@ -239,6 +270,7 @@ void DataStreamWriter::write(SEGMent::SceneModel& v)
 template <>
 void JSONObjectReader::read(const SEGMent::SceneModel& v)
 {
+  using namespace SEGMent;
   obj["Objects"] = toJsonArray(v.objects);
   obj["Gifs"] = toJsonArray(v.gifs);
   obj["ClickAreas"] = toJsonArray(v.clickAreas);
@@ -258,11 +290,14 @@ void JSONObjectReader::read(const SEGMent::SceneModel& v)
   obj["Sonar"] = v.m_sonar;
   obj["Cue"] = toJsonArray(v.m_cues);
   obj["Journal"] = v.m_journal;
+  obj["JournalBlink"] = v.m_journalBlink;
+  obj["CuesToRemove"] = stringToStringListSemicolon(v.m_cuesToRemove);
 }
 
 template <>
 void JSONObjectWriter::write(SEGMent::SceneModel& v)
 {
+  using namespace SEGMent;
   {
     const auto& objs = obj["Objects"].toArray();
     for (const auto& json_vref : objs)
@@ -318,4 +353,6 @@ void JSONObjectWriter::write(SEGMent::SceneModel& v)
   v.m_sonar = obj["Sonar"].toBool();
   fromJsonArray(obj["Cue"].toArray(), v.m_cues);
   v.m_journal = obj["Journal"].toString();
+  v.m_journalBlink = obj["JournalBlink"].toBool();
+  v.m_cuesToRemove = stringListToSemicolonString(obj["CuesToRemove"].toArray());
 }

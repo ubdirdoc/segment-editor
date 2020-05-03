@@ -289,6 +289,8 @@ PROPERTY_COMMAND_T(SEGMent, SetSceneImage, SceneModel::p_image, "Set image")
 PROPERTY_COMMAND_T(SEGMent, SetSceneRect, SceneModel::p_rect, "Set rect")
 PROPERTY_COMMAND_T(SEGMent, SetSceneCue, SceneModel::p_cue, "Set cue")
 PROPERTY_COMMAND_T(SEGMent, SetSceneJournal, SceneModel::p_journal, "Set journal")
+PROPERTY_COMMAND_T(SEGMent, SetSceneJournalBlink, SceneModel::p_journalBlink, "Set journal blinking")
+PROPERTY_COMMAND_T(SEGMent, SetSceneCuesToRemove, SceneModel::p_cuesToRemove, "Set cues to remove")
 
 PROPERTY_COMMAND_T(
     SEGMent,
@@ -331,10 +333,10 @@ PROPERTY_COMMAND_T(
     TransitionModel::p_video,
     "Set video")
 PROPERTY_COMMAND_T(
-        SEGMent,
-        SetTransitionVideoEachTime,
-        TransitionModel::p_videoEachTime,
-        "Set video each time")
+    SEGMent,
+    SetTransitionVideoEachTime,
+    TransitionModel::p_videoEachTime,
+    "Set video each time")
 
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectImage)
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectPos)
@@ -376,6 +378,8 @@ SCORE_COMMAND_DECL_T(SEGMent::SetSceneImage)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneRect)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneCue)
 SCORE_COMMAND_DECL_T(SEGMent::SetSceneJournal)
+SCORE_COMMAND_DECL_T(SEGMent::SetSceneJournalBlink)
+SCORE_COMMAND_DECL_T(SEGMent::SetSceneCuesToRemove)
 
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionSound)
 SCORE_COMMAND_DECL_T(SEGMent::SetTransitionFade)
