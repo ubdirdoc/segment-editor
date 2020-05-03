@@ -42,6 +42,14 @@ public:
   PROPERTY(bool, puzzle READ puzzle WRITE setPuzzle NOTIFY puzzleChanged)
 private:
   bool m_puzzle{false};
+
+public:
+  const QString& eventRequired() const MSVC_NOEXCEPT;
+  void setEventRequired(const QString& v) MSVC_NOEXCEPT;
+  void eventRequiredChanged(const QString& v) W_SIGNAL(eventRequiredChanged, v);
+  PROPERTY(QString, eventRequired READ eventRequired WRITE setEventRequired NOTIFY eventRequiredChanged)
+private:
+  QString m_eventRequired{};
 };
 
 } // namespace SEGMent

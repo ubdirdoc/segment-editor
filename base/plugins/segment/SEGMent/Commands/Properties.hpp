@@ -204,6 +204,12 @@ PROPERTY_COMMAND_T(
     ImageModel::p_puzzle,
     "Set puzzle")
 
+PROPERTY_COMMAND_T(
+    SEGMent,
+    SetObjectEventRequired,
+    ImageModel::p_eventRequired,
+    "Set event required")
+
 PROPERTY_COMMAND_T(SEGMent, SetGifImage, GifModel::p_image, "Set image")
 PROPERTY_COMMAND_T(SEGMent, SetGifPos, GifModel::p_pos, "Set pos")
 PROPERTY_COMMAND_T(SEGMent, SetGifSize, GifModel::p_size, "Set size")
@@ -344,6 +350,7 @@ SCORE_COMMAND_DECL_T(SEGMent::SetObjectSize)
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectZ)
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectSound)
 SCORE_COMMAND_DECL_T(SEGMent::SetObjectPuzzle)
+SCORE_COMMAND_DECL_T(SEGMent::SetObjectEventRequired)
 
 SCORE_COMMAND_DECL_T(SEGMent::SetGifImage)
 SCORE_COMMAND_DECL_T(SEGMent::SetGifPos)

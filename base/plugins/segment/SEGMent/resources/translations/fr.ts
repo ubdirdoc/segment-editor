@@ -45,7 +45,9 @@ de scène</translation></message>
     <message><source>Event Required</source><translation>Évènement
 requis</translation></message>
     <message><source>Cue</source><translation>Indice</translation></message>
+    <message><source>Cues To Remove</source><translation>Indices à enlever</translation></message>
     <message><source>Journal</source><translation>Journal</translation></message>
+    <message><source>Journal Blink</source><translation>Clignotement</translation></message>
     <message><source>Export game</source><translation>Exporter le jeu</translation></message>
     <message><source>Test game</source><translation>Lancer le jeu</translation></message>
     <message><source>Recenter</source><translation>Recentrer</translation></message>

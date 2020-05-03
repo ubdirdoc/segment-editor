@@ -65,6 +65,7 @@ public:
     setup_inspector(ImageModel::p_sound{}, sc, doc, *lay, this);
     setup_inspector(ImageModel::p_image{}, sc, doc, *lay, this);
     setup_inspector(ImageModel::p_puzzle{}, sc, doc, *lay, this);
+    setup_inspector(ImageModel::p_eventRequired{}, sc, doc, *lay, this);
     l->addLayout(lay);
     l->addStretch(1);
   }
