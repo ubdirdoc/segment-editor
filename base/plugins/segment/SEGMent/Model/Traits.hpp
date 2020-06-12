@@ -46,8 +46,11 @@ private:
 public:
   const QSizeF& size() const MSVC_NOEXCEPT { return m_size; }
 
-  void setSize(const QSizeF& v) MSVC_NOEXCEPT
+  void setSize(QSizeF v) MSVC_NOEXCEPT
   {
+    if(v.rwidth() <= 0.001) v.rwidth() = 0.001;
+    if(v.rheight() <= 0.001) v.rheight() = 0.001;
+
     if (m_size != v)
     {
       m_size = v;

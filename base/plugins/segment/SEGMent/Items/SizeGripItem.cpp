@@ -54,7 +54,7 @@ void SizeGripItem::HandleItem::paint(QPainter* painter, const QStyleOptionGraphi
 {
   double zoom = SEGMent::currentZoomLevel;
   const auto sz = this->parentItem()->boundingRect().size() * zoom;
-  if(sz.width() < 50 || sz.height() < 50)
+  if(sz.width() < 30 || sz.height() < 30)
       return;
 
   static const auto handlePixmap = [] {
@@ -63,6 +63,7 @@ void SizeGripItem::HandleItem::paint(QPainter* painter, const QStyleOptionGraphi
     return p;
   }();
 
+  painter->setCompositionMode(QPainter::CompositionMode_Exclusion);
   painter->drawPixmap(-4, -4, handlePixmap);
 }
 

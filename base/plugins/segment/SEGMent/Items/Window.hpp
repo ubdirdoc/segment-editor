@@ -92,8 +92,14 @@ public:
     {
       rel.rheight() = rect.height() / prect.width();
     }
-    self.context.dispatcher.template submitCommand<resize_command>(
-        self.model(), rel);
+
+    auto new_w = rel.width() * prect.width();
+    auto new_h = rel.height() * prect.height();
+    if(new_w > 10 && new_h > 10)
+    {
+      self.context.dispatcher.template submitCommand<resize_command>(
+          self.model(), rel);
+    }
 
     rect = self.rect();
   }

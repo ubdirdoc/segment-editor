@@ -136,7 +136,7 @@ GifWindow::GifWindow(
         parent)
     , m_object{p}
 {
-  setMinSize(20, 20);
+  setMinSize(10, 10);
   setZValue(5);
   setAcceptDrops(true);
 
