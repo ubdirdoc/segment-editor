@@ -222,7 +222,7 @@ void Arrow::dropEvent(QGraphicsSceneDragDropEvent* event)
         if (!trans->riddle.target<SEGMent::TextRiddle>())
         {
           auto r = trans->riddle;
-          static_cast<riddle_t::impl_type&>(r) = SEGMent::TextRiddle{};
+          static_cast<SEGMent::riddle_impl_type&>(r) = SEGMent::TextRiddle{};
           disp.submitCommand(new ChangeRiddle{m_model, std::move(r)});
         }
       }
@@ -232,7 +232,7 @@ void Arrow::dropEvent(QGraphicsSceneDragDropEvent* event)
         if (!trans->riddle.target<SEGMent::GifRiddle>())
         {
           auto r = trans->riddle;
-          static_cast<riddle_t::impl_type&>(r) = SEGMent::GifRiddle{};
+          static_cast<SEGMent::riddle_impl_type&>(r) = SEGMent::GifRiddle{};
           disp.submitCommand(new ChangeRiddle{m_model, std::move(r)});
         }
       }
@@ -242,7 +242,7 @@ void Arrow::dropEvent(QGraphicsSceneDragDropEvent* event)
         if (!trans->riddle.target<SEGMent::PuzzleRiddle>())
         {
           auto r = trans->riddle;
-          static_cast<riddle_t::impl_type&>(r) = SEGMent::PuzzleRiddle{};
+          static_cast<SEGMent::riddle_impl_type&>(r) = SEGMent::PuzzleRiddle{};
           disp.submitCommand(new ChangeRiddle{m_model, std::move(r)});
         }
       }

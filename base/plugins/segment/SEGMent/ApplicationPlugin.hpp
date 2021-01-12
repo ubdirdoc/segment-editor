@@ -3,6 +3,11 @@
 
 namespace SEGMent
 {
+/**
+ * @brief This class contains handling for all the global user actions and shortcuts.
+ *
+ * e.g. zooming, testing and exporting a game, etc.
+ */
 class ApplicationPlugin
     : public QObject
     , public score::GUIApplicationPlugin
@@ -20,6 +25,7 @@ private:
   void on_copy();
   void on_paste();
 
+  //! Changes the z-order of items.
   void on_moveForward();
   void on_moveBackwards();
 
@@ -30,6 +36,7 @@ private:
   void on_delete();
   void on_stop();
 
+  //! Center the view on the bounding box
   void on_recenter(score::Document& doc);
 
   void on_testGame();

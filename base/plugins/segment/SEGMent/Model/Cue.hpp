@@ -3,6 +3,11 @@
 #include <QVector>
 namespace SEGMent
 {
+/**
+ * @brief Represent a list of cues associated with a key.
+ *
+ * Used by SceneModel.
+ */
 struct Cue {
   QString key;
   QStringList cues;

@@ -12,6 +12,10 @@
 namespace SEGMent
 {
 
+/**
+ * @brief Given a filename (e.g. foo.jpg), looks for it in the resources of the game.
+ * @return Full path of the file (e.g. c:\bla\game\Ressources\Scenes\foo.jpg)
+ */
 inline QString
 toLocalFile(const QString& filename, const score::DocumentContext& ctx)
 {
@@ -37,6 +41,9 @@ toLocalFile(const QString& filename, const score::DocumentContext& ctx)
   return filename;
 }
 
+/**
+ * @brief Gets the absolute path to the ressources folder of the currently loaded game.
+ */
 inline QString ressourcesFolder(const score::DocumentContext& ctx)
 {
   auto docroot = ctx.document.metadata().fileName();

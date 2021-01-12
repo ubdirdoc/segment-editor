@@ -6,7 +6,7 @@
 #include <SEGMent/Model/ClickArea.hpp>
 #include <SEGMent/Model/GifObject.hpp>
 #include <SEGMent/Model/Scene.hpp>
-#include <SEGMent/Model/SimpleObject.hpp>
+#include <SEGMent/Model/ImageModel.hpp>
 #include <SEGMent/Model/Sound.hpp>
 #include <SEGMent/Model/TextArea.hpp>
 #include <SEGMent/Model/Transition.hpp>
@@ -18,6 +18,7 @@ ProcessModel::ProcessModel(Id<SEGMent::ProcessModel> id, QObject* parent)
 {
   metadata().setInstanceName(*this);
 
+  //! When building in debug mode we set-up a default document...
 #if !defined(NDEBUG)
   {
     auto scene1 = new SceneModel{Id<SceneModel>{0}, this};

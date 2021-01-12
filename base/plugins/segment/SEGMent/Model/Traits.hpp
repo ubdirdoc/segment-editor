@@ -6,6 +6,17 @@
 #include <SEGMent/Model/Sound.hpp>
 #include <wobjectimpl.h>
 
+/**
+ * This file contains various traits that are shared across objects models.
+ *
+ * A trait contains all the information needed to:
+ * - access a given kind of data (getter / setter)
+ * - save and load it
+ * - notify when the data changes
+ * - introspection & reflection data
+ *
+ */
+
 namespace SEGMent
 {
 //! A trait for objects that are positioned relatively to their parent
@@ -28,6 +39,7 @@ public:
     vis.writeTo(*this);
   }
 
+  /// Position ///
   const QPointF& pos() const MSVC_NOEXCEPT { return m_pos; }
 
   void setPos(const QPointF& v) MSVC_NOEXCEPT
@@ -43,6 +55,7 @@ public:
 private:
   QPointF m_pos{};
 
+  /// Size ///
 public:
   const QSizeF& size() const MSVC_NOEXCEPT { return m_size; }
 
@@ -63,6 +76,7 @@ public:
 private:
   QSizeF m_size{};
 
+  /// z-order ///
 public:
   int z() const MSVC_NOEXCEPT { return m_z; }
 
@@ -206,8 +220,21 @@ struct is_custom_serialized<SEGMent::WithSound<T>> : std::true_type
 
 namespace SEGMent
 {
+/**
+ * @brief Data model for most objects in a scene:
+ *
+ * They have:
+ * - an identifier
+ * - a sound
+ * - a position
+ */
 template <typename T>
 using Object = PathAsId<WithSound<RelativePositionable<score::Entity<T>>>>;
+
+
+/**
+ * @brief Data model for objects without an associated sound.
+ */
 template <typename T>
 using SilentObject = PathAsId<RelativePositionable<score::Entity<T>>>;
-} // namespace SEGMent
+}

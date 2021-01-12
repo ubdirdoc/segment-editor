@@ -4,7 +4,7 @@
 #include <SEGMent/Items/GlobalVariables.hpp>
 #include <SEGMent/Items/SceneWindow.hpp>
 #include <SEGMent/Model/ProcessModel.hpp>
-#include <SEGMent/Model/SimpleObject.hpp>
+#include <SEGMent/Model/ImageModel.hpp>
 
 namespace SEGMent
 {

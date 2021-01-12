@@ -9,7 +9,12 @@
 
 namespace SEGMent
 {
-//! A simple object with an image. Can be associated to a transition.
+
+/**
+ * @brief Data model for the simple images.
+ *
+ * Can be associated to a transition.
+ */
 class ImageModel : public Object<ImageModel>
 {
   W_OBJECT(ImageModel)
@@ -27,6 +32,7 @@ public:
     vis.writeTo(*this);
   }
 
+  // The image file used
 public:
   const Image& image() const MSVC_NOEXCEPT;
   void setImage(const Image& v) MSVC_NOEXCEPT;
@@ -35,6 +41,7 @@ public:
 private:
   Image m_image;
 
+  // Is the image a piece of a puzzle
 public:
   bool puzzle() const MSVC_NOEXCEPT;
   void setPuzzle(bool v) MSVC_NOEXCEPT;

@@ -1,4 +1,5 @@
 #include "Transition.hpp"
+#include <SEGMent/StringUtils.hpp>
 
 #include <score/serialization/VariantSerialization.hpp>
 
@@ -197,9 +198,9 @@ void JSONObjectReader::read(const SEGMent::TransitionModel& v)
   obj["Unique"] = v.m_unique;
 
   using namespace SEGMent;
-  obj["EventsToAdd"]    = stringToStringListSemicolon(v.m_eventToAdd);
-  obj["EventsToRemove"] = stringToStringListSemicolon(v.m_eventToRemove);
-  obj["EventsRequired"] = stringToStringListSemicolon(v.m_eventRequired);
+  obj["EventsToAdd"]    = semicolonStringToStringList(v.m_eventToAdd);
+  obj["EventsToRemove"] = semicolonStringToStringList(v.m_eventToRemove);
+  obj["EventsRequired"] = semicolonStringToStringList(v.m_eventRequired);
   obj["Video"] = v.m_video;
   obj["VideoEachTime"] = v.m_videoEachTime;
 }

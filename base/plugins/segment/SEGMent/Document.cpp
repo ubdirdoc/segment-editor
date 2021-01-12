@@ -26,6 +26,8 @@ DocumentModel::DocumentModel(
     , m_context{ctx}
     , m_base{new SEGMent::ProcessModel{Id<SEGMent::ProcessModel>{0}, this}}
 {
+  // This code creates all the default folders when making a new document.
+  // By default, it is done in a hidden directory - then it is copied to where the user saves it.
   auto locs = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
   QDir locs_dir{locs.front()};
   auto doc_folder = QString{"%1-%2"}.arg(QDateTime::currentMSecsSinceEpoch()).arg(ctx.document.metadata().fileName());

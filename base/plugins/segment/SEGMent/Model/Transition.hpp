@@ -9,68 +9,16 @@
 #include <SEGMent/Model/Model.hpp>
 #include <SEGMent/Model/Riddle.hpp>
 #include <SEGMent/Model/Scene.hpp>
-#include <SEGMent/Model/SimpleObject.hpp>
+#include <SEGMent/Model/ImageModel.hpp>
+#include <SEGMent/Model/TransitionData.hpp>
 
 namespace SEGMent
 {
-template <typename From, typename To>
-struct Transition
-{
-  Transition() = default;
-  Transition(const Transition&) = default;
-  Transition(Transition&&) = default;
-  Transition& operator=(const Transition&) = default;
-  Transition& operator=(Transition&&) = default;
-  Path<From> from;
-  Path<To> to;
-  anchor_id source{};
-  anchor_id target{};
 
-  bool operator==(const Transition& other) const MSVC_NOEXCEPT
-  {
-    return from == other.from && to == other.to && source == other.source
-           && target == other.target;
-  }
-  bool operator!=(const Transition& other) const MSVC_NOEXCEPT
-  {
-    return !(*this == other);
-  }
-};
-
-template <>
-struct Transition<SceneModel, SceneModel>
-{
-  Transition() = default;
-  Transition(const Transition&) = default;
-  Transition(Transition&&) = default;
-  Transition& operator=(const Transition&) = default;
-  Transition& operator=(Transition&&) = default;
-  Path<SceneModel> from;
-  Path<SceneModel> to;
-  anchor_id source{};
-  anchor_id target{};
-
-  riddle_t riddle;
-
-  bool operator==(const Transition& other) const MSVC_NOEXCEPT
-  {
-    return from == other.from && to == other.to && source == other.source
-           && target == other.target && riddle == other.riddle;
-  }
-  bool operator!=(const Transition& other) const MSVC_NOEXCEPT
-  {
-    return !(*this == other);
-  }
-};
-
-using SceneToScene = Transition<SceneModel, SceneModel>;
-using ObjectToScene = Transition<ImageModel, SceneModel>;
-using GifToScene = Transition<GifModel, SceneModel>;
-using ClickToScene = Transition<ClickAreaModel, SceneModel>;
-
-using transition_t
-    = eggs::variant<SceneToScene, ObjectToScene, GifToScene, ClickToScene>;
-
+/**
+ * @brief Class of the segment data model which carries the transition information,
+ * as well as a couple of common properties across transitions.
+ */
 class TransitionModel : public score::Entity<TransitionModel>
 {
 public:
@@ -184,100 +132,8 @@ private:
 
 } // namespace SEGMent
 
-JSON_METADATA(SEGMent::SceneToScene, "SceneToScene")
-JSON_METADATA(SEGMent::ObjectToScene, "ObjectToScene")
-JSON_METADATA(SEGMent::GifToScene, "GifToScene")
-JSON_METADATA(SEGMent::ClickToScene, "ClickAreaToScene")
 
-template <typename T, typename U>
-struct TSerializer<DataStream, SEGMent::Transition<T, U>>
-{
-  static void
-  readFrom(DataStream::Serializer& s, const SEGMent::Transition<T, U>& v)
-  {
-    auto& st = s.stream();
-    st << v.from << v.to << v.source << v.target;
-  }
-
-  static void
-  writeTo(DataStream::Deserializer& s, SEGMent::Transition<T, U>& v)
-  {
-    auto& st = s.stream();
-    st >> v.from >> v.to >> v.source >> v.target;
-  }
-};
-
-template <typename T, typename U>
-struct TSerializer<JSONObject, SEGMent::Transition<T, U>>
-{
-  static void
-  readFrom(JSONObject::Serializer& s, const SEGMent::Transition<T, U>& v)
-  {
-    s.obj["From"] = pathToString(v.from);
-    s.obj["To"] = pathToString(v.to);
-    s.obj["Source"] = v.source;
-    s.obj["Target"] = v.target;
-  }
-
-  static void
-  writeTo(JSONObject::Deserializer& s, SEGMent::Transition<T, U>& v)
-  {
-    v.from = SEGMent::pathFromString<T>(s.obj["From"].toString());
-    v.to = SEGMent::pathFromString<U>(s.obj["To"].toString());
-    v.source = s.obj["Source"].toInt();
-    v.target = s.obj["Target"].toInt();
-  }
-};
-
-template <>
-struct TSerializer<
-    DataStream,
-    SEGMent::Transition<SEGMent::SceneModel, SEGMent::SceneModel>>
-{
-  using type = SEGMent::Transition<SEGMent::SceneModel, SEGMent::SceneModel>;
-  static void readFrom(DataStream::Serializer& s, const type& v)
-  {
-    auto& st = s.stream();
-    st << v.from << v.to << v.source << v.target << v.riddle;
-  }
-
-  static void writeTo(DataStream::Deserializer& s, type& v)
-  {
-    auto& st = s.stream();
-    st >> v.from >> v.to >> v.source >> v.target >> v.riddle;
-  }
-};
-
-template <>
-struct TSerializer<
-    JSONObject,
-    SEGMent::Transition<SEGMent::SceneModel, SEGMent::SceneModel>>
-{
-  using type = SEGMent::Transition<SEGMent::SceneModel, SEGMent::SceneModel>;
-  static void readFrom(JSONObject::Serializer& s, const type& v)
-  {
-    s.obj["From"] = pathToString(v.from);
-    s.obj["To"] = pathToString(v.to);
-    s.obj["Source"] = v.source;
-    s.obj["Target"] = v.target;
-    s.obj["Riddle"] = toJsonObject(v.riddle);
-  }
-
-  static void writeTo(JSONObject::Deserializer& s, type& v)
-  {
-    v.from = SEGMent::pathFromString<SEGMent::SceneModel>(
-        s.obj["From"].toString());
-    v.to
-        = SEGMent::pathFromString<SEGMent::SceneModel>(s.obj["To"].toString());
-    v.source = s.obj["Source"].toInt();
-    v.target = s.obj["Target"].toInt();
-    v.riddle = fromJsonObject<SEGMent::riddle_t>(s.obj["Riddle"].toObject());
-  }
-};
-Q_DECLARE_METATYPE(SEGMent::transition_t)
 Q_DECLARE_METATYPE(SEGMent::TransitionModel::FadeMode)
-
-W_REGISTER_ARGTYPE(SEGMent::transition_t)
 W_REGISTER_ARGTYPE(SEGMent::TransitionModel::FadeMode)
 
 DEFAULT_MODEL_METADATA(SEGMent::TransitionModel, "Transition")

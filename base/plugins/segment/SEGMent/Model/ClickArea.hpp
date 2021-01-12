@@ -7,7 +7,10 @@
 #include <SEGMent/Model/Traits.hpp>
 namespace SEGMent
 {
-
+/**
+ * @brief Data model for the click zones.
+ * Does not contain any particular data.
+ */
 class ClickAreaModel : public Object<ClickAreaModel>
 {
   W_OBJECT(ClickAreaModel)

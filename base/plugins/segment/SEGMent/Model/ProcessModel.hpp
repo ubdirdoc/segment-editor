@@ -6,6 +6,11 @@
 #include <SEGMent/Model/Transition.hpp>
 namespace SEGMent
 {
+/**
+ * @brief The actual root of a SEGMent document.
+ *
+ * Contains a set of scenes and a set of transitions.
+ */
 class ProcessModel final : public score::Entity<ProcessModel>
 {
   SCORE_SERIALIZE_FRIENDS
@@ -21,6 +26,7 @@ public:
   }
 
   ~ProcessModel();
+
   score::EntityMap<SceneModel> scenes;
   score::EntityMap<TransitionModel> transitions;
 };

@@ -7,7 +7,7 @@
 #include <SEGMent/Model/GifObject.hpp>
 #include <SEGMent/Model/ProcessModel.hpp>
 #include <SEGMent/Model/Scene.hpp>
-#include <SEGMent/Model/SimpleObject.hpp>
+#include <SEGMent/Model/ImageModel.hpp>
 #include <SEGMent/Model/Sound.hpp>
 #include <SEGMent/Model/TextArea.hpp>
 #include <SEGMent/Model/Transition.hpp>

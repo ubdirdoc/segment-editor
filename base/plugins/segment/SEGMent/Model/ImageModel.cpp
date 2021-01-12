@@ -1,5 +1,6 @@
-#include "SimpleObject.hpp"
+#include "ImageModel.hpp"
 #include "Scene.hpp"
+#include <SEGMent/StringUtils.hpp>
 
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(SEGMent::ImageModel)
@@ -76,7 +77,7 @@ void JSONObjectReader::read(const SEGMent::ImageModel& v)
     using namespace SEGMent;
   obj["Image"] = v.m_image.path;
   obj["PuzzlePiece"] = v.m_puzzle;
-  obj["EventsRequired"] = stringToStringListSemicolon(v.m_eventRequired);
+  obj["EventsRequired"] = semicolonStringToStringList(v.m_eventRequired);
 }
 
 template <>

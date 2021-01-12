@@ -34,14 +34,21 @@
 #include <QDesktopWidget>
 #include <QDesktopServices>
 
+#include <SEGMent/Document.hpp>
 #include <SEGMent/Commands/Creation.hpp>
 #include <SEGMent/Commands/Deletion.hpp>
-#include <SEGMent/Document.hpp>
 #include <SEGMent/Items/ClickWindow.hpp>
 #include <SEGMent/Items/ObjectWindow.hpp>
 #include <SEGMent/Items/SceneWindow.hpp>
 #include <SEGMent/Model/Layer/ProcessView.hpp>
 #include <SEGMent/Model/Scene.hpp>
+#include <SEGMent/Exporter.hpp>
+#include <SEGMent/HelpWidget.hpp>
+#include <SEGMent/ObjectCopier.hpp>
+#include <SEGMent/ObjectPaster.hpp>
+#include <SEGMent/SoundPlayer.hpp>
+#include <SEGMent/Visitors.hpp>
+#include <SEGMent/ZOrder.hpp>
 
 #include <QProcess>
 
@@ -55,107 +62,19 @@
 
 namespace SEGMent
 {
-
-template <typename F>
-auto dispatch(const QObject* obj, F&& fun)
+//! Get the path to the application binary.
+//! Used to find the Unity3D engine files.
+QString applicationPath()
 {
-  if (auto v = qobject_cast<const SceneModel*>(obj))
-    return fun(*v);
-  if (auto v = qobject_cast<const ImageModel*>(obj))
-    return fun(*v);
-  if (auto v = qobject_cast<const GifModel*>(obj))
-    return fun(*v);
-  if (auto v = qobject_cast<const ClickAreaModel*>(obj))
-    return fun(*v);
-  if (auto v = qobject_cast<const BackClickAreaModel*>(obj))
-    return fun(*v);
-  if (auto v = qobject_cast<const TextAreaModel*>(obj))
-    return fun(*v);
-  if (auto v = qobject_cast<const TransitionModel*>(obj))
-    return fun(*v);
-
-  if constexpr (!std::is_same_v<
-                    decltype(fun(std::declval<const SceneModel&>())),
-                    void>)
-    return decltype(fun(std::declval<const SceneModel&>())){};
+    auto segment_path = qApp->applicationDirPath();
+#if defined(__APPLE__)
+    QDir d{segment_path};
+    d.cdUp();
+    segment_path = d.path();
+#endif
+    return segment_path;
 }
 
-template <typename F>
-auto dispatchItem(const QGraphicsItem* obj, F&& fun)
-{
-  if (auto v = dynamic_cast<const SceneWindow*>(obj))
-    return fun(v->model());
-  if (auto v = dynamic_cast<const ImageWindow*>(obj))
-    return fun(v->model());
-  if (auto v = dynamic_cast<const GifWindow*>(obj))
-    return fun(v->model());
-  if (auto v = dynamic_cast<const ClickWindow*>(obj))
-    return fun(v->model());
-  if (auto v = dynamic_cast<const BackClickWindow*>(obj))
-    return fun(v->model());
-  if (auto v = dynamic_cast<const TextWindow*>(obj))
-    return fun(v->model());
-
-  return decltype(fun(std::declval<const SceneModel&>())){};
-}
-
-class HelpBrowser final : public QTextBrowser
-{
-public:
-  HelpBrowser(QHelpEngine* helpEngine, QWidget* parent = 0)
-      : QTextBrowser{parent}, m_help_engine{helpEngine}
-  {
-    setMinimumWidth(1024);
-    setMinimumHeight(768);
-  }
-
-  QVariant loadResource(int type, const QUrl& name) override
-  {
-    if (name.scheme() == "qthelp")
-      return QVariant(m_help_engine->fileData(name));
-    else
-      return QTextBrowser::loadResource(type, name);
-  }
-
-private:
-  QHelpEngine* m_help_engine{};
-};
-
-class HelpWidget : public QSplitter
-{
-public:
-  HelpWidget(QString help_path, QWidget* parent = nullptr)
-      : QSplitter{Qt::Horizontal, parent}
-      , m_help_engine{help_path, this}
-      , m_help_browser{&m_help_engine, this}
-  {
-    auto content = m_help_engine.contentWidget();
-    content->setMinimumWidth(300);
-    content->setMaximumWidth(300);
-
-    m_help_browser.setSource(QUrl(
-        "qthelp://org.sphinx.segmenteditor."
-        + QString::number(SCORE_VERSION_MAJOR) + "."
-        + QString::number(SCORE_VERSION_MINOR) + "/doc/index.html"));
-    connect(
-        m_help_engine.contentWidget(),
-        &QHelpContentWidget::linkActivated,
-        &m_help_browser,
-        [&] (const auto& url) { m_help_browser.setSource(url); });
-    connect(
-        m_help_engine.indexWidget(),
-        &QHelpIndexWidget::linkActivated,
-        &m_help_browser,
-        [&](const auto& url) { m_help_browser.setSource(url); });
-
-    insertWidget(0, content);
-    insertWidget(1, &m_help_browser);
-  }
-
-private:
-  QHelpEngine m_help_engine;
-  HelpBrowser m_help_browser;
-};
 
 
 ApplicationPlugin::ApplicationPlugin(const score::GUIApplicationContext& presenter)
@@ -296,7 +215,6 @@ void ApplicationPlugin::on_documentChanged(score::Document* olddoc, score::Docum
 
 void ApplicationPlugin::on_recenter(score::Document& doc)
 {
-  // Center the view on the bounding box
   auto& m = static_cast<const SEGMent::DocumentModel&>(doc.model().modelDelegate());
   auto& v = static_cast<const SEGMent::DocumentView&>(doc.view()->viewDelegate());
 
@@ -324,16 +242,6 @@ void ApplicationPlugin::on_recenter(score::Document& doc)
 
 }
 
-QString applicationPath()
-{
-    auto segment_path = qApp->applicationDirPath();
-#if defined(__APPLE__)
-    QDir d{segment_path};
-    d.cdUp();
-    segment_path = d.path();
-#endif
-    return segment_path;
-}
 void ApplicationPlugin::on_testGame()
 {
   score::Document* doc = currentDocument();
@@ -391,63 +299,6 @@ void ApplicationPlugin::on_testGame()
   // Delete the temp file
   QFile::remove(path);
 }
-
-struct ExportVisitor
-{
-  std::function<void(const QString&)> copyFile;
-  void operator()(const SceneModel& scene)
-  {
-    copyFile(scene.image().path);
-    if(!scene.ambience().path().isEmpty())
-      copyFile(scene.ambience().path());
-
-    for(auto& o : scene.objects)
-      (*this)(o);
-    for(auto& o : scene.gifs)
-      (*this)(o);
-    for(auto& o : scene.textAreas)
-      (*this)(o);
-    for(auto& o : scene.clickAreas)
-      (*this)(o);
-    for(auto& o : scene.backClickAreas)
-      (*this)(o);
-  }
-
-  void operator()(const TransitionModel& obj)
-  {
-    if(!obj.sound().path().isEmpty())
-      copyFile(obj.sound().path());
-  }
-
-  void operator()(const GifModel& obj)
-  {
-    copyFile(obj.image().path);
-    if(!obj.sound().path().isEmpty())
-      copyFile(obj.sound().path());
-  }
-  void operator()(const ImageModel& obj)
-  {
-    copyFile(obj.image().path);
-    if(!obj.sound().path().isEmpty())
-      copyFile(obj.sound().path());
-  }
-  void operator()(const TextAreaModel& obj)
-  {
-    if(!obj.sound().path().isEmpty())
-      copyFile(obj.sound().path());
-  }
-  void operator()(const ClickAreaModel& obj)
-  {
-    if(!obj.sound().path().isEmpty())
-      copyFile(obj.sound().path());
-  }
-  void operator()(const BackClickAreaModel& obj)
-  {
-    if(!obj.sound().path().isEmpty())
-      copyFile(obj.sound().path());
-  }
-
-};
 
 void ApplicationPlugin::on_exportGame()
 {
@@ -596,95 +447,6 @@ score::GUIApplicationPlugin::GUIElements ApplicationPlugin::makeGUIElements()
   return e;
 }
 
-struct ResourceVisitor
-{
-  QJsonArray resources;
-  void operator()(const SceneModel& scene)
-  {
-    resources.push_back(scene.image().path);
-    if(!scene.ambience().path().isEmpty())
-      resources.push_back(scene.ambience().path());
-
-    for(auto& o : scene.objects)
-      (*this)(o);
-    for(auto& o : scene.gifs)
-      (*this)(o);
-    for(auto& o : scene.textAreas)
-      (*this)(o);
-    for(auto& o : scene.clickAreas)
-      (*this)(o);
-    for(auto& o : scene.backClickAreas)
-      (*this)(o);
-  }
-
-  void operator()(const TransitionModel& obj)
-  {
-
-  }
-
-  void operator()(const GifModel& obj)
-  {
-    resources.push_back(obj.image().path);
-    if(!obj.sound().path().isEmpty())
-      resources.push_back(obj.sound().path());
-  }
-  void operator()(const ImageModel& obj)
-  {
-    resources.push_back(obj.image().path);
-    if(!obj.sound().path().isEmpty())
-      resources.push_back(obj.sound().path());
-  }
-  void operator()(const TextAreaModel& obj)
-  {
-    if(!obj.sound().path().isEmpty())
-      resources.push_back(obj.sound().path());
-  }
-  void operator()(const ClickAreaModel& obj)
-  {
-    if(!obj.sound().path().isEmpty())
-      resources.push_back(obj.sound().path());
-  }
-  void operator()(const BackClickAreaModel& obj)
-  {
-    if(!obj.sound().path().isEmpty())
-      resources.push_back(obj.sound().path());
-  }
-
-};
-
-struct CopyObjectVisitor
-{
-  QJsonArray scenes;
-  QJsonArray transitions;
-
-  QJsonArray objects;
-
-  ResourceVisitor resources;
-
-  void operator()(const SceneModel& obj)
-  {
-    auto json = score::marshall<JSONObject>(obj);
-    scenes.push_back(json);
-    resources(obj);
-  }
-
-  void operator()(const TransitionModel& obj)
-  {
-
-  }
-
-  template<typename T>
-  void operator()(const T& obj)
-  {
-    auto json = score::marshall<JSONObject>(obj);
-    json["ObjectKind"] = Metadata<ObjectKey_k, T>::get();
-    objects.push_back(json);
-
-    resources(obj);
-  }
-};
-
-
 struct SharedTransitionVisitor
 {
   std::unordered_set<Path<SceneModel>> scenes;
@@ -701,6 +463,12 @@ struct SharedTransitionVisitor
   }
 };
 
+/**
+ * @brief Finds all the transitions which are contained in a selection.
+ *
+ * e.g. if we select two scenes, and an object of the first scene
+ * has a transition to the second scene, we want to select that transition.
+ */
 std::vector<TransitionModel*> sharedTransitions(const Selection& sel, const SEGMent::ProcessModel& process)
 {
   std::vector<TransitionModel*> res;
@@ -727,6 +495,7 @@ std::vector<TransitionModel*> sharedTransitions(const Selection& sel, const SEGM
 
   return res;
 }
+
 void ApplicationPlugin::on_copy()
 {
   score::Document* doc = currentDocument();
@@ -777,16 +546,6 @@ void ApplicationPlugin::on_copy()
   }
 }
 
-void copyResources(QString origDir, QString thisDir, QJsonArray resources)
-{
-  for(auto res : resources)
-  {
-    const auto& file = res.toString();
-    QFile f(origDir + QDir::separator() + file);
-    f.copy(thisDir + QDir::separator() + file);
-  }
-}
-
 void ApplicationPlugin::on_paste()
 {
   score::Document* doc = currentDocument();
@@ -803,144 +562,8 @@ void ApplicationPlugin::on_paste()
   if (!m)
     return;
 
-  if (m->hasFormat("segment/scenes"))
-  {
-    auto json = QJsonDocument::fromBinaryData(m->data("segment/scenes"));
-    auto& model = score::IDocument::get<SEGMent::DocumentModel>(*doc);
-    auto& proc = model.process();
-
-    auto obj = json.object();
-
-    const auto& docPath = obj["DocumentPath"].toString();
-    const auto& docResources = obj["Resources"].toArray();
-    copyResources(QFileInfo{docPath}.absolutePath(), QFileInfo{doc->metadata().fileName()}.absolutePath(), docResources);
-
-    std::vector<Id<SceneModel>> ids;
-    for(auto& scene : proc.scenes) ids.push_back(scene.id());
-
-    std::unordered_map<QString, Id<SceneModel>> id_map;
-
-    // Find the center of all the scenes
-    QPointF topLeft(INT_MAX, INT_MAX);
-    QPointF bottomRight(-INT_MAX, -INT_MAX);
-    for(const auto& scene_ref : obj["Scenes"].toArray())
-    {
-      auto scene = scene_ref.toObject();
-      auto path = scene["Path"].toString();
-
-      // Also generate new ids for the scenes
-      auto new_id = getStrongId(ids);
-      id_map[path] = new_id;
-      ids.push_back(new_id);
-
-      auto rect = fromJsonValue<QRectF>(scene["Rect"]);
-      if(rect.x() < topLeft.x()) topLeft.setX(rect.x());
-      if(rect.y() < topLeft.y()) topLeft.setY(rect.y());
-      if(rect.x() + rect.width() > bottomRight.x()) bottomRight.setX(rect.x() + rect.width());
-      if(rect.y() + rect.height() > bottomRight.y()) bottomRight.setY(rect.y() + rect.height());
-    }
-    QPointF orig_center = QRectF(topLeft, bottomRight).center();
-
-    // Create all the commands
-    RedoMacroCommandDispatcher<PasteScenes> disp{doc->context().commandStack};
-    for(auto scene_ref : obj["Scenes"].toArray())
-    {
-      auto scene = scene_ref.toObject();
-      auto rect = fromJsonValue<QRectF>(scene["Rect"]);
-      auto path = scene["Path"].toString();
-
-      scene["Rect"] = toJsonValue(
-            QRectF{rect.x() - orig_center.x() + scene_pos.x(),
-                   rect.y() - orig_center.y() + scene_pos.y(),
-                   rect.width(), rect.height()});
-      disp.submitCommand(new PasteScene{proc, scene, id_map.at(path)});
-    }
-
-    // This is the complicated part : we have to adjust the paths stored in the
-    // transitions, so that they point to the pasted objects instead of the original ones
-    for(auto transition_ref : obj["Transitions"].toArray())
-    {
-      auto transition = transition_ref.toObject();
-      auto trans_sub = transition["Transition"].toObject();
-      auto which_trans = trans_sub["Which"].toString();
-      auto trans_object = trans_sub[which_trans].toObject();
-      auto to = trans_object["To"].toString();
-      auto to_newPath = pathToString(Path{proc.scenes.at(id_map[to])});
-      trans_object["To"] = to_newPath;
-
-      if(which_trans == "SceneToScene")
-      {
-        auto from = trans_object["From"].toString();
-        auto from_newPath = pathToString(Path{proc.scenes.at(id_map[from])});
-        trans_object["From"] = from_newPath;
-      }
-      else
-      {
-        auto from = trans_object["From"].toString();
-        auto object_from = from.mid(from.lastIndexOf('/'));
-        auto scene_from = from.mid(0, from.lastIndexOf('/'));
-        auto from_newPath = pathToString(Path{proc.scenes.at(id_map[scene_from])}) + object_from;
-        trans_object["From"] = from_newPath;
-      }
-
-      trans_sub[which_trans] = trans_object;
-      transition["Transition"] = trans_sub;
-
-      disp.submitCommand(new PasteTransition{proc, transition});
-    }
-
-    disp.commit();
-  }
-  else if (m->hasFormat("segment/objects"))
-  {
-    auto item_under_mouse = view.graphicsView().itemAt(widget_pos);
-    if (!item_under_mouse)
-      return;
-
-    while (item_under_mouse->type() != SEGMent::SceneWindow::static_type())
-    {
-      item_under_mouse = item_under_mouse->parentItem();
-      if (!item_under_mouse)
-        return;
-    }
-
-    auto& scene = static_cast<SceneWindow*>(item_under_mouse)->model();
-
-    auto item_pos = item_under_mouse->mapFromScene(scene_pos);
-    QPointF relative_item_pos = {
-      item_pos.x() / item_under_mouse->boundingRect().width(),
-      item_pos.y() / item_under_mouse->boundingRect().height(),
-    };
-    RedoMacroCommandDispatcher<PasteObjects> disp{doc->context().commandStack};
-    auto arr = QJsonDocument::fromBinaryData(m->data("segment/objects")).array();
-    for(const auto json : arr)
-    {
-      auto obj = json.toObject();
-      obj["Pos"] = toJsonValue(relative_item_pos);
-      if (obj["ObjectKind"] == Metadata<ObjectKey_k, ImageModel>::get())
-      {
-        disp.submitCommand(new PasteObject<ImageModel>(scene, obj));
-      }
-      else if (obj["ObjectKind"] == Metadata<ObjectKey_k, GifModel>::get())
-      {
-        disp.submitCommand(new PasteObject<GifModel>(scene, obj));
-      }
-      else if (obj["ObjectKind"] == Metadata<ObjectKey_k, ClickAreaModel>::get())
-      {
-        disp.submitCommand(new PasteObject<ClickAreaModel>(scene, obj));
-      }
-      else if (obj["ObjectKind"]
-               == Metadata<ObjectKey_k, BackClickAreaModel>::get())
-      {
-        disp.submitCommand(new PasteObject<BackClickAreaModel>(scene, obj));
-      }
-      else if (obj["ObjectKind"] == Metadata<ObjectKey_k, TextAreaModel>::get())
-      {
-        disp.submitCommand(new PasteObject<TextAreaModel>(scene, obj));
-      }
-    }
-    disp.commit();
-  }
+  ObjectPaster paster{*doc, view, widget_pos, scene_pos};
+  paster.paste(m);
 }
 
 void ApplicationPlugin::on_zoom()
@@ -965,7 +588,10 @@ void ApplicationPlugin::on_dezoom()
   view.graphicsView().zoom(-100);
 }
 
-void ApplicationPlugin::on_help() { m_help->show(); }
+void ApplicationPlugin::on_help()
+{
+  m_help->show();
+}
 
 void ApplicationPlugin::on_delete()
 {
@@ -987,87 +613,11 @@ void ApplicationPlugin::on_delete()
       disp.commit();
 }
 
-void ApplicationPlugin::on_stop() { SoundPlayer::instance().stop(); }
-
-
-class SceneZOrders
+void ApplicationPlugin::on_stop()
 {
-public:
-  template <typename T>
-  SceneZOrders(const SceneModel& s, const T& self)
-  {
-    ossia::for_each_in_tuple(
-        std::tie(
-            s.objects, s.gifs, s.clickAreas, s.backClickAreas, s.textAreas),
-        [&](const auto& map) {
-          for (auto& obj : map)
-          {
-            using obj_t
-                = std::remove_reference_t<std::remove_const_t<decltype(obj)>>;
-            if constexpr (std::is_same_v<T, obj_t>)
-            {
-              if (&obj == &self)
-                continue;
-            }
-            min = std::min(min, obj.z());
-            max = std::max(max, obj.z());
-            count++;
-          }
-        });
-  }
-  int min{INT_MAX}, max{0};
-  int count = 0;
-};
+  SoundPlayer::instance().stop();
+}
 
-struct MoveForwardVisitor
-{
-  const score::DocumentContext& context;
-  void operator()(const SceneModel& obj) const {}
-
-  void operator()(const TransitionModel& obj) const {}
-
-  template <typename T>
-  void operator()(const T& obj) const
-  {
-    using property = typename T::p_z;
-    using cmd = typename score::PropertyCommand_T<property>::template command<
-        void>::type;
-
-    auto [min, max, count]
-        = SceneZOrders{*safe_cast<SceneModel*>(obj.parent()), obj};
-    if (count == 0)
-      return;
-
-    CommandDispatcher<>{context.commandStack}.submitCommand(
-        new cmd{obj, std::min(obj.z() + 1, max + 1)});
-  }
-};
-
-struct MoveBackwardsVisitor
-{
-  const score::DocumentContext& context;
-  void operator()(const SceneModel& obj) const {}
-
-  void operator()(const TransitionModel& obj) const {}
-
-  template <typename T>
-  void operator()(const T& obj) const
-  {
-    using property = typename T::p_z;
-    using cmd = typename score::PropertyCommand_T<property>::template command<
-        void>::type;
-
-    auto [min, max, count]
-        = SceneZOrders{*safe_cast<SceneModel*>(obj.parent()), obj};
-    if (count == 0)
-      return;
-    if (min <= 1)
-      min = 1;
-
-    CommandDispatcher<>{context.commandStack}.submitCommand(
-        new cmd{obj, std::max(obj.z() - 1, min - 1)});
-  }
-};
 
 void ApplicationPlugin::on_moveForward()
 {

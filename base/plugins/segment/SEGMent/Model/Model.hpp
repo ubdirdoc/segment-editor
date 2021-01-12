@@ -1,50 +1,18 @@
 #pragma once
 #include <score/model/Entity.hpp>
 #include <score/selection/Selectable.hpp>
-namespace SEGMent
-{
-
-template <typename T>
-QString pathToString(const Path<T>& p)
-{
-  QString s;
-  const ObjectPath& path = p.unsafePath();
-  for (auto& obj : path.vec())
-  {
-    s.append("/");
-    s.append(obj.objectName());
-    s.append(".");
-    s.append(QString::number(obj.id()));
-  }
-  return s;
-}
-
-template <typename T>
-Path<T> pathFromString(const QString& s)
-{
-  ObjectPath p;
-  const auto l = s.splitRef("/", QString::SplitBehavior::SkipEmptyParts);
-  for (auto& frag : l)
-  {
-    auto dot = frag.lastIndexOf(".");
-    QString name = frag.mid(0, dot).toString();
-    int number = frag.mid(dot + 1).toInt();
-    p.vec().push_back(ObjectIdentifier{name, number});
-  }
-  return Path<T>{p, typename Path<T>::UnsafeDynamicCreation{}};
-}
-} // namespace SEGMent
+#include <SEGMent/StringUtils.hpp>
 
 namespace SEGMent
 {
-//! A trait for objects that have a sound
+//! Used to add the Path field to the json for every serializable object.
+//! This is only used by the engine, not by the editor.
 template <typename T>
 class PathAsId : public T
 {
   friend struct TSerializer<JSONObject, SEGMent::PathAsId<T>>;
   friend struct TSerializer<DataStream, SEGMent::PathAsId<T>>;
 
-  // Pos and size are given relative to parent
 public:
   using base_type = T;
   using T::T;

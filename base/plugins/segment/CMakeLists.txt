@@ -11,6 +11,10 @@ set(HDRS
     SEGMent/Panel/Library.hpp
     SEGMent/Panel/Minimap.hpp
 
+    SEGMent/Browser/ImageList.hpp
+    SEGMent/Browser/SoundList.hpp
+    SEGMent/Browser/TemplateList.hpp
+
     SEGMent/Commands/CommandFactory.hpp
     SEGMent/Commands/Properties.hpp
     SEGMent/Commands/Creation.hpp
@@ -26,9 +30,10 @@ set(HDRS
     SEGMent/Model/ProcessMetadata.hpp
     SEGMent/Model/ProcessModel.hpp
     SEGMent/Model/Scene.hpp
-    SEGMent/Model/SimpleObject.hpp
+    SEGMent/Model/ImageModel.hpp
     SEGMent/Model/TextArea.hpp
     SEGMent/Model/Transition.hpp
+    SEGMent/Model/TransitionData.hpp
     SEGMent/Model/Traits.hpp
 
     SEGMent/Model/Sound.hpp
@@ -51,16 +56,28 @@ set(HDRS
     SEGMent/Items/Anchor.hpp
     SEGMent/Items/AnchorSetter.hpp
 
-    SEGMent/ImageCache.hpp
-    SEGMent/ImageList.hpp
-    SEGMent/Document.hpp
-    SEGMent/FilePath.hpp
     SEGMent/ApplicationPlugin.hpp
+    SEGMent/Document.hpp
+    SEGMent/Exporter.hpp
+    SEGMent/FilePath.hpp
+    SEGMent/HelpWidget.hpp
+    SEGMent/ImageCache.hpp
+    SEGMent/ObjectCopier.hpp
+    SEGMent/ObjectPaster.hpp
+    SEGMent/StringUtils.hpp
+    SEGMent/Visitors.hpp
+    SEGMent/ZOrder.hpp
+
+
     iscore_addon_SEGMent.hpp
 )
 set(SRCS
     SEGMent/Panel/Library.cpp
     SEGMent/Panel/Minimap.cpp
+
+    SEGMent/Browser/ImageList.cpp
+    SEGMent/Browser/SoundList.cpp
+    SEGMent/Browser/TemplateList.cpp
 
     SEGMent/Model/Layer/ProcessPresenter.cpp
     SEGMent/Model/Layer/ProcessView.cpp
@@ -70,7 +87,7 @@ set(SRCS
     SEGMent/Model/ClickArea.cpp
     SEGMent/Model/GifObject.cpp
     SEGMent/Model/Scene.cpp
-    SEGMent/Model/SimpleObject.cpp
+    SEGMent/Model/ImageModel.cpp
     SEGMent/Model/TextArea.cpp
     SEGMent/Model/Transition.cpp
 
@@ -90,7 +107,6 @@ set(SRCS
     SEGMent/Items/AnchorSetter.cpp
 
     SEGMent/Document.cpp
-    SEGMent/ImageList.cpp
 
     SEGMent/ApplicationPlugin.cpp
     iscore_addon_SEGMent.cpp

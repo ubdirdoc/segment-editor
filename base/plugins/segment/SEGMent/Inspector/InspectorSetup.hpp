@@ -30,7 +30,8 @@
 #include <SEGMent/FilePath.hpp>
 #include <SEGMent/Items/GlobalVariables.hpp>
 #include <SEGMent/Model/Scene.hpp>
-#include <SEGMent/Model/SimpleObject.hpp>
+#include <SEGMent/Model/ImageModel.hpp>
+#include <SEGMent/SoundPlayer.hpp>
 
 #define INSPECTOR_FACTORY(Factory, InspModel, InspObject, Uuid)               \
   class Factory final : public Inspector::InspectorWidgetFactory              \
@@ -589,7 +590,7 @@ struct WidgetFactory
             {
               if (riddle.which() != riddle.npos)
               {
-                static_cast<riddle_t::impl_type&>(riddle) = riddle_t::impl_type{};
+                static_cast<SEGMent::riddle_impl_type&>(riddle) = SEGMent::riddle_impl_type{};
                 disp.submitCommand(new ChangeRiddle{object, std::move(riddle)});
               }
               break;
@@ -598,7 +599,7 @@ struct WidgetFactory
             {
               if (riddle.which() != 0)
               {
-                static_cast<riddle_t::impl_type&>(riddle) = SEGMent::GifRiddle{};
+                static_cast<SEGMent::riddle_impl_type&>(riddle) = SEGMent::GifRiddle{};
                 disp.submitCommand(new ChangeRiddle{object, std::move(riddle)});
               }
               break;
@@ -607,7 +608,7 @@ struct WidgetFactory
             {
               if (riddle.which() != 1)
               {
-                static_cast<riddle_t::impl_type&>(riddle) = SEGMent::PuzzleRiddle{};
+                static_cast<SEGMent::riddle_impl_type&>(riddle) = SEGMent::PuzzleRiddle{};
                 disp.submitCommand(new ChangeRiddle{object, std::move(riddle)});
               }
               break;
@@ -616,7 +617,7 @@ struct WidgetFactory
             {
               if (riddle.which() != 2)
               {
-                static_cast<riddle_t::impl_type&>(riddle) = SEGMent::TextRiddle{};
+                static_cast<SEGMent::riddle_impl_type&>(riddle) = SEGMent::TextRiddle{};
                 disp.submitCommand(new ChangeRiddle{object, std::move(riddle)});
               }
               break;

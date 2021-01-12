@@ -4,7 +4,9 @@
 
 #include <QTabWidget>
 
-#include <SEGMent/ImageList.hpp>
+#include <SEGMent/Browser/ImageList.hpp>
+#include <SEGMent/Browser/SoundList.hpp>
+#include <SEGMent/Browser/TemplateList.hpp>
 namespace SEGMent
 {
 class ImageList;

@@ -7,104 +7,15 @@
 #include <SEGMent/Model/ClickArea.hpp>
 #include <SEGMent/Model/GifObject.hpp>
 #include <SEGMent/Model/Model.hpp>
-#include <SEGMent/Model/SimpleObject.hpp>
+#include <SEGMent/Model/ImageModel.hpp>
 #include <SEGMent/Model/Sound.hpp>
 #include <SEGMent/Model/TextArea.hpp>
 #include <SEGMent/Model/Cue.hpp>
+#include <SEGMent/Model/SceneDataModels.hpp>
+
+
 namespace SEGMent
 {
-
-inline
-QJsonArray stringToStringListSemicolon (const QString& str) {
-    QJsonArray array;
-
-    for(auto& elt : str.split(";")) {
-        if(auto str = elt.trimmed(); !str.isEmpty())
-            array.push_back(str);
-    }
-
-    return array;
-};
-
-inline
-QString stringListToSemicolonString(const QJsonArray& array) {
-    QString s;
-    for(const auto& elt : array) {
-        if(!elt.toString().isEmpty()) {
-            s += elt.toString();
-            s += " ; ";
-        }
-    }
-    if(!s.isEmpty())
-        s.resize(s.size() - 3);
-
-    return s;
-};
-
-
-struct LongText
-{
-  QString txt;
-  operator const QString&() const noexcept { return txt; }
-  operator QString&() noexcept { return txt; }
-  friend bool operator==(const LongText& lhs, const LongText& rhs) noexcept
-  {
-    return lhs.txt == rhs.txt;
-  }
-  friend bool operator!=(const LongText& lhs, const LongText& rhs) noexcept
-  {
-    return lhs.txt != rhs.txt;
-  }
-  friend bool operator<(const LongText& lhs, const LongText& rhs) noexcept
-  {
-    return lhs.txt < rhs.txt;
-  }
-  friend bool operator>(const LongText& lhs, const LongText& rhs) noexcept
-  {
-    return lhs.txt > rhs.txt;
-  }
-  friend bool operator<=(const LongText& lhs, const LongText& rhs) noexcept
-  {
-    return lhs.txt <= rhs.txt;
-  }
-  friend bool operator>=(const LongText& lhs, const LongText& rhs) noexcept
-  {
-    return lhs.txt >= rhs.txt;
-  }
-};
-
-
-struct JournalEntry
-{
-  QString txt;
-  operator const QString&() const noexcept { return txt; }
-  operator QString&() noexcept { return txt; }
-  friend bool operator==(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
-  {
-    return lhs.txt == rhs.txt;
-  }
-  friend bool operator!=(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
-  {
-    return lhs.txt != rhs.txt;
-  }
-  friend bool operator<(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
-  {
-    return lhs.txt < rhs.txt;
-  }
-  friend bool operator>(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
-  {
-    return lhs.txt > rhs.txt;
-  }
-  friend bool operator<=(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
-  {
-    return lhs.txt <= rhs.txt;
-  }
-  friend bool operator>=(const JournalEntry& lhs, const JournalEntry& rhs) noexcept
-  {
-    return lhs.txt >= rhs.txt;
-  }
-  JournalEntry& operator=(const QString& other) noexcept { txt = other; return *this; }
-};
 
 //! A scene is the main object in a SEGMent canvas
 class SceneModel : public PathAsId<score::Entity<SceneModel>>
@@ -125,6 +36,14 @@ public:
     vis.writeTo(*this);
   }
 
+  score::EntityMap<ImageModel> objects;
+  score::EntityMap<GifModel> gifs;
+  score::EntityMap<ClickAreaModel> clickAreas;
+  score::EntityMap<BackClickAreaModel> backClickAreas;
+  score::EntityMap<TextAreaModel> textAreas;
+
+  //! Scene type
+public:
   enum SceneType
   {
     Default,
@@ -133,13 +52,6 @@ public:
     GameOver
   };
 
-  score::EntityMap<ImageModel> objects;
-  score::EntityMap<GifModel> gifs;
-  score::EntityMap<ClickAreaModel> clickAreas;
-  score::EntityMap<BackClickAreaModel> backClickAreas;
-  score::EntityMap<TextAreaModel> textAreas;
-
-public:
   const SceneType& sceneType() const MSVC_NOEXCEPT;
   void setSceneType(const SceneType& v) MSVC_NOEXCEPT;
   void sceneTypeChanged(const SceneType& v) W_SIGNAL(sceneTypeChanged, v);
@@ -150,6 +62,7 @@ public:
 private:
   SceneType m_sceneType{SceneType::Default};
 
+  //! Sounds
 public:
   const Sound& ambience() const MSVC_NOEXCEPT;
   Sound& ambience_ref() MSVC_NOEXCEPT;
@@ -162,6 +75,7 @@ public:
 private:
   Sound m_ambience;
 
+  //! Other properties associated with text
 public:
   LongText startText() const MSVC_NOEXCEPT;
   void setStartText(const LongText& v) MSVC_NOEXCEPT;

@@ -7,6 +7,10 @@
 #include <SEGMent/Model/Traits.hpp>
 namespace SEGMent
 {
+/**
+ * @brief Data model for the back click zones.
+ * Does not contain any particular data.
+ */
 class BackClickAreaModel : public Object<BackClickAreaModel>
 {
   W_OBJECT(BackClickAreaModel)

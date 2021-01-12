@@ -25,6 +25,11 @@
 namespace SEGMent
 {
 class ImageCache;
+/**
+ * @brief The CacheInstance struct
+ *
+ * An image which is cached in multiple resolutions.
+ */
 struct CacheInstance
 {
 public:
@@ -158,6 +163,11 @@ Q_DECLARE_METATYPE_TEMPLATE_2ARG(std::unordered_map)
 
 namespace SEGMent
 {
+/**
+ * @brief The ImageCache class
+ *
+ * Used to create and cache small versions of pixmaps automatically.
+ */
 class ImageCache
 {
   using impl = std::unordered_map<QString, CacheInstance>;
@@ -317,6 +327,13 @@ private:
   ImageCache& operator=(ImageCache&&) = default;
 };
 
+/**
+ * @brief The LODPixmapItem class
+ *
+ * Used to display an image with varying levels of details:
+ * small version when dezoomed, large version when zooming.
+ * This is to keep good performances when dezooming.
+ */
 class LODPixmapItem : public QGraphicsItem
 {
 public:

@@ -12,7 +12,11 @@
 #endif
 namespace SEGMent
 {
-
+/**
+ * @brief Data model for a sound loaded in a scene, object, etc.
+ *
+ * Contains a few useful properties: volume, path, range, repeat, ...
+ */
 class Sound : public QObject
 {
   W_OBJECT(Sound)
@@ -60,43 +64,6 @@ public:
   PROPERTY(bool, repeat READ repeat WRITE setRepeat NOTIFY repeatChanged)
 private:
   bool m_repeat{true};
-};
-
-struct SoundPlayer
-{
-  QMediaPlayer player;
-
-  static SoundPlayer& instance()
-  {
-    static SoundPlayer p;
-    return p;
-  }
-
-  static auto convertVolume(double vol)
-  {
-    return QAudio::convertVolume(
-               vol / qreal(100.0),
-               QAudio::LogarithmicVolumeScale,
-               QAudio::LinearVolumeScale)
-           * 100.;
-  }
-  void play(const Sound& snd, const score::DocumentContext& ctx)
-  {
-    player.setMedia(QUrl::fromLocalFile(toLocalFile(snd.path(), ctx)));
-    player.setVolume(convertVolume(snd.volume() * 100.));
-    player.play();
-  }
-
-  void play(const QUrl& snd)
-  {
-    player.setMedia(snd);
-    player.setVolume(75);
-    player.play();
-  }
-
-  void setVolume(int vol) { player.setVolume(convertVolume(vol)); }
-
-  void stop() { player.stop(); }
 };
 
 } // namespace SEGMent

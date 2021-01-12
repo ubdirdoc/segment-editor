@@ -4,21 +4,11 @@
 #include <score/tools/std/HashMap.hpp>
 #include <score/tools/std/StringHash.hpp>
 #include <score/serialization/VariantSerialization.hpp>
-
+/**
+ * This file contains the data model for the various riddles.
+ */
 namespace SEGMent
 {
-//! Transitions can be :
-//! - Between scene and scene
-//!   - Such a transition can have an associated riddle
-//!     - Riddles can be either through input text or gif
-//!     - There is a set of associations between inputs to the riddle and texts
-//!     that are shown to the player
-//!       - The correct answer
-//!       - The default bad answer
-//!       - Various levels of answers in-between
-//! - Between object and scene
-//! - Between click area and scene
-
 //! The player must set the gifs at the correct frame.
 struct GifRiddle
 {
@@ -71,10 +61,10 @@ struct TextRiddle
 };
 
 //! A riddle can either be a text, a gif, or a puzzle
-struct riddle_t : eggs::variant<GifRiddle, PuzzleRiddle, TextRiddle>
+using riddle_impl_type = eggs::variant<GifRiddle, PuzzleRiddle, TextRiddle>;
+struct riddle_t : riddle_impl_type
 {
-  using impl_type = eggs::variant<GifRiddle, PuzzleRiddle, TextRiddle>;
-  riddle_t(impl_type t): variant{std::move(t)} { }
+  riddle_t(riddle_impl_type t): riddle_impl_type{std::move(t)} { }
 
   riddle_t() = default;
   riddle_t(const riddle_t&) = default;
@@ -87,7 +77,7 @@ struct riddle_t : eggs::variant<GifRiddle, PuzzleRiddle, TextRiddle>
 
   friend bool operator==(const riddle_t& lhs, const riddle_t& rhs) noexcept
   {
-    return static_cast<const impl_type&>(lhs) == static_cast<const impl_type&>(rhs) &&
+    return static_cast<const riddle_impl_type&>(lhs) == static_cast<const riddle_impl_type&>(rhs) &&
         lhs.maxTime == rhs.maxTime;
   }
   friend bool operator!=(const riddle_t& lhs, const riddle_t& rhs) noexcept
@@ -100,6 +90,8 @@ struct riddle_t : eggs::variant<GifRiddle, PuzzleRiddle, TextRiddle>
 
 } // namespace SEGMent
 
+// Serialization code.
+
 template <>
 struct is_custom_serialized<SEGMent::riddle_t>: std::true_type { };
 
@@ -111,13 +103,13 @@ struct TSerializer<
   using type = SEGMent::riddle_t;
   static void readFrom(DataStream::Serializer& s, const SEGMent::riddle_t& v)
   {
-    s.readFrom(static_cast<const typename type::impl_type&>(v));
+    s.readFrom(static_cast<const SEGMent::riddle_impl_type&>(v));
     s.stream() << v.maxTime;
   }
 
   static void writeTo(DataStream::Deserializer& s, SEGMent::riddle_t& v)
   {
-    auto& variant = static_cast<typename type::impl_type&>(v);
+    auto& variant = static_cast<SEGMent::riddle_impl_type&>(v);
     s.writeTo(variant);
     s.stream() >> v.maxTime;
   }
@@ -131,13 +123,13 @@ struct TSerializer<
   using type = SEGMent::riddle_t;
   static void readFrom(JSONObject::Serializer& s, const type& v)
   {
-    s.readFrom(static_cast<const typename type::impl_type&>(v));
+    s.readFrom(static_cast<const SEGMent::riddle_impl_type&>(v));
     s.obj["MaxTime"] = toJsonValue(v.maxTime);
   }
 
   static void writeTo(JSONObject::Deserializer& s, type& v)
   {
-    auto& variant = static_cast<typename type::impl_type&>(v);
+    auto& variant = static_cast<SEGMent::riddle_impl_type&>(v);
     s.writeTo(variant);
     v.maxTime = fromJsonValue<optional<int>>(s.obj["MaxTime"]);
   }

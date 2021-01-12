@@ -1,4 +1,5 @@
 #include "Scene.hpp"
+#include <SEGMent/StringUtils.hpp>
 
 #include <QUrl>
 
@@ -291,7 +292,7 @@ void JSONObjectReader::read(const SEGMent::SceneModel& v)
   obj["Cue"] = toJsonArray(v.m_cues);
   obj["Journal"] = v.m_journal;
   obj["JournalBlink"] = v.m_journalBlink;
-  obj["CuesToRemove"] = stringToStringListSemicolon(v.m_cuesToRemove);
+  obj["CuesToRemove"] = semicolonStringToStringList(v.m_cuesToRemove);
 }
 
 template <>

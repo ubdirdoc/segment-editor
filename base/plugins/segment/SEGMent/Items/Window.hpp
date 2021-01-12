@@ -22,7 +22,7 @@
 #include <SEGMent/Items/QLineEditAutoResizeAutoCenter.hpp>
 #include <SEGMent/Items/RectItem.hpp>
 #include <SEGMent/Items/SizeGripItem.hpp>
-#include <SEGMent/Model/SimpleObject.hpp>
+#include <SEGMent/Model/ImageModel.hpp>
 #include <SEGMent/Model/Transition.hpp>
 
 namespace SEGMent

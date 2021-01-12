@@ -6,20 +6,15 @@
 #include <SEGMent/Model/Traits.hpp>
 namespace SEGMent
 {
-
+/**
+ * @brief Data model for the text areas.
+ */
 class TextAreaModel : public Object<TextAreaModel>
 {
   W_OBJECT(TextAreaModel)
   SCORE_SERIALIZE_FRIENDS
 public:
   using base_type = Object<TextAreaModel>;
-  enum Behaviour
-  {
-    Add,
-    Replace,
-    Clear,
-    Validate
-  };
   Selectable selection{this};
 
   TextAreaModel(const Id<TextAreaModel>& id, QObject* parent);
@@ -40,6 +35,14 @@ private:
   QString m_text;
 
 public:
+  enum Behaviour
+  {
+    Add,
+    Replace,
+    Clear,
+    Validate
+  };
+
   Behaviour behaviour() const MSVC_NOEXCEPT;
   void setBehaviour(Behaviour v) MSVC_NOEXCEPT;
   void behaviourChanged(Behaviour v) W_SIGNAL(behaviourChanged, v);
