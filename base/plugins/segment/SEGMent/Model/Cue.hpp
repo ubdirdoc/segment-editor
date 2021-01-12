@@ -1,6 +1,8 @@
 #pragma once
 #include <QStringList>
 #include <QVector>
+#include <verdigris>
+
 namespace SEGMent
 {
 /**
@@ -23,3 +25,8 @@ struct Cue {
 };
 using Cues = QVector<Cue>;
 }
+
+Q_DECLARE_METATYPE(SEGMent::Cues)
+W_REGISTER_ARGTYPE(SEGMent::Cues)
+Q_DECLARE_METATYPE(SEGMent::Cue)
+W_REGISTER_ARGTYPE(SEGMent::Cue)
