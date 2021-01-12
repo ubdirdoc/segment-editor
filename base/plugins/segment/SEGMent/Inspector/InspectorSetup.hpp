@@ -549,7 +549,7 @@ struct WidgetFactory
         if (cur.maxTime != time)
         {
           if(time == 0)
-            cur.maxTime = ossia::none;
+            cur.maxTime = std::nullopt;
           else
           {
             cur.maxTime = time;

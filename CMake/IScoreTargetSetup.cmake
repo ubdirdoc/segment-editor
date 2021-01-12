@@ -28,9 +28,6 @@ function(score_cotire_pre TheTarget)
 endfunction()
 
 function(score_cotire_post TheTarget)
-if(SCORE_COTIRE AND NOT MSVC)
-   cotire(${TheTarget})
-endif()
 endfunction()
 
 ### Call at the beginning of a plug-in cmakelists ###

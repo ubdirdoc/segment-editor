@@ -274,7 +274,7 @@ struct TSerializer<JSONObject, optional<int32_t>>
   {
     if (s.obj[s.strings.id].toString() == s.strings.none)
     {
-      obj = ossia::none;
+      obj = std::nullopt;
     }
     else
     {

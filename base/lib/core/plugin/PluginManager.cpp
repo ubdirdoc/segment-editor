@@ -295,7 +295,7 @@ optional<score::Addon> makeAddon(
   }
 
   if (add.name.isEmpty() || add.path.isEmpty() || add.key.impl().is_nil())
-    return ossia::none;
+    return std::nullopt;
 
   return add;
 }

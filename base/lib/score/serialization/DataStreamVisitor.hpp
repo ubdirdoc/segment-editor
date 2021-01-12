@@ -510,7 +510,7 @@ struct TSerializer<DataStream, optional<T>>
     }
     else
     {
-      obj = ossia::none;
+      obj = std::nullopt;
     }
     SCORE_DEBUG_CHECK_DELIMITER2(s);
   }

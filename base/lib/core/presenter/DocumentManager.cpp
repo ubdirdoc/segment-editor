@@ -203,7 +203,7 @@ void DocumentManager::setCurrentDocument(
   {
     for (auto& panel : ctx.panels())
     {
-      panel.setModel(ossia::none);
+      panel.setModel(std::nullopt);
     }
   }
 

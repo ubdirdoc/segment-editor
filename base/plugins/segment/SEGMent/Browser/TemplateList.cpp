@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QDir>
 #include <QJsonDocument>
+#include <QJsonObject>
 
 namespace SEGMent
 {
