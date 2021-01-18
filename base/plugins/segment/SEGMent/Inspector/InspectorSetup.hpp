@@ -100,6 +100,8 @@ struct WidgetFactory
   Inspector::Layout& layout;
   QWidget* parent;
 
+  using cmd = score::command_type<T>;
+
   QString prettyText(QString str)
   {
     SCORE_ASSERT(!str.isEmpty());
@@ -133,8 +135,6 @@ struct WidgetFactory
   auto make(X*) = delete;
   auto make(bool c)
   {
-    using cmd =
-        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto cb = new QCheckBox{parent};
     cb->setCheckState(c ? Qt::Checked : Qt::Unchecked);
 
@@ -162,8 +162,6 @@ struct WidgetFactory
 
   auto make(const QString& cur)
   {
-    using cmd =
-        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto l = new QLineEdit{cur, parent};
     l->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     QObject::connect(
@@ -188,8 +186,6 @@ struct WidgetFactory
 
   auto make(const LongText& cur)
   {
-    using cmd =
-        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto l = new QPlainTextEdit{cur, parent};
     l->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     QObject::connect(
@@ -215,8 +211,6 @@ struct WidgetFactory
 
   auto make(const QStringList& cur)
   {
-    using cmd =
-        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto container = new QWidget;
     auto lay = new QFormLayout{container};
     lay->setLabelAlignment(Qt::AlignLeft);
@@ -258,8 +252,6 @@ struct WidgetFactory
 /*
   auto make(QColor cur)
   {
-    using cmd =
-        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto l = new color_widgets::ColorWheel{parent};
     l->setColor(cur);
     QObject::connect(
@@ -306,8 +298,6 @@ struct WidgetFactory
 
   auto make(const SEGMent::Sound& cur)
   {
-    using cmd =
-        typename score::PropertyCommand_T<T>::template command<void>::type;
     const Sound& sound_obj
         = (const_cast<U&>(object).*SoundAccessor<U>::value)();
 
@@ -474,9 +464,6 @@ struct WidgetFactory
           SignalUtils::QComboBox_currentIndexChanged_int(),
           &object,
           [i, &object = this->object, &ctx = this->ctx](int idx) {
-            using cmd = typename score::PropertyCommand_T<T>::template command<
-                void>::type;
-
             CommandDispatcher<> disp{ctx.commandStack};
             auto f = object.frames();
             f[i] = (SEGMent::GifModel::Frame)idx;
@@ -833,8 +820,6 @@ struct WidgetFactory
   template <typename Type>
   auto make_combo(std::vector<std::pair<QString, Type>> values, Type s)
   {
-    using cmd =
-        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto cb = new QComboBox;
     cb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     for (auto& v : values)
@@ -870,8 +855,6 @@ struct WidgetFactory
 
   auto make_combo(std::vector<QString> values, QString s)
   {
-    using cmd =
-        typename score::PropertyCommand_T<T>::template command<void>::type;
     auto cb = new QComboBox;
     cb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     for (auto& v : values)

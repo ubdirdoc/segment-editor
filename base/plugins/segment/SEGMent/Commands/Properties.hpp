@@ -192,6 +192,18 @@ struct PropertyCommand_T<SEGMent::SceneModel::p_sceneType>
     using type = SEGMent::SetSceneType;
   };
 };
+template <>
+struct PropertyCommand_T<SEGMent::TransitionModel::p_transition>
+{
+  template <typename T>
+  struct command
+  {
+    // if you encounter an error at this line, it's because you are trying
+    // to do forbidden things !
+    // don't use property commands for updating the transition data.
+    using type = int;
+  };
+};
 } // namespace score
 PROPERTY_COMMAND_T(SEGMent, SetObjectImage, ImageModel::p_image, "Set image")
 PROPERTY_COMMAND_T(SEGMent, SetObjectPos, ImageModel::p_pos, "Set pos")

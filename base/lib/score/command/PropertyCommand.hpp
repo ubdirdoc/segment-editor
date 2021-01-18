@@ -106,6 +106,10 @@ private:
   Path<model_t> m_path;
   param_t m_old, m_new;
 };
+
+template<typename Property_T>
+using command_type = typename PropertyCommand_T<Property_T>::template command<void>::type;
+#define get_command_type(type, property) score::command_type<typename type::p_ ## property>
 } // namespace score
 
 #define PROPERTY_COMMAND_T(NS, Name, Property, Description)         \

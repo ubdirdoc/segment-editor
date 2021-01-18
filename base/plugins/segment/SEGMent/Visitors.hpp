@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/typelist.hpp>
 #include <SEGMent/Model/Scene.hpp>
 #include <SEGMent/Model/ClickArea.hpp>
 #include <SEGMent/Model/BackClickArea.hpp>
@@ -12,7 +13,6 @@
 
 namespace SEGMent
 {
-
 //! Used to run a function for every data model type available in SEGMent
 template <typename F>
 auto dispatch(const QObject* obj, F&& fun)
@@ -72,5 +72,19 @@ auto dispatchSceneChildren(const SceneModel& scene, F&& fun)
     fun(o);
   for(auto& o : scene.backClickAreas)
     fun(o);
+}
+
+template <typename Scene_T, typename F>
+auto forEachCategoryInScene(Scene_T& v, F&& func)
+{
+  const auto& objects = std::tie(
+              v.objects,
+              v.gifs,
+              v.clickAreas,
+              v.backClickAreas,
+              v.textAreas
+  );
+
+  ossia::for_each_in_tuple(objects, std::forward<F>(func));
 }
 }

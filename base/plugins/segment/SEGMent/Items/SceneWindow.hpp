@@ -1,6 +1,9 @@
 #pragma once
 #include <SEGMent/Items/Window.hpp>
 #include <SEGMent/ImageCache.hpp>
+#include <SEGMent/Accessors.hpp>
+#include <brigand/algorithms/transform.hpp>
+
 namespace SEGMent
 {
 class ImageWindow;
@@ -80,16 +83,6 @@ public:
 
   void dropEvent(QGraphicsSceneDragDropEvent* event) override;
 
-  void on_objectCreated(const ImageModel& obj);
-  void on_objectRemoved(const ImageModel& obj);
-  void on_gifCreated(const GifModel& obj);
-  void on_gifRemoved(const GifModel& obj);
-  void on_clickAreaCreated(const ClickAreaModel& obj);
-  void on_clickAreaRemoved(const ClickAreaModel& obj);
-  void on_backClickAreaCreated(const BackClickAreaModel& obj);
-  void on_backClickAreaRemoved(const BackClickAreaModel& obj);
-  void on_textAreaCreated(const TextAreaModel& obj);
-  void on_textAreaRemoved(const TextAreaModel& obj);
 
 private:
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
@@ -120,12 +113,61 @@ private:
 
   qreal m_backgroundImgRealWidth{100.0};
 
-  ossia::ptr_map<const ImageModel*, ImageWindow*> m_objects;
-  ossia::ptr_map<const GifModel*, GifWindow*> m_gifs;
-  ossia::ptr_map<const ClickAreaModel*, ClickWindow*> m_clickAreas;
-  ossia::ptr_map<const BackClickAreaModel*, BackClickWindow*> m_backClickAreas;
-  ossia::ptr_map<const TextAreaModel*, TextWindow*> m_textAreas;
+  template<typename T>
+  struct ChildWindowSet : public Nano::Observer
+  {
+    using accessor = ::SEGMent::SceneAccessor<T>;
+    using model_type = T;
+    using view_type = typename accessor::view;
+    SceneWindow* parent{};
+    ChildWindowSet()
+    {
+    }
 
-  bool m_moving{false};
+    void init(SceneWindow& parent)
+    {
+      this->parent = &parent;
+
+      auto& model_elements = accessor::get(parent.model());
+      for (const auto& o : model_elements)
+      {
+        on_created(o);
+      }
+
+      model_elements.added.template connect<&ChildWindowSet::on_created>(this);
+      model_elements.removed.template connect<&ChildWindowSet::on_removed>(this);
+    }
+
+    void on_created(const T& object)
+    {
+      auto sc = new view_type{object, parent->context, parent->m_view, &parent->m_sceneArea};
+      parent->m_childWindows.push_back(sc);
+      m_objects.insert({&object, sc});
+    }
+
+    void on_removed(const T& object)
+    {
+      auto it = m_objects.find(&object);
+      if (it != m_objects.end())
+      {
+        auto ptr = it->second;
+        {
+          auto sit = ossia::find(parent->m_childWindows, ptr);
+          if (sit != parent->m_childWindows.end())
+          {
+            parent->m_childWindows.erase(sit);
+          }
+        }
+
+        m_objects.erase(it);
+        delete ptr;
+      }
+    }
+
+    ossia::ptr_map<const model_type*, view_type*> m_objects;
+  };
+
+  using items = brigand::transform<SEGMent::SceneChildrenTypes, brigand::bind<ChildWindowSet, brigand::_1>>;
+  items m_items;
 };
 } // namespace SEGMent

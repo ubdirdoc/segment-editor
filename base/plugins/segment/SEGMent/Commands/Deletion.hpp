@@ -18,11 +18,11 @@
 #include <SEGMent/Model/Sound.hpp>
 #include <SEGMent/Model/TextArea.hpp>
 #include <SEGMent/Model/Transition.hpp>
+#include <SEGMent/Accessors.hpp>
 #include <unordered_map>
 
 namespace SEGMent
 {
-
 //! Return true if p is the beginning of c, e.g. is_prefix({3, 5}, {3, 5, 7})
 //! == true
 template <typename T>

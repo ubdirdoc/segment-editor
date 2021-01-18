@@ -68,9 +68,8 @@ template <typename T, bool KeepRatio>
 class ObjectResizer final : public SizeGripItem::Resizer
 {
 public:
-  using resize_command = typename score::PropertyCommand_T<
-      typename std::remove_reference_t<decltype(
-          std::declval<T>().model())>::p_size>::template command<void>::type;
+  using model_type = std::remove_reference_t<decltype(std::declval<T>().model())>;
+  using resize_command = get_command_type(model_type, size);
 
   ObjectResizer(T& w) : self{w} {}
   T& self;
@@ -114,9 +113,10 @@ public:
 struct ObjectMover
 {
   template <typename T>
-  using move_command = typename score::PropertyCommand_T<
-      typename std::remove_reference_t<decltype(
-          std::declval<T>().model())>::p_pos>::template command<void>::type;
+  using model_type = std::remove_reference_t<decltype(std::declval<T>().model())>;
+
+  template <typename T>
+  using move_command = get_command_type(model_type<T>, pos);
 
   static bool isLeft(QGraphicsSceneMouseEvent* event)
   {
@@ -169,11 +169,8 @@ struct ObjectMover
       }
       QPointF pt{self.pos().x() / prect.width(),
                  self.pos().y() / prect.height()};
-      using command_t =
-          typename score::PropertyCommand_T<typename std::remove_reference_t<
-              decltype(std::declval<T>().model())>::p_pos>::
-              template command<void>::type;
-      self.context.dispatcher.template submitCommand<command_t>(
+
+      self.context.dispatcher.template submitCommand<move_command<T>>(
           self.model(), pt);
     }
 
@@ -191,11 +188,7 @@ struct ObjectMover
         QPointF pt{self.pos().x() / prect.width(),
                    self.pos().y() / prect.height()};
 
-        using command_t =
-            typename score::PropertyCommand_T<typename std::remove_reference_t<
-                decltype(std::declval<T>().model())>::p_pos>::
-                template command<void>::type;
-        self.context.dispatcher.template submitCommand<command_t>(
+        self.context.dispatcher.template submitCommand<move_command<T>>(
             self.model(), pt);
         self.context.dispatcher.commit();
       }
@@ -239,9 +232,7 @@ struct ObjectDropper
   template <typename T, typename Prop>
   static void dropEvent(T& self, Prop, QGraphicsSceneDragDropEvent* event)
   {
-    using cmd =
-        typename score::PropertyCommand_T<Prop>::template command<void>::type;
-
+    using cmd = score::command_type<Prop>;
     const QMimeData* currentMimeData = event->mimeData();
 
     if (currentMimeData->hasUrls())

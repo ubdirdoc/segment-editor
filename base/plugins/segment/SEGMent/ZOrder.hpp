@@ -1,6 +1,7 @@
 #pragma once
 #include <score/document/DocumentContext.hpp>
 
+#include <SEGMent/Visitors.hpp>
 #include <SEGMent/Model/Scene.hpp>
 #include <SEGMent/Model/Transition.hpp>
 #include <SEGMent/Commands/Creation.hpp>
@@ -19,27 +20,24 @@ class SceneZOrders
 {
 public:
   template <typename T>
-  SceneZOrders(const SceneModel& s, const T& self)
+  SceneZOrders(const SceneModel& scene, const T& self)
   {
-    ossia::for_each_in_tuple(
-        std::tie(
-            s.objects, s.gifs, s.clickAreas, s.backClickAreas, s.textAreas),
-        [&](const auto& map) {
-          for (auto& obj : map)
-          {
-            using obj_t
-                = std::remove_reference_t<std::remove_const_t<decltype(obj)>>;
-            if constexpr (std::is_same_v<T, obj_t>)
-            {
-              if (&obj == &self)
-                continue;
-            }
-            min = std::min(min, obj.z());
-            max = std::max(max, obj.z());
-            count++;
-          }
-        });
+      dispatchSceneChildren(
+                  scene,
+                  [&] <typename Obj_T> (const Obj_T& obj) {
+      {
+        if constexpr (std::is_same_v<T, Obj_T>)
+        {
+          if (&obj == &self)
+            return;
+        }
+        min = std::min(min, obj.z());
+        max = std::max(max, obj.z());
+        count++;
+      }
+    });
   }
+
   int min{INT_MAX}, max{0};
   int count = 0;
 };
@@ -50,24 +48,23 @@ public:
 struct MoveForwardVisitor
 {
   const score::DocumentContext& context;
-  void operator()(const SceneModel& obj) const {}
 
+  void operator()(const SceneModel& obj) const {}
   void operator()(const TransitionModel& obj) const {}
 
   template <typename T>
   void operator()(const T& obj) const
   {
-    using property = typename T::p_z;
-    using cmd = typename score::PropertyCommand_T<property>::template command<
-        void>::type;
+    using cmd = get_command_type(T, z);
 
     auto [min, max, count]
         = SceneZOrders{*safe_cast<SceneModel*>(obj.parent()), obj};
     if (count == 0)
       return;
 
+    const auto z = std::min(obj.z() + 1, max + 1);
     CommandDispatcher<>{context.commandStack}.submitCommand(
-        new cmd{obj, std::min(obj.z() + 1, max + 1)});
+        new cmd{obj, z});
   }
 };
 
@@ -77,16 +74,14 @@ struct MoveForwardVisitor
 struct MoveBackwardsVisitor
 {
   const score::DocumentContext& context;
-  void operator()(const SceneModel& obj) const {}
 
+  void operator()(const SceneModel& obj) const {}
   void operator()(const TransitionModel& obj) const {}
 
   template <typename T>
   void operator()(const T& obj) const
   {
-    using property = typename T::p_z;
-    using cmd = typename score::PropertyCommand_T<property>::template command<
-        void>::type;
+    using cmd = get_command_type(T, z);
 
     auto [min, max, count]
         = SceneZOrders{*safe_cast<SceneModel*>(obj.parent()), obj};
@@ -95,8 +90,9 @@ struct MoveBackwardsVisitor
     if (min <= 1)
       min = 1;
 
+    const auto z = std::max(obj.z() - 1, min - 1);
     CommandDispatcher<>{context.commandStack}.submitCommand(
-        new cmd{obj, std::max(obj.z() - 1, min - 1)});
+        new cmd{obj, z});
   }
 };
 

@@ -19,9 +19,14 @@
 #include <SEGMent/Model/Sound.hpp>
 #include <SEGMent/Model/TextArea.hpp>
 #include <SEGMent/Model/Transition.hpp>
+#include <SEGMent/Visitors.hpp>
+
 namespace SEGMent
 {
 
+/**
+ * @brief Command used when an user does a "paste" action with a scene in the clipboard.
+ */
 class PasteScene final : public score::Command
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), PasteScene, "Paste a scene")
@@ -46,9 +51,11 @@ public:
     scene->setId(m_newId);
     process.scenes.add(scene);
 
+    // If it is the first scene to be pasted, we set it as initial.
+    // Else some users are lost :-)
     if(process.scenes.size() == 1)
     {
-        scene->setSceneType(SceneModel::Initial);
+      scene->setSceneType(SceneModel::Initial);
     }
   }
 
@@ -68,6 +75,11 @@ private:
   QJsonObject m_json{};
 };
 
+/**
+ * @brief Command used to paste transitions.
+ *
+ * Used when an user does a "paste" action with multiple scenes and transitions inbetween.
+ */
 class PasteTransition final : public score::Command
 {
   SCORE_COMMAND_DECL(CommandFactoryName(), PasteTransition, "Paste a transition")
@@ -120,6 +132,9 @@ class PasteObjects final : public score::AggregateCommand
   SCORE_COMMAND_DECL(CommandFactoryName(), PasteObjects, "Paste objects")
 };
 
+/**
+ * Generic command used to paste images, gifs, click areas, etc.
+ */
 template <typename T>
 class PasteObject final : public score::Command
 {
@@ -143,6 +158,7 @@ public:
   {
     return QObject::tr("Paste %1").arg(Metadata<Description_k, T>::get());
   }
+
   PasteObject(const SceneModel& scene, QJsonObject obj)
       : m_path{scene}
       , m_newId{getStrongId(SceneAccessor<T>::get(scene))}

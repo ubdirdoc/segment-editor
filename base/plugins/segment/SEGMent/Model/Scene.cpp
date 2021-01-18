@@ -5,7 +5,9 @@
 
 #include <SEGMent/Model/Model.hpp>
 #include <SEGMent/ImageCache.hpp>
+#include <SEGMent/Visitors.hpp>
 #include <wobjectimpl.h>
+
 W_OBJECT_IMPL(SEGMent::SceneModel)
 namespace SEGMent
 {
@@ -209,6 +211,7 @@ void DataStreamWriter::write(SEGMent::Cue& v)
 {
     m_stream >> v.key >> v.cues;
 }
+
 template <>
 void JSONObjectReader::read(const SEGMent::Cue& v)
 {
@@ -229,15 +232,17 @@ void JSONObjectWriter::write(SEGMent::Cue& v)
 template <>
 void DataStreamReader::read(const SEGMent::SceneModel& v)
 {
-  ossia::for_each_in_tuple(
-      std::tie(v.objects, v.gifs, v.clickAreas, v.backClickAreas, v.textAreas),
-      [&](const auto& map) {
-        m_stream << (int32_t)map.size();
-        for (const auto& obj : map)
-        {
-          readFrom(obj);
-        }
-      });
+  // Serialize objects, gifs, etc
+  SEGMent::forEachCategoryInScene(v,
+      [&] (auto& map) {
+      m_stream << (int32_t)map.size();
+      for (const auto& obj : map)
+      {
+        readFrom(obj);
+      }
+  });
+
+  // Serialize scene properties
   m_stream << v.m_ambience << v.m_image << v.m_rect << v.m_sceneType
            << v.m_startText << v.m_repeatText << v.m_sonar << v.m_cues << v.m_journal
            << v.m_journalBlink << v.m_cuesToRemove;
@@ -248,11 +253,11 @@ void DataStreamReader::read(const SEGMent::SceneModel& v)
 template <>
 void DataStreamWriter::write(SEGMent::SceneModel& v)
 {
-  ossia::for_each_in_tuple(
-      std::tie(v.objects, v.gifs, v.clickAreas, v.backClickAreas, v.textAreas),
-      [&](auto& map) {
-        using entity_type =
-            typename std::remove_reference_t<decltype(map)>::value_type;
+  // Deserialize objects, gifs, etc
+  SEGMent::forEachCategoryInScene(v,
+      [&] <typename T> (T& map) {
+        using entity_type = typename T::value_type;
+
         int32_t sz;
         m_stream >> sz;
         for (; sz-- > 0;)
@@ -260,7 +265,9 @@ void DataStreamWriter::write(SEGMent::SceneModel& v)
           auto obj = new entity_type{*this, &v};
           map.add(obj);
         }
-      });
+  });
+
+  // Deserialize scene properties
   m_stream >> v.m_ambience >> v.m_image >> v.m_rect >> v.m_sceneType
       >> v.m_startText >> v.m_repeatText >> v.m_sonar >> v.m_cues >> v.m_journal
       >> v.m_journalBlink >> v.m_cuesToRemove;
@@ -272,12 +279,15 @@ template <>
 void JSONObjectReader::read(const SEGMent::SceneModel& v)
 {
   using namespace SEGMent;
+
+  // Serialize objects, gifs, etc
   obj["Objects"] = toJsonArray(v.objects);
   obj["Gifs"] = toJsonArray(v.gifs);
   obj["ClickAreas"] = toJsonArray(v.clickAreas);
   obj["BackClickAreas"] = toJsonArray(v.backClickAreas);
   obj["TextAreas"] = toJsonArray(v.textAreas);
 
+  // Serialize scene properties
   obj["Ambience"] = toJsonObject(v.m_ambience);
   obj["Image"] = v.m_image.path;
 
@@ -299,6 +309,8 @@ template <>
 void JSONObjectWriter::write(SEGMent::SceneModel& v)
 {
   using namespace SEGMent;
+
+  // Serialize objects, gifs, etc
   {
     const auto& objs = obj["Objects"].toArray();
     for (const auto& json_vref : objs)
@@ -345,6 +357,7 @@ void JSONObjectWriter::write(SEGMent::SceneModel& v)
     }
   }
 
+  // Deserialize scene properties
   v.m_ambience = fromJsonObject<SEGMent::Sound>(obj["Ambience"]);
   v.m_image.path = obj["Image"].toString();
   v.m_rect = fromJsonValue<QRectF>(obj["Rect"]);

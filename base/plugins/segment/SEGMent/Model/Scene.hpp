@@ -164,38 +164,6 @@ private:
 
 };
 
-template <typename T>
-struct SceneAccessor;
-template <>
-struct SceneAccessor<ImageModel>
-{
-  static auto& get(SceneModel& scene) { return scene.objects; }
-  static auto& get(const SceneModel& scene) { return scene.objects; }
-};
-template <>
-struct SceneAccessor<GifModel>
-{
-  static auto& get(SceneModel& scene) { return scene.gifs; }
-  static auto& get(const SceneModel& scene) { return scene.gifs; }
-};
-template <>
-struct SceneAccessor<ClickAreaModel>
-{
-  static auto& get(SceneModel& scene) { return scene.clickAreas; }
-  static auto& get(const SceneModel& scene) { return scene.clickAreas; }
-};
-template <>
-struct SceneAccessor<BackClickAreaModel>
-{
-  static auto& get(SceneModel& scene) { return scene.backClickAreas; }
-  static auto& get(const SceneModel& scene) { return scene.backClickAreas; }
-};
-template <>
-struct SceneAccessor<TextAreaModel>
-{
-  static auto& get(SceneModel& scene) { return scene.textAreas; }
-  static auto& get(const SceneModel& scene) { return scene.textAreas; }
-};
 } // namespace SEGMent
 
 DEFAULT_MODEL_METADATA(SEGMent::SceneModel, "Scene")
