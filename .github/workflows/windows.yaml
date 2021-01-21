@@ -12,12 +12,12 @@ jobs:
         config:
         - {
             name: "Windows",
-            os: windows-latest
+            os: windows-latest,
             buildtype: "Debug"
           }
         - {
             name: "Windows",
-            os: windows-latest
+            os: windows-latest,
             buildtype: "Release"
           }
 
