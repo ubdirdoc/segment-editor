@@ -5,6 +5,7 @@ sudo pacman -S --needed --noconfirm \
     mingw-w64-portaudio \
     mingw-w64-fftw \
     mingw-w64-ffmpeg \
+    mingw-w64-boost \
     ninja \
     mingw-w64-gcc
 

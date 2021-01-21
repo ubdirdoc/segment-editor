@@ -31,7 +31,8 @@ sudo apt-get install -qq --force-yes \
     libsdl2-dev libsdl2-2.0-0 libglu1-mesa-dev libglu1-mesa \
     libgles2-mesa-dev \
     libavahi-compat-libdnssd-dev libsamplerate0-dev \
-    libclang-10-dev
+    libclang-10-dev \
+    libboost-devel
 
 sudo apt-get remove -qq clang-8
 wait wget || true

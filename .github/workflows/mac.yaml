@@ -1,4 +1,4 @@
-name: Build
+name: macOS build
 
 on: [push]
 
@@ -42,12 +42,12 @@ jobs:
       id: get_version
       uses: battila7/get-version-action@v2
 
-     - name: Dependencies
-       run: |
-         ./ci/${{ matrix.config.script }}.deps.sh
+    - name: Dependencies
+      run: |
+        ./ci/${{ matrix.config.script }}.deps.sh
 
-     - name: Build
-       run: |
-         export CMAKE_CONFIG=${{ matrix.config.buildtype }}
-         ./ci/${{ matrix.config.script }}.build.sh
+    - name: Build
+      run: |
+        export CMAKE_CONFIG=${{ matrix.config.buildtype }}
+        ./ci/${{ matrix.config.script }}.build.sh
 
