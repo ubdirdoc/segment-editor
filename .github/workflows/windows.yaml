@@ -1,0 +1,48 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "Windows",
+            os: windows-latest
+            buildtype: "Debug"
+          }
+        - {
+            name: "Windows",
+            os: windows-latest
+            buildtype: "Release"
+          }
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get latest release version number
+      id: get_version
+      uses: battila7/get-version-action@v2
+
+    - name: Install dependencies
+      run:  |
+        git submodule update --init --recursive
+      shell: bash
+
+    - name: Configure
+      run: |
+        mkdir build && cd build
+        cmake -G"Visual Studio 16 2019" -DBOOST_ROOT="$BOOST_ROOT_1_72_0" -DSEGMENT_RELEASE=1 ..
+      shell: bash
+
+    - name: Build
+      run: |
+        cd build
+        cmake --build . --config ${{ matrix.config.buildtype }}
+        cmake --build . --config ${{ matrix.config.buildtype }} --target install
+
+

@@ -1,0 +1,53 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "MacOS Debug Homebrew",
+            os: macos-latest,
+            script: "osx-brew",
+            buildtype: "Debug"
+          }
+        - {
+            name: "MacOS Release Homebrew",
+            os: macos-latest,
+            script: "osx-brew",
+            buildtype: "Release"
+          }
+        - {
+            name: "MacOS Debug Package",
+            os: macos-latest,
+            script: "osx-package",
+            buildtype: "Debug"
+          }
+        - {
+            name: "MacOS Release Package",
+            os: macos-latest,
+            script: "osx-package",
+            buildtype: "Release"
+          }
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get latest release version number
+      id: get_version
+      uses: battila7/get-version-action@v2
+
+     - name: Dependencies
+       run: |
+         ./ci/${{ matrix.config.script }}.deps.sh
+
+     - name: Build
+       run: |
+         export CMAKE_CONFIG=${{ matrix.config.buildtype }}
+         ./ci/${{ matrix.config.script }}.build.sh
+
